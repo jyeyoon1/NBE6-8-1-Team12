@@ -1,6 +1,6 @@
 package com.caffe.domain.shipping.entity;
 
-import com.caffe.domain.order.order.entity.Order;
+import com.caffe.domain.order.order.entity.Purchase;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,5 +33,5 @@ public class Shipping {
     private LocalDateTime modifyDate;
 
     @OneToOne
-    private Order order;
+    private Purchase purchase;
 }
