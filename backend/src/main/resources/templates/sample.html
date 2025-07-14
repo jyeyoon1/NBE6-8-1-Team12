@@ -8,67 +8,70 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+  <!-- 다음(카카오) 우편번호 및 주소 검색 API 스크립트 로드 -->
+  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <style>
-      body {
-          background: #ddd;
-      }
+    body {
+        background: #ddd;
+    }
 
-      .card {
-          margin: auto;
-          max-width: 950px;
-          width: 90%;
-          box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-          border-radius: 1rem;
-          border: transparent
-      }
+    .card {
+        margin: auto;
+        max-width: 950px;
+        width: 90%;
+        box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 1rem;
+        border: transparent
+    }
 
-      .summary {
-          background-color: #ddd;
-          border-top-right-radius: 1rem;
-          border-bottom-right-radius: 1rem;
-          padding: 4vh;
-          color: rgb(65, 65, 65)
-      }
+    .summary {
+        background-color: #ddd;
+        border-top-right-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+        padding: 4vh;
+        color: rgb(65, 65, 65)
+    }
 
-      @media (max-width: 767px) {
-          .summary {
-              border-top-right-radius: unset;
-              border-bottom-left-radius: 1rem
-          }
-      }
+    @media (max-width: 767px) {
+        .summary {
+            border-top-right-radius: unset;
+            border-bottom-left-radius: 1rem
+        }
+    }
 
-      .row {
-          margin: 0
-      }
+    .row {
+        margin: 0
+    }
 
-      .title b {
-          font-size: 1.5rem
-      }
+    .title b {
+        font-size: 1.5rem
+    }
 
-      .col-2,
-      .col {
-          padding: 0 1vh
-      }
+    .col-2,
+    .col {
+        padding: 0 1vh
+    }
 
-      img {
-          width: 3.5rem
-      }
+    img {
+        width: 3.5rem
+    }
 
-      hr {
-          margin-top: 1.25rem
-      }
-      .products {
-          width: 100%;
-      }
-      .products .price, .products .action {
-          line-height: 38px;
-      }
-      .products .action {
-          line-height: 38px;
-      }
+    hr {
+        margin-top: 1.25rem
+    }
+    .products {
+        width: 100%;
+    }
+    .products .price, .products .action {
+        line-height: 38px;
+    }
+    .products .action {
+        line-height: 38px;
+    }
 
   </style>
-  <title>Hello, world!</title>
+  <title>팀 12 | 취급</title>
 </head>
 <body class="container-fluid">
 <div class="row justify-content-center m-4">
@@ -128,13 +131,18 @@
           <input type="email" class="form-control mb-1" id="email">
         </div>
         <div class="mb-3">
-          <label for="address" class="form-label">주소</label>
-          <input type="text" class="form-control mb-1" id="address">
+          <label for="address" class="form-label">배송지</label>
+          <div class="input-group">
+            <textarea class="form-control mb-1" id="address" rows="3" readonly></textarea>
+            <button type="button" class="btn btn-secondary" onclick="execDaumPostcode()">주소 검색</button>
+          </div>
         </div>
+
         <div class="mb-3">
           <label for="postcode" class="form-label">우편번호</label>
-          <input type="text" class="form-control" id="postcode">
+          <input type="text" class="form-control" id="postcode" readonly>
         </div>
+
         <div>당일 오후 2시 이후의 주문은 다음날 배송을 시작합니다.</div>
       </form>
       <div class="row pt-2 pb-2 border-top">
@@ -145,5 +153,25 @@
     </div>
   </div>
 </div>
+<script>
+
+  // 다음 주소 API를 실행하여 우편번호와 주소를 입력받는 함수
+  function execDaumPostcode() {
+      new daum.Postcode({
+          oncomplete: function(data) {
+              let fullAddr = data.roadAddress ? data.roadAddress : data.jibunAddress;
+              if (data.userSelectedType === 'R') {
+                  let extraAddr = '';
+                  if (data.bname) extraAddr += data.bname;
+                  if (data.buildingName) extraAddr += (extraAddr ? ', ' + data.buildingName : data.buildingName);
+                  if (extraAddr) fullAddr += ' (' + extraAddr + ')';
+              }
+              document.getElementById('postcode').value = data.zonecode;
+              document.getElementById('address').value = fullAddr;
+          }
+      }).open();
+  }
+</script>
+
 </body>
 </html>
