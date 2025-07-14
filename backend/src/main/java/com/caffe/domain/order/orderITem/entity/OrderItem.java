@@ -1,6 +1,6 @@
 package com.caffe.domain.order.orderITem.entity;
 
-import com.caffe.domain.order.order.entity.Order;
+import com.caffe.domain.order.order.entity.Purchase;
 import com.caffe.domain.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -29,7 +29,7 @@ public class OrderItem {
     private Product product;
 
     @ManyToOne
-    private Order order;
+    private Purchase purchase;
 
     @CreatedDate
     private LocalDateTime createDate;

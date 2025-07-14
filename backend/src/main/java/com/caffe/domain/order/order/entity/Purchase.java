@@ -16,7 +16,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Setter
 @Entity
-public class Order {
+public class Purchase {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Setter(PROTECTED)

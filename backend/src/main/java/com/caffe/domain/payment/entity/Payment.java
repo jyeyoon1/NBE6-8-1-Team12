@@ -1,7 +1,7 @@
 package com.caffe.domain.payment.entity;
 
 
-import com.caffe.domain.order.order.entity.Order;
+import com.caffe.domain.order.order.entity.Purchase;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -32,5 +32,5 @@ public class Payment {
     @LastModifiedDate
     private LocalDateTime modifyDate;
     @OneToOne
-    private Order order;
+    private Purchase purchase;
 }
