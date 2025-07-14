@@ -1,7 +1,7 @@
 package com.caffe.domain.payment.entity;
 
 
-import com.caffe.domain.order.entity.Order;
+import com.caffe.domain.order.order.entity.Order;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;

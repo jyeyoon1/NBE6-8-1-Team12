@@ -1,8 +1,8 @@
-package com.caffe.domain.order.entity;
+package com.caffe.domain.order.orderITem.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.caffe.domain.order.order.entity.Order;
+import com.caffe.domain.product.entity.Product;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -16,14 +16,20 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Setter
 @Entity
-public class Order {
+public class OrderItem {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Setter(PROTECTED)
     private int id;
 
-    private String user_email;
-    private char status;
+    private int quantity;
+    private double price;
+
+    @OneToOne
+    private Product product;
+
+    @ManyToOne
+    private Order order;
 
     @CreatedDate
     private LocalDateTime createDate;
