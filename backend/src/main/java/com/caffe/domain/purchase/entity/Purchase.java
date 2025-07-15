@@ -34,4 +34,9 @@ public class Purchase {
     private LocalDateTime createDate;
     @LastModifiedDate
     private LocalDateTime modifyDate;
+
+    public void addPurchaseItem(PurchaseItem purchaseItem) {
+        purchaseItems.add(purchaseItem);
+        purchaseItem.setPurchase(this);
+    }
 }
