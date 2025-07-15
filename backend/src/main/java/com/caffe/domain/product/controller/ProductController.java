@@ -25,6 +25,14 @@ public class ProductController {
         return "product/list_product";
     }
 
+    // GET ID로 단건 조회
+    @GetMapping("/{id}")
+    public String getProductById(@PathVariable int id, Model model) {
+        Product product = productService.getProductById(id);
+        model.addAttribute("product", product);
+        return "product/detail_product";
+    }
+
     // 상품 추가 폼 보여주기
     @GetMapping("/add")
     public String showAddForm(Model model) {
@@ -39,11 +47,6 @@ public class ProductController {
         return "redirect:/api/products/list"; // 저장 후 상품 목록으로 이동
     }
 
-    // GET ID로 단건 조회
-    @GetMapping("/{id}")
-    public Product getProductById(@PathVariable int id) {
-        return productService.getProductById(id);
-    }
 
     // POST 상품 등록
     @PostMapping

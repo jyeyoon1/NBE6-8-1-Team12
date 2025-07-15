@@ -87,13 +87,15 @@
 
     <ul class="product-list">
         <li class="product-item" th:each="product : ${products}">
-            <img th:src="${product.image_url}" alt="이미지" class="product-img" />
-            <div class="product-info">
-                <div class="product-name" th:text="${product.productName}">상품명</div>
-                <div class="product-category" th:text="${product.description}">설명</div>
-                <div class="product-price"
-                     th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'">가격</div>
-            </div>
+            <a th:href="@{/api/products/{id}(id=${product.id})}" style="display: flex; text-decoration: none; color: inherit;">
+                <img th:src="${product.image_url}" alt="이미지" class="product-img" />
+                <div class="product-info">
+                    <div class="product-name" th:text="${product.productName}">상품명</div>
+                    <div class="product-category" th:text="${product.description}">설명</div>
+                    <div class="product-price"
+                         th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'">가격</div>
+                </div>
+            </a>
         </li>
     </ul>
 </div>
