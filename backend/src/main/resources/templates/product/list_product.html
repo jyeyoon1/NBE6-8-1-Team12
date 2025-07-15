@@ -1,98 +1,31 @@
 <!doctype html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>상품 목록</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-        body {
-          background: #ddd;
-        }
-
-        .container {
-          max-width: 900px;
-          margin: 3rem auto;
-          background-color: white;
-          padding: 2rem;
-          border-radius: 1rem;
-          box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        }
-
-        h1 {
-          text-align: center;
-          margin-bottom: 2rem;
-        }
-
-        .btn-add {
-          margin-bottom: 2rem;
-        }
-
-        .product-list {
-          list-style: none;
-          padding: 0;
-        }
-
-        .product-item {
-          display: flex;
-          align-items: center;
-          padding: 1rem;
-          border-bottom: 1px solid #ccc;
-        }
-
-        .product-item:last-child {
-          border-bottom: none;
-        }
-
-        .product-img {
-          width: 80px;
-          height: 80px;
-          object-fit: cover;
-          border-radius: 0.5rem;
-          margin-right: 1.5rem;
-          background-color: #f0f0f0;
-        }
-
-        .product-info {
-          flex-grow: 1;
-        }
-
-        .product-name {
-          font-weight: 600;
-          font-size: 1.1rem;
-          margin-bottom: 0.25rem;
-        }
-
-        .product-category {
-          font-size: 0.9rem;
-          color: #666;
-          margin-bottom: 0.5rem;
-        }
-
-        .product-price {
-          font-weight: 700;
-          color: #333;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-200">
 
-<div class="container">
-    <h1>상품 목록</h1>
+<div class="max-w-4xl mx-auto mt-12 bg-white p-8 rounded-xl shadow-lg">
+    <h1 class="text-3xl font-bold text-center mb-8">상품 목록</h1>
 
-    <div class="text-end">
-        <a href="/api/products/add" class="btn btn-dark btn-add">상품 추가</a>
+    <div class="flex justify-end mb-6">
+        <a href="/api/products/add" class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700">
+            상품 추가
+        </a>
     </div>
 
-    <ul class="product-list">
-        <li class="product-item" th:each="product : ${products}">
-            <a th:href="@{/api/products/{id}(id=${product.id})}" style="display: flex; text-decoration: none; color: inherit;">
-                <img th:src="${product.image_url}" alt="이미지" class="product-img" />
-                <div class="product-info">
-                    <div class="product-name" th:text="${product.productName}">상품명</div>
-                    <div class="product-category" th:text="${product.description}">설명</div>
-                    <div class="product-price"
+    <ul class="space-y-4">
+        <li th:each="product : ${products}">
+            <a th:href="@{/api/products/{id}(id=${product.id})}" class="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <img th:src="${product.image_url}" alt="이미지"
+                     class="w-20 h-20 rounded-md object-cover bg-gray-200 mr-6" />
+                <div class="flex-grow">
+                    <div class="text-lg font-semibold" th:text="${product.productName}">상품명</div>
+                    <div class="text-sm text-gray-500 mb-1" th:text="${product.description}">설명</div>
+                    <div class="text-base font-bold text-gray-700"
                          th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'">가격</div>
                 </div>
             </a>
