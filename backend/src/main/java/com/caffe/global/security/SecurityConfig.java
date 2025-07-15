@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,11 +26,14 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 //CSRF  보호 비활성화
                 .csrf(AbstractHttpConfigurer::disable)
+                .headers((headers) -> headers
+                        .addHeaderWriter(new XFrameOptionsHeaderWriter(
+                                XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
                 //HTTP Basic 인증 방식 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable)
                 //Form 기반 로그인 비활성화
                 .formLogin(AbstractHttpConfigurer::disable)
-                //세션 관리 정책 설정 : STATELESS (세션을 사용ㅎ지 않음)
+                //세션 관리 정책 설정 : STATELESS (세션을 사용하지 않음)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 //요청 경로별 인가 설정
                 .authorizeHttpRequests(auth -> auth
