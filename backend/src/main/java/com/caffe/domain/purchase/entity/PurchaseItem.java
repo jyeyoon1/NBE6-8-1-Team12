@@ -1,6 +1,5 @@
-package com.caffe.domain.order.orderITem.entity;
+package com.caffe.domain.purchase.entity;
 
-import com.caffe.domain.order.order.entity.Purchase;
 import com.caffe.domain.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -16,7 +15,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Setter
 @Entity
-public class OrderItem {
+public class PurchaseItem {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Setter(PROTECTED)
@@ -28,7 +27,7 @@ public class OrderItem {
     @OneToOne
     private Product product;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Purchase purchase;
 
     @CreatedDate
