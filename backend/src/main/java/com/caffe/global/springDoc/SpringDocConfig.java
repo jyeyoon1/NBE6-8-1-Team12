@@ -21,7 +21,7 @@ public class SpringDocConfig {
     public GroupedOpenApi groupController() {
         return GroupedOpenApi.builder()
                 .group("domain")
-                .pathsToExclude("/**")
+                .pathsToExclude("/api/**")
                 .build();
     }
 }
