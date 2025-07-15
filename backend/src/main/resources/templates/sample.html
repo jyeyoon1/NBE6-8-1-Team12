@@ -11,6 +11,10 @@
 
   <!-- 다음(카카오) 우편번호 및 주소 검색 API 스크립트 로드 -->
   <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+  <!-- 모달 스크립트 로드 -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+
   <style>
     body {
         background: #ddd;
@@ -155,6 +159,9 @@
 </div>
 <script>
 
+  // 선택된 구매 ID
+  let selectedPurchaseId = null;
+
   // 다음 주소 API를 실행하여 우편번호와 주소를 입력받는 함수
   function execDaumPostcode() {
       new daum.Postcode({
@@ -171,7 +178,84 @@
           }
       }).open();
   }
+
+ // 이메일 입력창에서 포커스가 빠져나갈 때(blur 이벤트 발생)
+ document.getElementById('email').addEventListener('blur', () => {
+    const email = document.getElementById('email').value;
+    if (!email) return; // 이메일이 없으면 종료
+
+    // 서버에 최신 구매 내역 요청 (이메일로)
+    fetch(`/api/shippings/latest-purchase/${email}`)
+        .then(response => response.json())
+        .then(purchase => {
+
+            // 받아온 구매 정보의 id를 selectedPurchaseId에 저장
+            selectedPurchaseId = purchase.id;
+            console.log("최신 구매 ID:", selectedPurchaseId);
+        });
+  });
+
+  // 결제하기 버튼 클릭 이벤트
+  document.querySelector('.btn-dark').addEventListener('click', () => {
+
+      // 구매 내역이 없는 경우(이메일 입력 안 함) 모달로 안내하고 결제 중단
+      if (!selectedPurchaseId) {
+        showInfoModal("이메일을 입력하여 구매 내역을 불러와야 합니다.");
+        return;
+      }
+
+      // 입력한 주소와 우편번호 가져오기
+      const address = document.getElementById('address').value;
+      const postcode = document.getElementById('postcode').value;
+
+      // 서버에 배송 정보 등록 API 호출
+      fetch('/api/shippings', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+              purchaseId: selectedPurchaseId,
+              address: address,
+              postcode: postcode,
+              status: 'DELIVERING'
+          })
+      })
+      .then(response => {
+          if (response.ok) {
+              showInfoModal('배송지가 저장되었습니다!');
+              return response.json();
+          } else {
+              showInfoModal('배송 저장 실패!!');
+          }
+      })
+      .catch(error => {
+          console.error('배송 저장 중 에러 발생:', error);
+          showInfoModal('배송 저장 중 오류가 발생했습니다.');
+      });
+  });
+
+  // 안내 메시지를 모달로 보여주는 함수
+  function showInfoModal(message) {
+    document.getElementById('infoModalMessage').textContent = message;
+    let modal = new bootstrap.Modal(document.getElementById('infoModal'));
+    modal.show();
+  }
+
 </script>
 
+<!-- 안내 메시지를 보여줄 Bootstrap 모달 -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="infoModalLabel">안내</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="infoModalMessage"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
