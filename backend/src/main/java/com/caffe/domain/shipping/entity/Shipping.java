@@ -4,6 +4,7 @@ import com.caffe.domain.purchase.entity.Purchase;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -28,6 +29,7 @@ public class Shipping {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Setter(PROTECTED)
+    @Autowired
     private int id; // 배송 번호
 
     private String address; // 주소
