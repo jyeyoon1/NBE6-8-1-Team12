@@ -1,26 +1,18 @@
 package com.caffe.domain.purchase.entity;
 
 import com.caffe.domain.product.entity.Product;
-import jakarta.persistence.*;
+import com.caffe.global.jpa.entity.BaseEntity;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDateTime;
-
-import static jakarta.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Setter
 @Entity
-public class PurchaseItem {
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Setter(PROTECTED)
-    private int id;
-
+public class PurchaseItem extends BaseEntity {
     private int quantity;
     private double price;
 
@@ -29,9 +21,4 @@ public class PurchaseItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Purchase purchase;
-
-    @CreatedDate
-    private LocalDateTime createDate;
-    @LastModifiedDate
-    private LocalDateTime modifyDate;
 }
