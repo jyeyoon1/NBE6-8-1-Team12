@@ -1,4 +1,4 @@
-package com.caffe.domain.shipping;
+package com.caffe.domain.shipping.repository;
 
 import com.caffe.domain.shipping.entity.Shipping;
 import org.springframework.data.jpa.repository.JpaRepository;
