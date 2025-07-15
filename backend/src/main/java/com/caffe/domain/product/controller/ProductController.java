@@ -44,9 +44,9 @@ public class ProductController {
 
     // 상품 추가 처리
     @PostMapping("/add")
-    public String addProduct(@ModelAttribute Product product) {
-        productService.saveProduct(product);
-        return "redirect:/api/products/list"; // 저장 후 상품 목록으로 이동
+    public ResponseEntity<String> addProduct(@RequestBody ProductDTO productDTO) {
+        productService.saveProduct(productDTO.toEntity());
+        return ResponseEntity.ok("상품이 성공적으로 추가되었습니다.");
     }
 
 
