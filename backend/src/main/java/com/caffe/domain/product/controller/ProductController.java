@@ -25,9 +25,18 @@ public class ProductController {
         return "product/list_product";
     }
 
+    // 상품 추가 폼 보여주기
     @GetMapping("/add")
-    public String addProductPage() {
-        return "product/add_product";
+    public String showAddForm(Model model) {
+        model.addAttribute("product", new Product());
+        return "product/add_product"; // templates/product/add_product.html
+    }
+
+    // 상품 추가 처리
+    @PostMapping("/add")
+    public String addProduct(@ModelAttribute Product product) {
+        productService.saveProduct(product);
+        return "redirect:/api/products/list"; // 저장 후 상품 목록으로 이동
     }
 
     // GET ID로 단건 조회
