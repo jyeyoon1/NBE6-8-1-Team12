@@ -1,6 +1,6 @@
 package com.caffe.domain.shipping.entity;
 
-import com.caffe.domain.order.order.entity.Purchase;
+import com.caffe.domain.purchase.entity.Purchase;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
