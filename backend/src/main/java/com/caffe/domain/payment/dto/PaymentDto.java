@@ -1,10 +1,6 @@
 package com.caffe.domain.payment.dto;
 
 import com.caffe.domain.payment.entity.Payment;
-import com.caffe.domain.purchase.entity.Purchase;
-import jakarta.persistence.OneToOne;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
