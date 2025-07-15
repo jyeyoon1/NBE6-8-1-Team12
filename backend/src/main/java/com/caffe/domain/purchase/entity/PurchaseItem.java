@@ -27,7 +27,7 @@ public class PurchaseItem {
     @OneToOne
     private Product product;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Purchase purchase;
 
     @CreatedDate
