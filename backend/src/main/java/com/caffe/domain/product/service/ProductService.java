@@ -40,7 +40,9 @@ public class ProductService {
 
         // 상품 삭제
         public void deleteProduct(int id) {
-            productRepository.deleteById(id);
+            Product product = productRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException(id + "번 상품을 찾을 수 없습니다."));
+            productRepository.delete(product);
         }
 
 
