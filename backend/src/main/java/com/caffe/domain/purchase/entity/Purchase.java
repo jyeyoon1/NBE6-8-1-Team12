@@ -24,7 +24,7 @@ public class Purchase {
     @Setter(PROTECTED)
     private int id;
 
-    private String user_email;
+    private String userEmail;
     private char status;
 
     @OneToMany(mappedBy = "purchase", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
