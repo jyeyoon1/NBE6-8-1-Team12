@@ -4,6 +4,7 @@ package com.caffe.domain.product.controller;
 import com.caffe.domain.product.dto.ProductDTO;
 import com.caffe.domain.product.entity.Product;
 import com.caffe.domain.product.service.ProductService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,7 +22,8 @@ public class ProductController {
 
     // GET 모든 상품 조회
     @GetMapping("/list")
-    public String listProducts(Model model) {
+    public String listProducts(HttpSession session, Model model) {
+        Object user = session.getAttribute("SPRING_SECURITY_CONTEXT");
         List<Product> productList = productService.getAllProducts();
         model.addAttribute("products", productList);
         return "product/list_product";

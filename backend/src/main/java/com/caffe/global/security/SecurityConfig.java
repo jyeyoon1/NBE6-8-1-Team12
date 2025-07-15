@@ -8,8 +8,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -36,14 +37,31 @@ public class SecurityConfig {
                 //HTTP Basic 인증 방식 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable)
                 //Form 기반 로그인/로그아웃 비활성화
-                .formLogin(AbstractHttpConfigurer::disable)
-                .logout(AbstractHttpConfigurer::disable)
+                .formLogin(form -> form
+                        .loginPage("/api/member/login")               // 로그인 폼 GET 경로
+                        .loginProcessingUrl("/api/member/login")      // 로그인 폼 제출(POST) 처리 경로
+                        .failureUrl("/api/member/login?error=true")  // 로그인 실패 시 리다이렉트 URL
+                        .defaultSuccessUrl("/api/products/list", true)
+                        .permitAll()
+                )
+                // 로그아웃 설정
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                )
                 //세션 관리 정책 설정 : STATELESS (세션을 사용하지 않음)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                )
                 //요청 경로별 인가 설정
                 .authorizeHttpRequests(auth -> auth
-                        //모든 요청 허용
-                        .requestMatchers("/**").permitAll()
+                        // 로그인 페이지, 정적 리소스는 허용
+                        .requestMatchers("/", "/api/member/login", "/css/**", "/js/**").permitAll()
+                        // 상품 관련 페이지는 인증 필요
+                        .requestMatchers("/api/products/**").authenticated()
+                        .anyRequest().denyAll()  // 그 외 요청은 모두 거부(필요 시 변경)
                 );
         return http.build();
     }
@@ -59,11 +77,19 @@ public class SecurityConfig {
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
         //허용할 헤더
         configuration.setAllowedHeaders(List.of("*"));
+        //세션 쿠키를 위해 추가
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         //모든 경로에 대해 위 설정 적용
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    // 비밀번호 암호화 설정
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }
