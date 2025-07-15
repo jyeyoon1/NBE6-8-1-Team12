@@ -1,26 +1,68 @@
+/* globals.css */
+
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #ffffff; /* ✅ 기본 배경을 흰색으로 변경 */
+  color: #4a3b31;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 흐릿한 배경 스타일 (변경 없음) */
+.background-blur {
+  position: fixed;
+  inset: 0;
+  background-image: url('/nbe6-8-team12_caffe_logo.png');
+  background-size: 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: blur(10px);
+  z-index: -1;
+}
+
+/* 콘텐츠 래퍼 스타일 (변경 없음) */
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* 헤더 스타일 (변경 없음 - 이미 흰색 계열) */
+.header-container {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.7); /* 반투명한 흰색 배경 */
+  color: #4a3b31;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  backdrop-filter: blur(5px);
+}
+
+/* 메인 콘텐츠 영역 (변경 없음) */
+main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 로고 이미지 스타일 (변경 없음) */
+.header-logo {
+  height: 50px;
+  width: auto;
+}
+
+/* 푸터 스타일 (기존 베이지 색상 유지) */
+.footer-container {
+  width: 100%;
+  background-color: rgba(224, 218, 209, 0.7); /* 반투명한 베이지 배경 */
+  color: #776e65;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.75rem;
+  margin-top: auto;
 }
