@@ -1,10 +1,7 @@
-package com.caffe.shipping;
+package com.caffe.domain.shipping;
 
-import com.caffe.domain.shipping.entity.Shipping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/shipping")
