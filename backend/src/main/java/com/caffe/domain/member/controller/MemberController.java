@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/member")
+@RequestMapping("/api/member")
 @RequiredArgsConstructor
 public class MemberController {
 
@@ -24,6 +24,7 @@ public class MemberController {
     public String loginPage() {
         return "/member/view_login";
     }
+
 
     // 모든 회원 조회
     @GetMapping

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>상품 목록</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+          background: #ddd;
+        }
+
+        .container {
+          max-width: 900px;
+          margin: 3rem auto;
+          background-color: white;
+          padding: 2rem;
+          border-radius: 1rem;
+          box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+
+        h1 {
+          text-align: center;
+          margin-bottom: 2rem;
+        }
+
+        .btn-add {
+          margin-bottom: 2rem;
+        }
+
+        .product-list {
+          list-style: none;
+          padding: 0;
+        }
+
+        .product-item {
+          display: flex;
+          align-items: center;
+          padding: 1rem;
+          border-bottom: 1px solid #ccc;
+        }
+
+        .product-item:last-child {
+          border-bottom: none;
+        }
+
+        .product-img {
+          width: 80px;
+          height: 80px;
+          object-fit: cover;
+          border-radius: 0.5rem;
+          margin-right: 1.5rem;
+          background-color: #f0f0f0;
+        }
+
+        .product-info {
+          flex-grow: 1;
+        }
+
+        .product-name {
+          font-weight: 600;
+          font-size: 1.1rem;
+          margin-bottom: 0.25rem;
+        }
+
+        .product-category {
+          font-size: 0.9rem;
+          color: #666;
+          margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+          font-weight: 700;
+          color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>상품 목록</h1>
+
+    <div class="text-end">
+        <a href="add-product.html" class="btn btn-dark btn-add">상품 추가</a>
+    </div>
+
+    <ul class="product-list">
+        <li class="product-item">
+            <img src="https://i.imgur.com/HKOFQYa.jpeg" alt="Columbia Nariñó" class="product-img" />
+            <div class="product-info">
+                <div class="product-name">Columbia Nariñó</div>
+                <div class="product-category">커피콩</div>
+                <div class="product-price">5,000원</div>
+            </div>
+        </li>
+
+        <li class="product-item">
+            <img src="https://i.imgur.com/7tZ8J3K.jpeg" alt="Ethiopian Yirgacheffe" class="product-img" />
+            <div class="product-info">
+                <div class="product-name">Ethiopian Yirgacheffe</div>
+                <div class="product-category">커피콩</div>
+                <div class="product-price">6,500원</div>
+            </div>
+        </li>
+
+        <li class="product-item">
+            <img src="https://i.imgur.com/3kBzH4a.jpeg" alt="Green Tea Powder" class="product-img" />
+            <div class="product-info">
+                <div class="product-name">Green Tea Powder</div>
+                <div class="product-category">차</div>
+                <div class="product-price">3,000원</div>
+            </div>
+        </li>
+    </ul>
+</div>
+
+</body>
+</html>
