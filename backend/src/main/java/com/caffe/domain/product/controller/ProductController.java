@@ -1,9 +1,11 @@
 package com.caffe.domain.product.controller;
 
 
+import com.caffe.domain.product.dto.ProductDTO;
 import com.caffe.domain.product.entity.Product;
 import com.caffe.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -48,17 +50,37 @@ public class ProductController {
     }
 
 
+    // 상품 수정 폼 보여주기
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable int id, Model model) {
+        Product product = productService.getProductById(id);
+        model.addAttribute("product", product);
+        return "product/edit_product";
+    }
+
+    // 상품 수정 처리
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateProduct(@PathVariable int id, @RequestBody ProductDTO dto) {
+        Product product = productService.getProductById(id);
+
+        product.setProductName(dto.getProductName());
+        product.setPrice(dto.getPrice());
+        product.setDescription(dto.getDescription());
+        product.setImage_url(dto.getImage_url());
+        product.setTotal_quantity(dto.getTotal_quantity());
+
+        productService.saveProduct(product);
+        return ResponseEntity.ok().build();
+    }
+
+
     // POST 상품 등록
     @PostMapping
     public Product createProduct(@RequestBody Product product) {
         return productService.saveProduct(product);
     }
 
-    // PUT 상품 수정
-    @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable int id, @RequestBody Product product) {
-        return productService.updateProduct(product);
-    }
+
 
     // DELETE 상품 삭제
     @DeleteMapping("/{id}")
