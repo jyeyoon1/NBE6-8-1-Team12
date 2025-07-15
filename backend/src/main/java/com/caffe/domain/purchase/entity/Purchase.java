@@ -1,15 +1,17 @@
-package com.caffe.domain.order.order.entity;
+package com.caffe.domain.purchase.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -24,6 +26,9 @@ public class Purchase {
 
     private String user_email;
     private char status;
+
+    @OneToMany(mappedBy = "purchase", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
+    private List<PurchaseItem> purchaseItems = new ArrayList<>();
 
     @CreatedDate
     private LocalDateTime createDate;
