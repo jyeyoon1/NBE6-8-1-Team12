@@ -26,6 +26,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 //CSRF  보호 비활성화
                 .csrf(AbstractHttpConfigurer::disable)
+                //같은 도메인페이지에서만 이 페이지의 프레임을 표시
                 .headers((headers) -> headers
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(
                                 XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
