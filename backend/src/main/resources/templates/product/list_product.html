@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -81,34 +82,17 @@
     <h1>상품 목록</h1>
 
     <div class="text-end">
-        <a href="add-product.html" class="btn btn-dark btn-add">상품 추가</a>
+        <a href="/api/products/add" class="btn btn-dark btn-add">상품 추가</a>
     </div>
 
     <ul class="product-list">
-        <li class="product-item">
-            <img src="https://i.imgur.com/HKOFQYa.jpeg" alt="Columbia Nariñó" class="product-img" />
+        <li class="product-item" th:each="product : ${products}">
+            <img th:src="${product.image_url}" alt="이미지" class="product-img" />
             <div class="product-info">
-                <div class="product-name">Columbia Nariñó</div>
-                <div class="product-category">커피콩</div>
-                <div class="product-price">5,000원</div>
-            </div>
-        </li>
-
-        <li class="product-item">
-            <img src="https://i.imgur.com/7tZ8J3K.jpeg" alt="Ethiopian Yirgacheffe" class="product-img" />
-            <div class="product-info">
-                <div class="product-name">Ethiopian Yirgacheffe</div>
-                <div class="product-category">커피콩</div>
-                <div class="product-price">6,500원</div>
-            </div>
-        </li>
-
-        <li class="product-item">
-            <img src="https://i.imgur.com/3kBzH4a.jpeg" alt="Green Tea Powder" class="product-img" />
-            <div class="product-info">
-                <div class="product-name">Green Tea Powder</div>
-                <div class="product-category">차</div>
-                <div class="product-price">3,000원</div>
+                <div class="product-name" th:text="${product.productName}">상품명</div>
+                <div class="product-category" th:text="${product.description}">설명</div>
+                <div class="product-price"
+                     th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'">가격</div>
             </div>
         </li>
     </ul>
