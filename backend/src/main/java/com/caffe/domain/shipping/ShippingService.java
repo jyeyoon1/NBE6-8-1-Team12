@@ -1,12 +1,7 @@
-package com.caffe.shipping;
+package com.caffe.domain.shipping;
 
-import com.caffe.domain.shipping.entity.Shipping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
