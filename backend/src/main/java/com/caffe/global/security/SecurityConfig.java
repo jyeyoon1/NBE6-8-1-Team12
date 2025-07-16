@@ -58,7 +58,7 @@ public class SecurityConfig {
                 //요청 경로별 인가 설정
                 .authorizeHttpRequests(auth -> auth
                         // 로그인 페이지, 정적 리소스는 허용
-                        .requestMatchers("/", "/api/member/login", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/", "/api/member/login", "/css/**", "/js/**","/h2-console/**","/apidoc/**","/swagger-ui/**").permitAll()
                         // 상품 관련 페이지는 인증 필요
                         .requestMatchers("/api/products/**").authenticated()
                         .anyRequest().denyAll()  // 그 외 요청은 모두 거부(필요 시 변경)
