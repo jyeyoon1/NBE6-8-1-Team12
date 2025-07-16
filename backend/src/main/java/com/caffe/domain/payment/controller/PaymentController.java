@@ -8,7 +8,9 @@ import com.caffe.domain.payment.service.PaymentService;
 import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.service.PurchaseService;
 import com.caffe.global.rsData.RsData;
-import jakarta.transaction.Transactional;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,24 +20,36 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/payments")
+@RequestMapping("/api/v1/payments")
+@Tag(name = "ApiV1PaymentController", description = "API 결제 컨트롤러")
 public class PaymentController {
     private final PaymentService paymentService;
     private final PurchaseService purchaseService;
 
+    @GetMapping()
+    @Transactional(readOnly = true)
+    @Operation(summary = "다건조회")
+    public List<PaymentDto.PaymentResponseDto> getAll() {
+        List<Payment> payments = paymentService.getAll();
+        return payments.stream().map(PaymentDto.PaymentResponseDto::new).toList();
+    }
+
     @GetMapping("/{id}")
-    public PaymentDto.PaymentResponseDto findById(@PathVariable int id) {
+    @Transactional(readOnly = true)
+    @Operation(summary = "단건조회")
+    public PaymentDto.PaymentResponseDto getOne(@PathVariable int id) {
         Payment payment = paymentService.findById(id).get();
         return new PaymentDto.PaymentResponseDto(payment);
     }
 
     @PostMapping()
     @Transactional
+    @Operation(summary = "결제 요청")
     public RsData<PaymentDto.PaymentResponseDto> request(@Valid @RequestBody PaymentDto.PaymentRequestDto paymentRequestDto) {
 
         Purchase purchase = purchaseService.getPurchaseById(paymentRequestDto.purchaseId());
         Optional<PaymentOption> paymentOption = paymentService.getPaymentOption(paymentRequestDto.paymentOptionId());
-        if(!paymentOption.isPresent()) {
+        if(paymentOption.isEmpty()) {
             return new RsData<>("404-1","지원하지 않는 결제방식입니다.");
         }
         // 서비스 계층에서 결제 로직 처리
@@ -46,6 +60,7 @@ public class PaymentController {
 
     @DeleteMapping("/{id}")
     @Transactional
+    @Operation(summary = "결제 삭제")
     public RsData<Void> cancel(@PathVariable int id) {
         Payment payment = paymentService.findById(id).get();
         paymentService.cancel(payment);
@@ -54,6 +69,7 @@ public class PaymentController {
 
     @PutMapping("/{id}")
     @Transactional
+    @Operation(summary = "결제 방법 수정")
     public RsData<PaymentDto.PaymentResponseDto> update(@PathVariable int id, @Valid @RequestBody PaymentDto.PaymentUpdateDto paymentUpdateDto) {
         Optional<Payment> payment = paymentService.findById(id);
         if(payment.isEmpty()) {
@@ -71,6 +87,8 @@ public class PaymentController {
     }
 
     @GetMapping("/options/{id}")
+    @Transactional(readOnly = true)
+    @Operation(summary = "결제 방법 조회")
     public List<PaymentOptionDto> getDetailPaymentOptions(@PathVariable int id) {
         return paymentService.getDetailPaymentOptions(id);
     }
