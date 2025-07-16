@@ -2,6 +2,8 @@ package com.caffe.domain.purchase.entity;
 
 import com.caffe.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +19,11 @@ import static jakarta.persistence.CascadeType.REMOVE;
 @Entity
 public class Purchase extends BaseEntity {
     private String userEmail;
-    private char status;
+
+    private double totalPrice;
+
+    @Enumerated(EnumType.STRING)
+    private PurchaseStatus status;
 
     @OneToMany(mappedBy = "purchase", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
     private List<PurchaseItem> purchaseItems = new ArrayList<>();

@@ -3,13 +3,13 @@ package com.caffe.domain.purchase.controller;
 import com.caffe.domain.payment.dto.PaymentOptionDto;
 import com.caffe.domain.payment.service.PaymentOptionService;
 import com.caffe.domain.purchase.dto.PurchaseInfoDto;
+import com.caffe.domain.purchase.dto.PurchasePageReqBody;
 import com.caffe.domain.purchase.dto.PurchasePageResBody;
 import com.caffe.domain.purchase.service.PurchaseService;
+import com.caffe.global.rsData.RsData;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,4 +32,16 @@ public class PurchaseController {
         return new PurchasePageResBody(orderPageInfo, topLevelPaymentOptions);
     }
 
+    @PostMapping("/checkout")
+    public RsData<Void> createOrder(
+            @Valid @RequestBody PurchasePageReqBody reqBody
+    ) {
+        purchaseService.createPurchase(reqBody);
+
+        // 임시
+        return new RsData<>(
+                "201",
+                "주문이 완료되었습니다."
+        );
+    }
 }
