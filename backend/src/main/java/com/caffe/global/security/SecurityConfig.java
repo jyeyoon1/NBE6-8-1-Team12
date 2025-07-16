@@ -61,7 +61,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/api/member/login", "/css/**", "/js/**").permitAll()
                         // 상품 관련 페이지는 인증 필요
                         .requestMatchers("/api/products/**").authenticated()
-                        .anyRequest().denyAll()  // 그 외 요청은 모두 거부(필요 시 변경)
+                        .anyRequest().permitAll()  // 그 외 요청은 모두 승인(필요 시 변경)
                 );
         return http.build();
     }
