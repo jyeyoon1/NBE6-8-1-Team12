@@ -1,4 +1,24 @@
-<header class="header-container" th:fragment="headerFragment">
-    <img th:src="'https://i.postimg.cc/PJDhy8d9/nbe6-8-team12-caffe-logo.png'" alt="Caffe Logo" class="header-logo" />
-    <h5>Caffe 메뉴 서비스 입니다.</h5>
+<!-- fragments/header.html -->
+<header th:fragment="headerFragment" xmlns:th="http://www.thymeleaf.org"
+        class="w-full fixed top-0 left-0 bg-gray-800 text-white shadow-md z-50">
+
+    <!-- 전체 레이아웃 -->
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+
+        <!-- 좌측: 로고 + 설명 -->
+        <div class="flex items-center space-x-3">
+            <img th:src="'https://i.postimg.cc/PJDhy8d9/nbe6-8-team12-caffe-logo.png'"
+                 alt="Caffe Logo" class="w-10 h-10 object-contain" />
+            <h5 class="text-base text-white">Caffe 메뉴 서비스 입니다.</h5>
+        </div>
+
+        <!-- 우측: 네비게이션 -->
+        <div class="flex items-center space-x-3 text-sm font-medium">
+            <a href="/" class="hover:text-gray-300 transition-colors">홈</a>
+            <span class="text-gray-300">|</span>
+            <a href="/admin/dashboard" class="hover:text-gray-300 transition-colors">대시보드</a>
+            <span class="text-gray-300">|</span>
+            <a href="/logout" class="hover:text-gray-300 transition-colors">로그아웃</a>
+        </div>
+    </div>
 </header>

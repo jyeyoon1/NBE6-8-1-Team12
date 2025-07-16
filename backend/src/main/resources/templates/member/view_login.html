@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -7,11 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-200 min-h-screen flex items-center justify-center px-4">
+<body class="bg-gray-200 min-h-screen flex items-center justify-center px-4" xmlns:th="http://www.thymeleaf.org">
+<!-- 헤더 삽입 -->
+<div th:replace="fragments/header :: headerFragment"></div>
 <div class="bg-white rounded-2xl shadow-lg max-w-md w-[90%] mx-auto p-10">
-    <div class="text-center mb-8">
-        <h2 class="text-gray-800 font-bold text-3xl">취급Caffe</h2>
-    </div>
 
     <div class="mb-5 text-center">
         <h5 class="font-bold text-xl">관리자 로그인</h5>
