@@ -25,7 +25,6 @@ public class PurchaseController {
 
     private final PurchaseService purchaseService;
     private final PaymentService paymentService;
-
     @PostMapping("/search")
     @Operation(summary = "주문 조회")
     public RsData<PurchaseDetailDto> getPurchase(

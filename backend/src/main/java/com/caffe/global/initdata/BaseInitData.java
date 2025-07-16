@@ -77,7 +77,8 @@ public class BaseInitData {
         System.out.println("기본 상품 2개 생성 완료");
     }
 
-    private void initPaymentOptions() {
+    @Transactional
+    public void initPaymentOptions() {
         if (paymentOptionRepository.count() > 0) return;
         PaymentOption paymentOption1 = new PaymentOption();
         paymentOption1.setType(PaymentOptionType.TOP_LEVEL);
