@@ -9,19 +9,13 @@ import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 
 @Controller
 public class HomeController {
-    /*
+
     @SneakyThrows
-    @GetMapping(produces = TEXT_HTML_VALUE)
-    @Operation(summary = "메인 페이지")
+    @GetMapping("/apidoc")
+    @Operation(summary = "API 문서 페이지")
     public String apiMain() {
-        return """
-               <h1>API Server</h1>
-               <div>
-                    <a href="/swagger-ui/index.html">API 문서로 이동</a>
-               </div>
-               """;
+        return "redirect:/swagger-ui/index.html";
     }
-     */
 
     /**
      * @return 렌더링할 Thymeleaf 템플릿 이름 ("home")
