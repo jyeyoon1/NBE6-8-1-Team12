@@ -76,16 +76,6 @@ public class ProductController {
         return ResponseEntity.ok(updateProduct);
     }
 
-
-    // POST 상품 등록
-    @PostMapping
-    @Valid
-    public Product createProduct(@RequestBody Product product) {
-        return productService.saveProduct(product);
-    }
-
-
-
     // DELETE 상품 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable int id) {
