@@ -1,3 +1,5 @@
+'use client'; // 꼭 필요함 (Client Component로 선언)
+
 import { useEffect, useState } from 'react';
 
 interface Product {

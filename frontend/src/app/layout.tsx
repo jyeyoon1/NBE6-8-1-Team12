@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
+import Header from '@/components/Header';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,6 +28,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
+        {/* 1. 흐릿한 배경을 위한 div 추가 */}
+        <Header />
+
         {/* 1. 흐릿한 배경을 위한 div 추가 */}
         <div className="background-blur"></div>
 
