@@ -43,7 +43,6 @@ public class PaymentDto {
     }
 
     public record PaymentUpdateDto(
-            @NotNull int paymentId,
             @NotNull int paymentOptionId,
             @NotNull String paymentInfo,
             @Positive double amount

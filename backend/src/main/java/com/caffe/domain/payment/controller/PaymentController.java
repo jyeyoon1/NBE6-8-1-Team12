@@ -46,21 +46,21 @@ public class PaymentController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public RsData<Void> cancel(@RequestParam int id) {
+    public RsData<Void> cancel(@PathVariable int id) {
         Payment payment = paymentService.findById(id).get();
         paymentService.cancel(payment);
         return new RsData<>("200-1", "결제번호 %d 가 삭제되었습니다.".formatted(id));
     }
 
-    @PutMapping()
+    @PutMapping("/{id}")
     @Transactional
-    public RsData<PaymentDto.PaymentResponseDto> update(@Valid @RequestBody PaymentDto.PaymentUpdateDto paymentUpdateDto) {
-        Optional<Payment> payment = paymentService.findById(paymentUpdateDto.paymentId());
-        if(!payment.isPresent()) {
+    public RsData<PaymentDto.PaymentResponseDto> update(@PathVariable int id, @Valid @RequestBody PaymentDto.PaymentUpdateDto paymentUpdateDto) {
+        Optional<Payment> payment = paymentService.findById(id);
+        if(payment.isEmpty()) {
             return new RsData<>("404-1","결제정보를 찾을 수 없습니다.",null);
         }
         Optional<PaymentOption> paymentOption = paymentService.getPaymentOption(paymentUpdateDto.paymentOptionId());
-        if(!payment.isPresent()) {
+        if(paymentOption.isEmpty()) {
             return new RsData<>("400-1","잘못된 결제방법입니다.",null);
         }
         Payment updatedPayment = paymentService.changePayment(payment.get(), paymentOption.get(), paymentUpdateDto.paymentInfo(), paymentUpdateDto.amount());
@@ -70,8 +70,8 @@ public class PaymentController {
                 new PaymentDto.PaymentResponseDto(updatedPayment));
     }
 
-    @GetMapping("/options")
-    public List<PaymentOptionDto> getDetailPaymentOptions(@RequestParam int parentId) {
-        return paymentService.getDetailPaymentOptions(parentId);
+    @GetMapping("/options/{id}")
+    public List<PaymentOptionDto> getDetailPaymentOptions(@PathVariable int id) {
+        return paymentService.getDetailPaymentOptions(id);
     }
 }
