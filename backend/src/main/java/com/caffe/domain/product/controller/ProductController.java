@@ -34,7 +34,7 @@ public class ProductController {
 
     //상품 수정 API
     @PutMapping("/{id}")
-    public ResponseEntity<RsData<Product>> updateProduct(@Valid @PathVariable int id, @RequestBody ProductDTO dto) {
+    public ResponseEntity<RsData<Product>> updateProduct(@PathVariable int id, @Valid @RequestBody ProductDTO dto) {
         Product product = productService.getProductById(id);
 
         // 상품 정보 업데이트
