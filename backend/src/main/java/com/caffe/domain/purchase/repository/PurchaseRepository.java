@@ -14,5 +14,6 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Integer> {
      */
     Optional<Purchase> findTopByUserEmailOrderByCreateDateDesc(String userEmail);
 
-
+    // 장바구니 기능 추가 후, 주문:주문 제품 여러개로 될 시 패치조인으로 변경 예정
+    Optional<Purchase> findByIdAndUserEmail(int id, String email);
 }
