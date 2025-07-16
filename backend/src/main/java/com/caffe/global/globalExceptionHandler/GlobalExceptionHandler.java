@@ -33,14 +33,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
                 new RsData<>(
                         "404-1",
-                        "해당 데이터가 존재하지 않습니다."
+                        ex.getMessage()
                 ),
                 NOT_FOUND
         );
     }
 
     /**
-     * @Validated 어노테이션을 통해 PathVariable 또는 RequestParam 유효성 검증에 실패한 경우를 처리합니다.
+     *  Validated 어노테이션을 통해 PathVariable 또는 RequestParam 유효성 검증에 실패한 경우를 처리합니다.
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<RsData<Void>> handle(ConstraintViolationException ex) {
@@ -100,7 +100,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
                 new RsData<>(
                         "400-1",
-                        "요청 본문이 올바르지 않습니다."
+                        ex.getMessage()
                 ),
                 BAD_REQUEST
         );
@@ -116,6 +116,17 @@ public class GlobalExceptionHandler {
                                 "NotBlank",
                                 ex.getLocalizedMessage()
                         )
+                ),
+                BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<RsData<Void>> handle(IllegalArgumentException ex) {
+        return new ResponseEntity<>(
+                new RsData<>(
+                        "400-2",  // 기존 400-1과 구분하기 위해 400-2 사용
+                        ex.getMessage()
                 ),
                 BAD_REQUEST
         );
