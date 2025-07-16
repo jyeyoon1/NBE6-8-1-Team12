@@ -41,13 +41,11 @@ body {
     color: #4a3b31;
     padding: 1rem;
     backdrop-filter: blur(5px);
-    /* Tailwind의 flex, align-items, justify-content, gap을 직접 적용 */
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 1rem;
 }
-
 /* main 콘텐츠 영역 스타일 */
 main {
     /* Tailwind의 flex-1, display, align-items, justify-content를 직접 적용 */
@@ -60,9 +58,8 @@ main {
 /* 로고 이미지 스타일 */
 .header-logo {
     height: 50px;
-    width: auto; /* 너비는 비율에 맞게 자동 조절 */
+    width: auto;
 }
-
 /* footer-container 스타일 */
 .footer-container {
     width: 100%;
