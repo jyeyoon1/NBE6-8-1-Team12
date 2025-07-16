@@ -4,16 +4,14 @@ package com.caffe.domain.product.controller;
 import com.caffe.domain.product.dto.ProductDTO;
 import com.caffe.domain.product.entity.Product;
 import com.caffe.domain.product.service.ProductService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
 public class ProductController {
@@ -21,12 +19,17 @@ public class ProductController {
     private final ProductService productService;
 
     // GET 모든 상품 조회
+//    @GetMapping("/list")
+//    public String listProducts(Model model) {
+//        List<Product> productList = productService.getAllProducts();
+//        model.addAttribute("products", productList);
+//        return "product/list_product";
+//    }
+
+    // 상품 목록 조회 REST API 버전
     @GetMapping("/list")
-    public String listProducts(HttpSession session, Model model) {
-        Object user = session.getAttribute("SPRING_SECURITY_CONTEXT");
-        List<Product> productList = productService.getAllProducts();
-        model.addAttribute("products", productList);
-        return "product/list_product";
+    public List<Product> getAllProducts() {
+        return productService.getAllProducts();
     }
 
     // GET ID로 단건 조회
@@ -41,7 +44,7 @@ public class ProductController {
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("product", new Product());
-        return "product/add_product"; // templates/product/add_product.html
+        return "product/add_product";
     }
 
     // 상품 추가 처리
