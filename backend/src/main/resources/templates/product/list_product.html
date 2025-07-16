@@ -20,7 +20,7 @@
     <ul class="space-y-4">
         <li th:each="product : ${products}">
             <a th:href="@{/api/products/{id}(id=${product.id})}" class="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                <img th:src="${product.image_url}" alt="이미지"
+                <img th:src="${product.imageUrl}" alt="이미지"
                      class="w-20 h-20 rounded-md object-cover bg-gray-200 mr-6" />
                 <div class="flex-grow">
                     <div class="text-lg font-semibold" th:text="${product.productName}">상품명</div>
