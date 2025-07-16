@@ -22,7 +22,7 @@ public class PaymentDto {
         public PaymentResponseDto(Payment payment) {
             this(
                     payment.getId(),
-                    payment.getPaymentOption().getType().toString(),
+                    payment.getPaymentOption().getParent().getName(),
                     payment.getPaymentOption().getName(),
                     payment.getPaymentInfo(),
                     payment.getAmount(),

@@ -33,6 +33,7 @@ public class Payment extends BaseEntity {
     public void updateStatus(char status) {
         this.status = status;
     }
+
     public void updatePayment(PaymentOption paymentOption, String paymentInfo, double amount) {
         this.paymentOption = paymentOption;
         this.paymentInfo = paymentInfo;

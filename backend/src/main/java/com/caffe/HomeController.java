@@ -11,7 +11,7 @@ import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 public class HomeController {
 
     @SneakyThrows
-    @GetMapping("/apidoc")
+    @GetMapping("/")
     @Operation(summary = "API 문서 페이지")
     public String apiMain() {
         return "redirect:/swagger-ui/index.html";
@@ -20,7 +20,7 @@ public class HomeController {
     /**
      * @return 렌더링할 Thymeleaf 템플릿 이름 ("home")
      */
-    @GetMapping("/")
+    @GetMapping("/api/home")
     @Operation(summary = "메인 페이지 뷰")
     public String home() {
         return "home";

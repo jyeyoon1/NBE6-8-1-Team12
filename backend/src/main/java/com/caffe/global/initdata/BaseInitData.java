@@ -3,9 +3,11 @@ package com.caffe.global.initdata;
 import com.caffe.domain.member.entity.Member;
 import com.caffe.domain.member.entity.Role;
 import com.caffe.domain.member.repository.MemberRepository;
+import com.caffe.domain.payment.entity.Payment;
 import com.caffe.domain.payment.entity.PaymentOption;
 import com.caffe.domain.payment.entity.PaymentOptionType;
 import com.caffe.domain.payment.repository.PaymentOptionRepository;
+import com.caffe.domain.payment.repository.PaymentRepository;
 import com.caffe.domain.product.entity.Product;
 import com.caffe.domain.product.repository.ProductRepository;
 import com.caffe.domain.purchase.entity.Purchase;
@@ -30,6 +32,7 @@ public class BaseInitData {
     private final ProductRepository productRepository;
     private final PaymentOptionRepository paymentOptionRepository;
     private final PurchaseRepository purchaseRepository;
+    private final PaymentRepository paymentRepository;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationContext applicationContext;
 
@@ -41,6 +44,7 @@ public class BaseInitData {
             self.initProducts();
             self.initPaymentOptions();
             self.initPurchase();
+            self.initPayment();
         };
     }
 
@@ -197,5 +201,23 @@ public class BaseInitData {
         purchaseRepository.save(purchase3);
 
         // 배송 정보 데이터 필요
+    }
+
+    @Transactional
+    public void initPayment() {
+        if(paymentRepository.count() > 0) return;
+        Purchase purchase1 = purchaseRepository.findById(1).get();
+        PaymentOption paymentOption1 = paymentOptionRepository.findById(4).get();
+
+        Payment payment1 = new Payment("1234-5678-9012-3123", 15000, purchase1, paymentOption1);
+        paymentRepository.save(payment1);
+
+        Purchase purchase2 = purchaseRepository.findById(2).get();
+        PaymentOption paymentOption2 = paymentOptionRepository.findById(7).get();
+
+        Payment payment2 = new Payment("111-222-3333-4444", 40000, purchase2, paymentOption2);
+        paymentRepository.save(payment2);
+
+        System.out.println("결제  데이터 2개  생성 완료");
     }
 }

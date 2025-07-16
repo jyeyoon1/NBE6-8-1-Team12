@@ -36,6 +36,10 @@ public class PaymentService {
                 .collect(Collectors.toList());
     }
 
+    public List<Payment> getAll(){
+        return paymentRepository.findAll();
+    }
+
     public Optional<PaymentOption> getPaymentOption(int paymentOptionId) {
         return paymentOptionRepository.findById(paymentOptionId);
     }
