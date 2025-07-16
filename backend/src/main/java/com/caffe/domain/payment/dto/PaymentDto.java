@@ -1,10 +1,12 @@
 package com.caffe.domain.payment.dto;
 
 import com.caffe.domain.payment.entity.Payment;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDateTime;
 
-public record PaymentDto(
+public record PaymentResponseDto(
         int id,
         String method,
         char status,
@@ -23,3 +25,9 @@ public record PaymentDto(
         );
     }
 }
+
+public record PaymentRequestDto(
+        @NotNull int purchaseId,
+        @NotNull int paymentOptionId,
+        @Positive double amount
+) {}
