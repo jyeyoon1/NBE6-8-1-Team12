@@ -31,10 +31,11 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
+	implementation("org.apache.commons:commons-lang3:3.18.0")
 	// JWT 의존성 (0.9.1 버전 - 간단한 설정)
 	implementation("io.jsonwebtoken:jjwt:0.9.1")
 	// Thymeleaf + Spring Security 연동
-	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
+	implementation("org.springframework.security:spring-security-taglibs")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.h2database:h2")
