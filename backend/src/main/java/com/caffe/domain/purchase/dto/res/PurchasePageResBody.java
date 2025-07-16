@@ -1,4 +1,4 @@
-package com.caffe.domain.purchase.dto;
+package com.caffe.domain.purchase.dto.res;
 
 import com.caffe.domain.payment.dto.PaymentOptionDto;
 

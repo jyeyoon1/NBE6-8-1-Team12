@@ -130,5 +130,7 @@ public class BaseInitData {
 
         purchase3.addPurchaseItem(purchaseItem3);
         purchaseRepository.save(purchase3);
+
+        // 배송 정보 데이터 필요
     }
 }

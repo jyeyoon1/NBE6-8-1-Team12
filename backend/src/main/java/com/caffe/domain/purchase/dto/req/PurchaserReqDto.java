@@ -1,4 +1,4 @@
-package com.caffe.domain.purchase.dto;
+package com.caffe.domain.purchase.dto.req;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
