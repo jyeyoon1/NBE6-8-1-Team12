@@ -4,6 +4,7 @@ package com.caffe.domain.product.controller;
 import com.caffe.domain.product.dto.ProductDTO;
 import com.caffe.domain.product.entity.Product;
 import com.caffe.domain.product.service.ProductService;
+import com.caffe.global.rsData.RsData;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,30 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+
+    // 상품 등록
+    @PostMapping("/add")
+    @Valid
+    public ResponseEntity<RsData<Void>> addProduct(@RequestBody ProductDTO productDTO) {
+        productService.saveProduct(productDTO.toEntity());
+        return ResponseEntity.ok(new RsData<>("200-1", "상품이 성공적으로 등록되었습니다."));
+    }
+
+    // 상품 수정
+    @PutMapping("/{id}")
+    @Valid
+    public ResponseEntity<RsData<Product>> updateProduct(@PathVariable int id, @RequestBody ProductDTO dto) {
+        Product product = productService.getProductById(id);
+
+        product.setProductName(dto.getProductName());
+        product.setPrice(dto.getPrice());
+        product.setDescription(dto.getDescription());
+        product.setImageUrl(dto.getImageUrl());
+        product.setTotalQuantity(dto.getTotalQuantity());
+
+        Product updateProduct = productService.updateProduct(product);
+        return ResponseEntity.ok(new RsData<>("200-2", "상품이 성공적으로 수정되었습니다.", updateProduct));
+    }
 
     // GET 모든 상품 조회
     @GetMapping("/list")
@@ -43,14 +68,6 @@ public class ProductController {
         return "product/add_product"; // templates/product/add_product.html
     }
 
-    // 상품 추가 처리
-    @PostMapping("/add")
-    @Valid
-    public ResponseEntity<String> addProduct(@RequestBody ProductDTO productDTO) {
-        productService.saveProduct(productDTO.toEntity());
-        return ResponseEntity.ok("상품이 성공적으로 추가되었습니다.");
-    }
-
 
     // 상품 수정 폼 보여주기
     @GetMapping("/edit/{id}")
@@ -60,26 +77,10 @@ public class ProductController {
         return "product/edit_product";
     }
 
-    // 상품 수정 처리
-    @PutMapping("/{id}")
-    @Valid
-    public ResponseEntity<?> updateProduct(@PathVariable int id, @RequestBody ProductDTO dto) {
-        Product product = productService.getProductById(id);
-
-        product.setProductName(dto.getProductName());
-        product.setPrice(dto.getPrice());
-        product.setDescription(dto.getDescription());
-        product.setImageUrl(dto.getImageUrl());
-        product.setTotalQuantity(dto.getTotalQuantity());
-
-        Product updateProduct = productService.updateProduct(product);
-        return ResponseEntity.ok(updateProduct);
-    }
-
     // DELETE 상품 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable int id) {
+    public ResponseEntity<RsData<Void>> deleteProduct(@PathVariable int id) {
         productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new RsData<>("200-3", "상품이 성공적으로 삭제되었습니다."));
     }
 }
