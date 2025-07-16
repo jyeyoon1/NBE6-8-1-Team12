@@ -17,20 +17,20 @@
             <!-- 로그인 안 됐을 때 -->
             <div th:if="${#authentication == null or !#authorization.expression('isAuthenticated()')}">
                 <a href="/" class="hover:text-gray-300 transition-colors">홈</a>
-                <span class="text-gray-300 px-2">|</span>
+                <span class="text-gray-300 px-1">|</span>
                 <a href="/order/form" class="hover:text-gray-300 transition-colors">주문 내역</a>
-                <span class="text-gray-300 px-2">|</span>
+                <span class="text-gray-300 px-1">|</span>
                 <a href="/api/member/login" class="hover:text-gray-300 transition-colors">관리자 로그인</a>
             </div>
 
             <!-- 로그인 됐을 때 -->
             <div th:if="${#authorization.expression('isAuthenticated()')}">
                 <a href="/api/products/list" class="hover:text-gray-300 transition-colors">상품 목록</a>
-                <span class="text-gray-300 px-2">|</span>
+                <span class="text-gray-300 px-1">|</span>
                 <a href="/api/products/add" class="hover:text-gray-300 transition-colors">상품 등록</a>
-                <span class="text-gray-300 px-2">|</span>
+                <span class="text-gray-300 px-1">|</span>
                 <a href="/orders" class="hover:text-gray-300 transition-colors">주문 목록</a>
-                <span class="text-gray-300 px-2">|</span>
+                <span class="text-gray-300 px-1">|</span>
                 <a href="/logout" class="hover:text-gray-300 transition-colors">로그아웃</a>
             </div>
         </div>

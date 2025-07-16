@@ -56,6 +56,14 @@ public class ProductController {
         return "product/list_product";
     }
 
+    // 상품 목록 조회_v2 (REST API)
+    @GetMapping("/list_v2")
+    public String listProducts_v2(Model model) {
+        List<Product> productList = productService.getAllProducts();
+        model.addAttribute("products", productList);
+        return "product/list_product";
+    }
+
     // GET ID로 단건 조회
     @GetMapping("/{id}")
     public String getProductById(@PathVariable int id, Model model) {
