@@ -36,7 +36,7 @@ export default function RootLayout({
           <header className="header-container">
             {/* 3. 로고 이미지 추가 */}
             <Image
-              src="/nbe6-8-team12_caffe_logo.png" // public 폴더의 로고 이미지 경로
+              src="https://i.postimg.cc/PJDhy8d9/nbe6-8-team12-caffe-logo.png" // public 폴더의 로고 이미지 경로
               alt="Caffe Logo"
               width={50} // 로고 너비
               height={50} // 로고 높이
