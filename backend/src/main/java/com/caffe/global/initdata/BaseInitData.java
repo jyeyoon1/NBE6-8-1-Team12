@@ -3,6 +3,9 @@ package com.caffe.global.initdata;
 import com.caffe.domain.member.entity.Member;
 import com.caffe.domain.member.entity.Role;
 import com.caffe.domain.member.repository.MemberRepository;
+import com.caffe.domain.payment.entity.PaymentOption;
+import com.caffe.domain.payment.entity.PaymentOptionType;
+import com.caffe.domain.payment.repository.PaymentOptionRepository;
 import com.caffe.domain.product.entity.Product;
 import com.caffe.domain.product.repository.ProductRepository;
 import com.caffe.domain.purchase.entity.Purchase;
@@ -25,6 +28,7 @@ public class BaseInitData {
 
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
+    private final PaymentOptionRepository paymentOptionRepository;
     private final PurchaseRepository purchaseRepository;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationContext applicationContext;
@@ -35,6 +39,7 @@ public class BaseInitData {
             BaseInitData self = applicationContext.getBean(BaseInitData.class);
             self.newAdmin();
             self.initProducts();
+            self.initPaymentOptions();
             self.initPurchase();
         };
     }
@@ -70,6 +75,65 @@ public class BaseInitData {
 
         productRepository.saveAll(List.of(product1, product2));
         System.out.println("기본 상품 2개 생성 완료");
+    }
+
+    private void initPaymentOptions() {
+        if (paymentOptionRepository.count() > 0) return;
+        PaymentOption paymentOption1 = new PaymentOption();
+        paymentOption1.setType(PaymentOptionType.TOP_LEVEL);
+        paymentOption1.setCode("0001");
+        paymentOption1.setName("BANK");
+        paymentOption1.setSortSeq(1);
+        PaymentOption paymentOption2 = new PaymentOption();
+        paymentOption2.setType(PaymentOptionType.TOP_LEVEL);
+        paymentOption2.setCode("0002");
+        paymentOption2.setName("CARD");
+        paymentOption2.setSortSeq(2);
+        PaymentOption paymentOption3 = new PaymentOption();
+        paymentOption3.setType(PaymentOptionType.TOP_LEVEL);
+        paymentOption3.setCode("0003");
+        paymentOption3.setName("PG");
+        paymentOption3.setSortSeq(3);
+        PaymentOption paymentOption11 = new PaymentOption();
+        paymentOption11.setType(PaymentOptionType.DETAIL);
+        paymentOption11.setCode("000101");
+        paymentOption11.setName("NH");
+        paymentOption11.setSortSeq(1);
+        paymentOption11.setParent(paymentOption1);
+        PaymentOption paymentOption12 = new PaymentOption();
+        paymentOption12.setType(PaymentOptionType.DETAIL);
+        paymentOption12.setCode("000102");
+        paymentOption12.setName("HN");
+        paymentOption12.setSortSeq(2);
+        paymentOption12.setParent(paymentOption1);
+        PaymentOption paymentOption21 = new PaymentOption();
+        paymentOption21.setType(PaymentOptionType.DETAIL);
+        paymentOption21.setCode("000201");
+        paymentOption21.setName("WR");
+        paymentOption21.setSortSeq(1);
+        paymentOption21.setParent(paymentOption2);
+        PaymentOption paymentOption22 = new PaymentOption();
+        paymentOption22.setType(PaymentOptionType.DETAIL);
+        paymentOption22.setCode("000202");
+        paymentOption22.setName("HD");
+        paymentOption22.setSortSeq(2);
+        paymentOption22.setParent(paymentOption2);
+        PaymentOption paymentOption31 = new PaymentOption();
+        paymentOption31.setType(PaymentOptionType.DETAIL);
+        paymentOption31.setCode("000301");
+        paymentOption31.setName("KAKAO");
+        paymentOption31.setSortSeq(1);
+        paymentOption31.setParent(paymentOption3);
+        PaymentOption paymentOption32 = new PaymentOption();
+        paymentOption32.setType(PaymentOptionType.DETAIL);
+        paymentOption32.setCode("000302");
+        paymentOption32.setName("Toss");
+        paymentOption32.setSortSeq(2);
+        paymentOption32.setParent(paymentOption3);
+
+        paymentOptionRepository.saveAll(List.of(paymentOption1, paymentOption2, paymentOption3, paymentOption11, paymentOption12, paymentOption21, paymentOption22,paymentOption31, paymentOption32));
+        System.out.println("결제 옵션 데이터 9개  생성 완료");
+
     }
 
     // 상세페이지에서 주문 (주문:구매제품 1:1)

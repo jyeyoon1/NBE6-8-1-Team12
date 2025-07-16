@@ -1,7 +1,7 @@
 package com.caffe.domain.purchase.controller;
 
 import com.caffe.domain.payment.dto.PaymentOptionDto;
-import com.caffe.domain.payment.service.PaymentOptionService;
+import com.caffe.domain.payment.service.PaymentService;
 import com.caffe.domain.purchase.dto.req.PurchasePageReqBody;
 import com.caffe.domain.purchase.dto.req.PurchaserReqBody;
 import com.caffe.domain.purchase.dto.res.PurchaseDetailDto;
@@ -24,7 +24,7 @@ import java.util.List;
 public class PurchaseController {
 
     private final PurchaseService purchaseService;
-    private final PaymentOptionService paymentOptionService;
+    private final PaymentService paymentService;
 
     @PostMapping("/search")
     @Operation(summary = "주문 조회")
@@ -47,7 +47,7 @@ public class PurchaseController {
             @RequestParam int quantity
     ) {
         PurchaseInfoDto purchasePageInfo = purchaseService.getOrderPageInfo(productId, quantity);
-        List<PaymentOptionDto> topLevelPaymentOptions = paymentOptionService.getTopLevelPaymentOptions();
+        List<PaymentOptionDto> topLevelPaymentOptions = paymentService.getTopLevelPaymentOptions();
 
         return new PurchasePageResBody(purchasePageInfo, topLevelPaymentOptions);
     }
