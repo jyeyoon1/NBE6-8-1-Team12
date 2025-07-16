@@ -4,6 +4,7 @@ package com.caffe.domain.product.controller;
 import com.caffe.domain.product.dto.ProductDTO;
 import com.caffe.domain.product.entity.Product;
 import com.caffe.domain.product.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -44,6 +45,7 @@ public class ProductController {
 
     // 상품 추가 처리
     @PostMapping("/add")
+    @Valid
     public ResponseEntity<String> addProduct(@RequestBody ProductDTO productDTO) {
         productService.saveProduct(productDTO.toEntity());
         return ResponseEntity.ok("상품이 성공적으로 추가되었습니다.");
@@ -60,6 +62,7 @@ public class ProductController {
 
     // 상품 수정 처리
     @PutMapping("/{id}")
+    @Valid
     public ResponseEntity<?> updateProduct(@PathVariable int id, @RequestBody ProductDTO dto) {
         Product product = productService.getProductById(id);
 
@@ -76,6 +79,7 @@ public class ProductController {
 
     // POST 상품 등록
     @PostMapping
+    @Valid
     public Product createProduct(@RequestBody Product product) {
         return productService.saveProduct(product);
     }
