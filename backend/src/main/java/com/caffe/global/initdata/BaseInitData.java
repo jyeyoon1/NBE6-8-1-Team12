@@ -57,7 +57,7 @@ public class BaseInitData {
         product2.setPrice(6500);
         product2.setTotal_quantity(50);
         product2.setDescription("플로럴 향이 풍부한 에티오피아 예가체프 커피입니다.");
-        product2.setImage_url("https://i.imgur.com/7tZ8J3K.jpeg");
+        product2.setImage_url("https://m.media-amazon.com/images/I/71LN-graGzL._UF894%2C1000_QL80_.jpg");
 
         productRepository.saveAll(List.of(product1, product2));
         System.out.println("기본 상품 2개 생성 완료");

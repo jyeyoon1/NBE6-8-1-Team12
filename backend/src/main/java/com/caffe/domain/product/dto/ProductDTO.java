@@ -19,6 +19,7 @@ public class ProductDTO {
         p.setProductName(this.productName);
         p.setDescription(this.description);
         p.setPrice(this.price);
+        p.setTotal_quantity(this.total_quantity);
         p.setImage_url(this.image_url);
         return p;
     }
