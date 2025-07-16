@@ -6,7 +6,7 @@ public record PurchaseInfoDto(
         int productId,
         String productName,
         double price,
-        String image_url,
+        String imageUrl,
         int quantity,
         double totalPrice
 ) {
@@ -15,7 +15,7 @@ public record PurchaseInfoDto(
                 product.getId(),
                 product.getProductName(),
                 product.getPrice(),
-                product.getImage_url(),
+                product.getImageUrl(),
                 quantity,
                 totalPrice
         );

@@ -14,7 +14,7 @@
     <h1 class="text-3xl font-bold text-center mb-8">상품 수정</h1>
 
     <!-- 이미지 미리보기 -->
-    <img th:if="${product.image_url}" th:src="${product.image_url}" alt="상품 이미지"
+    <img th:if="${product.imageUrl}" th:src="${product.imageUrl}" alt="상품 이미지"
          id="preview"
          class="w-full max-h-96 object-cover rounded-xl mb-8" />
 
@@ -43,9 +43,16 @@
         </div>
 
         <div>
-            <label for="image_url" class="block mb-2 font-semibold text-gray-700">이미지 URL</label>
-            <input type="url" id="image_url" placeholder="예: https://i.imgur.com/HKOFQYa.jpeg"
-                   th:value="${product.image_url}"
+            <label for="totalQuantity" class="block mb-2 font-semibold text-gray-700">재고 수량</label>
+            <input type="number" id="totalQuantity" placeholder="예: 100"
+                   th:value="${product.totalQuantity}"
+                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600" />
+        </div>
+
+        <div>
+            <label for="imageUrl" class="block mb-2 font-semibold text-gray-700">이미지 URL</label>
+            <input type="url" id="imageUrl" placeholder="예: https://i.imgur.com/HKOFQYa.jpeg"
+                   th:value="${product.imageUrl}"
                    oninput="document.getElementById('preview').src = this.value"
                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600" />
         </div>
@@ -70,7 +77,8 @@
         productName: document.getElementById('productName').value,
         description: document.getElementById('description').value,
         price: parseFloat(document.getElementById('price').value),
-        image_url: document.getElementById('image_url').value
+        totalQuantity: parseInt(document.getElementById('totalQuantity').value),
+        imageUrl: document.getElementById('imageUrl').value
       };
 
       fetch(`/api/products/${productId}`, {

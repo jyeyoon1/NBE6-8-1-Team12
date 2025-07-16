@@ -9,9 +9,9 @@ import lombok.Setter;
 public class ProductDTO {
     private String productName;
     private double price;
-    private int total_quantity;
+    private int totalQuantity;
     private String description;
-    private String image_url;
+    private String imageUrl;
 
     // DTO → Entity 변환 메서드 (예시)
     public Product toEntity() {
@@ -19,7 +19,8 @@ public class ProductDTO {
         p.setProductName(this.productName);
         p.setDescription(this.description);
         p.setPrice(this.price);
-        p.setImage_url(this.image_url);
+        p.setTotalQuantity(this.totalQuantity);
+        p.setImageUrl(this.imageUrl);
         return p;
     }
 }

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDateTime;
 
@@ -24,9 +25,9 @@ public class Product {
 
     private String productName;
     private double price;
-    private int total_quantity;
+    private int totalQuantity;
     private String description;
-    private String image_url;
+    private String imageUrl;
 
     @CreatedDate
     private LocalDateTime createDate;

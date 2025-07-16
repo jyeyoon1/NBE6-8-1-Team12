@@ -31,9 +31,15 @@
                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600" required />
         </div>
 
+        <div class="mb-6">
+            <label for="totalQuantity" class="block mb-2 font-semibold text-gray-700">재고 수량</label>
+            <input type="number" id="totalQuantity" name="totalQuantity" placeholder="예: 100"
+                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600" required />
+        </div>
+
         <div class="mb-8">
-            <label for="image_url" class="block mb-2 font-semibold text-gray-700">이미지 URL</label>
-            <input type="url" id="image_url" name="image_url" placeholder="예: https://i.imgur.com/HKOFQYa.jpeg"
+            <label for="imageUrl" class="block mb-2 font-semibold text-gray-700">이미지 URL</label>
+            <input type="url" id="imageUrl" name="imageUrl" placeholder="예: https://i.imgur.com/HKOFQYa.jpeg"
                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600" required />
         </div>
 
@@ -52,14 +58,16 @@
       const productName = document.getElementById('productName').value.trim();
       const description = document.getElementById('description').value.trim();
       const price = parseInt(document.getElementById('price').value);
-      const image_url = document.getElementById('image_url').value.trim();
+      const totalQuantity = parseInt(document.getElementById('totalQuantity').value);
+      const imageUrl = document.getElementById('imageUrl').value.trim();
 
       // JSON 객체 생성
       const productData = {
         productName,
         description,
         price,
-        image_url
+        totalQuantity,
+        imageUrl
       };
 
       try {
