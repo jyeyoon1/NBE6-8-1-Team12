@@ -25,9 +25,9 @@ public class Product {
 
     private String productName;
     private double price;
-    private int total_quantity;
+    private int totalQuantity;
     private String description;
-    private String image_url;
+    private String imageUrl;
 
     @CreatedDate
     private LocalDateTime createDate;

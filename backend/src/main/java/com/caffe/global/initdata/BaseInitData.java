@@ -48,16 +48,16 @@ public class BaseInitData {
         Product product1 = new Product();
         product1.setProductName("Columbia Nariñó");
         product1.setPrice(5000);
-        product1.setTotal_quantity(100);
+        product1.setTotalQuantity(100);
         product1.setDescription("고소한 맛이 특징인 콜롬비아 나리뇨 커피입니다.");
-        product1.setImage_url("https://i.imgur.com/HKOFQYa.jpeg");
+        product1.setImageUrl("https://i.imgur.com/HKOFQYa.jpeg");
 
         Product product2 = new Product();
         product2.setProductName("Ethiopian Yirgacheffe");
         product2.setPrice(6500);
-        product2.setTotal_quantity(50);
+        product2.setTotalQuantity(50);
         product2.setDescription("플로럴 향이 풍부한 에티오피아 예가체프 커피입니다.");
-        product2.setImage_url("https://m.media-amazon.com/images/I/71LN-graGzL._UF894%2C1000_QL80_.jpg");
+        product2.setImageUrl("https://m.media-amazon.com/images/I/71LN-graGzL._UF894%2C1000_QL80_.jpg");
 
         productRepository.saveAll(List.of(product1, product2));
         System.out.println("기본 상품 2개 생성 완료");

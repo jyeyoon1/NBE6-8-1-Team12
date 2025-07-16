@@ -68,8 +68,8 @@ public class ProductController {
         product.setProductName(dto.getProductName());
         product.setPrice(dto.getPrice());
         product.setDescription(dto.getDescription());
-        product.setImage_url(dto.getImage_url());
-        product.setTotal_quantity(dto.getTotal_quantity());
+        product.setImageUrl(dto.getImageUrl());
+        product.setTotalQuantity(dto.getTotalQuantity());
 
         productService.saveProduct(product);
         return ResponseEntity.ok().build();
