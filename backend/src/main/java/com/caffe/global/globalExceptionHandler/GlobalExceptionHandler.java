@@ -1,6 +1,8 @@
 package com.caffe.global.globalExceptionHandler;
 
+import com.caffe.global.exception.ServiceException;
 import com.caffe.global.rsData.RsData;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import jakarta.validation.ConstraintViolationException;
@@ -130,5 +132,14 @@ public class GlobalExceptionHandler {
                 ),
                 BAD_REQUEST
         );
+    }
+
+    @ExceptionHandler(ServiceException.class)
+    public RsData<Void> handle(ServiceException ex, HttpServletResponse response) {
+        RsData<Void> rsData = ex.getRsData();
+
+        response.setStatus(rsData.statusCode());
+
+        return rsData;
     }
 }
