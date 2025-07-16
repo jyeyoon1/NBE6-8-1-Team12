@@ -33,6 +33,8 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
 	// JWT 의존성 (0.9.1 버전 - 간단한 설정)
 	implementation("io.jsonwebtoken:jjwt:0.9.1")
+	// Thymeleaf + Spring Security 연동
+	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.h2database:h2")
