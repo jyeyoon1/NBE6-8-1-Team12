@@ -42,6 +42,7 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 }
 
 tasks.withType<Test> {
