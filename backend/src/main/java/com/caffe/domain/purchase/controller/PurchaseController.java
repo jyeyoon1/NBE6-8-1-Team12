@@ -22,18 +22,18 @@ public class PurchaseController {
     private final PaymentOptionService paymentOptionService;
 
     @GetMapping("/checkout")
-    public PurchasePageResBody showOrderPage(
+    public PurchasePageResBody showPurchasePage(
             @RequestParam int productId,
             @RequestParam int quantity
     ) {
-        PurchaseInfoDto orderPageInfo = purchaseService.getOrderPageInfo(productId, quantity);
+        PurchaseInfoDto purchasePageInfo = purchaseService.getOrderPageInfo(productId, quantity);
         List<PaymentOptionDto> topLevelPaymentOptions = paymentOptionService.getTopLevelPaymentOptions();
 
-        return new PurchasePageResBody(orderPageInfo, topLevelPaymentOptions);
+        return new PurchasePageResBody(purchasePageInfo, topLevelPaymentOptions);
     }
 
     @PostMapping("/checkout")
-    public RsData<Void> createOrder(
+    public RsData<Void> createPurchase(
             @Valid @RequestBody PurchasePageReqBody reqBody
     ) {
         purchaseService.createPurchase(reqBody);
