@@ -21,13 +21,14 @@ import static lombok.AccessLevel.PROTECTED;
 public class Shipping {
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Setter(PROTECTED)
     private int id; // 배송 번호
 
     private String address; // 주소
     private String contactNumber; // 연락처
     private String contactName; // 이름
     private String carrier; // 업체
+    private int postcode; // 우편번호
+
 
     @Enumerated(EnumType.STRING)
     private ShippingStatus status;
@@ -49,9 +50,10 @@ public class Shipping {
     private Purchase purchase; // 주문 번호
 
 
-    public Shipping(String address, String contactNumber, String contactName,
+    public Shipping(String address, int postcode, String contactNumber, String contactName,
                     String carrier, ShippingStatus status, Purchase purchase) {
         this.address = address;
+        this.postcode = postcode;
         this.contactNumber = contactNumber;
         this.contactName = contactName;
         this.carrier = carrier;

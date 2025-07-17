@@ -135,6 +135,14 @@
           <input type="email" class="form-control mb-1" id="email">
         </div>
         <div class="mb-3">
+          <label for="name" class="form-label">이름</label>
+          <input type="text" class="form-control mb-1" id="name">
+        </div>
+        <div class="mb-3">
+          <label for="phoneNumber" class="form-label">연락처</label>
+          <input type="text" class="form-control mb-1" id="phoneNumber">
+        </div>
+        <div class="mb-3">
           <label for="address" class="form-label">배송지</label>
           <div class="input-group">
             <textarea class="form-control mb-1" id="address" rows="3" readonly></textarea>
@@ -196,42 +204,61 @@
   });
 
   // 결제하기 버튼 클릭 이벤트
-  document.querySelector('.btn-dark').addEventListener('click', () => {
+ document.querySelector('.btn-dark').addEventListener('click', () => {
+    const email = document.getElementById('email').value.trim();
+    const name = document.getElementById('name').value.trim();
+    const phoneNumber = document.getElementById('phoneNumber').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const postcode = document.getElementById('postcode').value.trim();
 
-      // 구매 내역이 없는 경우(이메일 입력 안 함) 모달로 안내하고 결제 중단
-      if (!selectedPurchaseId) {
-        showInfoModal("이메일을 입력하여 구매 내역을 불러와야 합니다.");
+    let missingFields = [];
+    if (!email) missingFields.push("이메일");
+    if (!name) missingFields.push("이름");
+    if (!phoneNumber) missingFields.push("연락처");
+    if (!address) missingFields.push("배송지");
+    if (!postcode) missingFields.push("우편번호");
+
+    if (missingFields.length > 0) {
+        showInfoModal(`${missingFields.join(", ")}을(를) 입력해주세요.`);
         return;
-      }
+    }
 
-      // 입력한 주소와 우편번호 가져오기
-      const address = document.getElementById('address').value;
-      const postcode = document.getElementById('postcode').value;
+    // 연락처 형식 검사
+    const phoneRegex = /^010-\d{4}-\d{4}$/;
+    if (!phoneRegex.test(phoneNumber)) {
+        showInfoModal("연락처는 010-xxxx-yyyy 형식으로 입력해주세요.");
+        return;
+    }
 
-      // 서버에 배송 정보 등록 API 호출
-      fetch('/api/shippings', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-              purchaseId: selectedPurchaseId,
-              address: address,
-              postcode: postcode,
-              status: 'DELIVERING'
-          })
-      })
-      .then(response => {
-          if (response.ok) {
-              showInfoModal('배송지가 저장되었습니다!');
-              return response.json();
-          } else {
-              showInfoModal('배송 저장 실패!!');
-          }
-      })
-      .catch(error => {
-          console.error('배송 저장 중 에러 발생:', error);
-          showInfoModal('배송 저장 중 오류가 발생했습니다.');
-      });
-  });
+    fetch('/api/shippings', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            email: email,
+            name: name,
+            phoneNumber: phoneNumber,
+            address: address,
+            postcode: postcode,
+            status: 'DELIVERING'
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            showInfoModal('배송지가 저장되었습니다!');
+            return response.json();
+        } else {
+            showInfoModal('배송 저장 실패!!');
+        }
+    })
+    .catch(error => {
+        console.error('배송 저장 중 에러 발생:', error);
+        showInfoModal('배송 저장 중 오류가 발생했습니다.');
+    });
+});
+
+
+
+
 
   // 안내 메시지를 모달로 보여주는 함수
   function showInfoModal(message) {

@@ -10,7 +10,7 @@ public class ShippingDto {
 
     private int purchaseId;    // 배송이 연결될 구매(Purchase)의 ID
     private String address;    // 배송 받을 주소
-    private String postcode;   // 배송지 우편번호
+    private int postcode;   // 배송지 우편번호
     private ShippingStatus status;  // 배송 상태 (BEFORE_DELIVERY, DELIVERING, DELIVERED)
 
 }

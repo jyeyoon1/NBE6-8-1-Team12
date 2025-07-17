@@ -7,11 +7,13 @@ public record ReceiverReqDto(
         String name,
         @NotBlank
         String phoneNumber,
-        // 주소 : 주소 api 연동 전 수기 입력 (배송 담당자 논의 필요)
-        // 우편주소 여부
         @NotBlank
-        String address
-        /*@NotBlank
-        String postcode*/
+        String address, // 주소
+        @NotBlank
+        int postcode, // 우편번호
+        @NotBlank
+        String email,
+        @NotBlank
+        String status // 배송 상태
 ) {
 }
