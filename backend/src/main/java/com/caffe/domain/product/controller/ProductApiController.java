@@ -60,11 +60,11 @@ public class ProductApiController {
 
         // 상품 정보 업데이트
         product.updateProductInfo(
-                dto.getProductName(),
-                dto.getPrice(),
-                dto.getTotalQuantity(),
-                dto.getDescription(),
-                dto.getImageUrl()
+                dto.productName(),
+                dto.price(),
+                dto.totalQuantity(),
+                dto.description(),
+                dto.imageUrl()
         );
 
         Product updatedProduct = productService.updateProduct(product);

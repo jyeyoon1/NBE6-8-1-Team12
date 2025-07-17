@@ -43,7 +43,7 @@ public class ProductWebController {
     // 상품 추가 폼 보여주기
     @GetMapping("/add")
     public String showAddForm(Model model) {
-        model.addAttribute("product", new ProductDTO());
+        model.addAttribute("product", ProductDTO.empty());
         return "product/add_product";
     }
 
@@ -81,11 +81,11 @@ public class ProductWebController {
             
             // 상품 정보 업데이트
             product.updateProductInfo(
-                    dto.getProductName(),
-                    dto.getPrice(),
-                    dto.getTotalQuantity(),
-                    dto.getDescription(),
-                    dto.getImageUrl()
+                    dto.productName(),
+                    dto.price(),
+                    dto.totalQuantity(),
+                    dto.description(),
+                    dto.imageUrl()
             );
 
             productService.updateProduct(product);
