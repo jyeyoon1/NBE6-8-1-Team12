@@ -3,9 +3,7 @@ package com.caffe.domain.payment.entity;
 
 import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.global.jpa.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +13,8 @@ import lombok.NoArgsConstructor;
 public class Payment extends BaseEntity {
     private String paymentInfo;
     private int amount;
-    private char status;
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status;
     @OneToOne
     private Purchase purchase;
 
@@ -25,19 +24,23 @@ public class Payment extends BaseEntity {
     public Payment(String paymentInfo, int amount, Purchase purchase,  PaymentOption paymentOption) {
         this.paymentInfo = paymentInfo;
         this.amount = amount;
-        this.status = 'R';
+        this.status = PaymentStatus.PENDING;
         this.purchase = purchase;
         this.paymentOption = paymentOption;
     }
 
-    public void updateStatus(char status) {
-        this.status = status;
+    public void isSuccess(boolean result) {
+        this.status = result ? PaymentStatus.SUCCESS : PaymentStatus.FAILED;
+    }
+
+    public void cancel() {
+        this.status = PaymentStatus.CANCELED;
     }
 
     public void updatePayment(PaymentOption paymentOption, String paymentInfo, int amount) {
         this.paymentOption = paymentOption;
         this.paymentInfo = paymentInfo;
         this.amount = amount;
-        this.status = 'R';
+        this.status = PaymentStatus.PENDING;
     }
 }

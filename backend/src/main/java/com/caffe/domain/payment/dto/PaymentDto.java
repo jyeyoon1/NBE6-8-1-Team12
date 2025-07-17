@@ -1,6 +1,7 @@
 package com.caffe.domain.payment.dto;
 
 import com.caffe.domain.payment.entity.Payment;
+import com.caffe.domain.payment.entity.PaymentStatus;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -14,7 +15,7 @@ public class PaymentDto {
             String paymentOptionName,
             String paymentInfo,
             int amount,
-            char status,
+            PaymentStatus status,
             LocalDateTime createDate,
             LocalDateTime modifyDate,
             int purchaseId

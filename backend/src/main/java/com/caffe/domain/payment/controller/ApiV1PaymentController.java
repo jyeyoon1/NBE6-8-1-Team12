@@ -4,6 +4,7 @@ import com.caffe.domain.payment.dto.PaymentDto;
 import com.caffe.domain.payment.dto.PaymentOptionDto;
 import com.caffe.domain.payment.entity.Payment;
 import com.caffe.domain.payment.entity.PaymentOption;
+import com.caffe.domain.payment.entity.PaymentStatus;
 import com.caffe.domain.payment.service.PaymentService;
 import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.service.PurchaseService;
@@ -55,16 +56,25 @@ public class ApiV1PaymentController {
         // 서비스 계층에서 결제 로직 처리
         Payment payment = paymentService.request(purchase, paymentOption.get(), paymentRequestDto.paymentInfo(), paymentRequestDto.amount());
 
-        return new RsData<>(payment.getStatus()=='S'? "201-1":"503-1", "주문번호 %d의 결제가 ".formatted(purchase.getId())+(payment.getStatus()=='S'? "성공했습니다.":"실패했습니다."), new PaymentDto.PaymentResponseDto(payment));
+        return new RsData<>(payment.getStatus()== PaymentStatus.SUCCESS? "201-1":"503-1", "주문번호 %d의 결제가 ".formatted(purchase.getId())+(payment.getStatus()== PaymentStatus.SUCCESS? "성공했습니다.":"실패했습니다."), new PaymentDto.PaymentResponseDto(payment));
     }
 
     @DeleteMapping("/{id}")
     @Transactional
     @Operation(summary = "결제 삭제")
+    public RsData<Void> delete(@PathVariable int id) {
+        Payment payment = paymentService.findById(id).get();
+        paymentService.delete(payment);
+        return new RsData<>("200-1", "결제번호 %d 가 삭제되었습니다.".formatted(id));
+    }
+
+    @PutMapping("/{id}/cancel")
+    @Transactional
+    @Operation(summary = "결제 취소")
     public RsData<Void> cancel(@PathVariable int id) {
         Payment payment = paymentService.findById(id).get();
         paymentService.cancel(payment);
-        return new RsData<>("200-1", "결제번호 %d 가 삭제되었습니다.".formatted(id));
+        return new RsData<>("200-1", "결제번호 %d 가 취소되었습니다.".formatted(id));
     }
 
     @PutMapping("/{id}")
@@ -81,8 +91,8 @@ public class ApiV1PaymentController {
         }
         Payment updatedPayment = paymentService.changePayment(payment.get(), paymentOption.get(), paymentUpdateDto.paymentInfo(), paymentUpdateDto.amount());
         return new RsData<>(
-                updatedPayment.getStatus()=='S'? "201-1":"503-1",
-                "주문번호 %d의 결제가 ".formatted(updatedPayment.getPurchase().getId())+(updatedPayment.getStatus()=='S'? "성공했습니다.":"실패했습니다."),
+                updatedPayment.getStatus()==PaymentStatus.SUCCESS? "201-1":"503-1",
+                "주문번호 %d의 결제가 ".formatted(updatedPayment.getPurchase().getId())+(updatedPayment.getStatus()==PaymentStatus.SUCCESS? "성공했습니다.":"실패했습니다."),
                 new PaymentDto.PaymentResponseDto(updatedPayment));
     }
 
