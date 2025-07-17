@@ -22,7 +22,7 @@ import static jakarta.persistence.CascadeType.REMOVE;
 public class Purchase extends BaseEntity {
     private String userEmail;
 
-    private double totalPrice;
+    private int totalPrice;
 
     @Setter // 결제 상태에 따라 변경 필요
     @Enumerated(EnumType.STRING)
@@ -45,7 +45,7 @@ public class Purchase extends BaseEntity {
     public void calcTotalPrice() {
         totalPrice = purchaseItems
                 .stream()
-                .mapToDouble(PurchaseItem::getItemTotalPrice)
+                .mapToInt(PurchaseItem::getItemTotalPrice)
                 .sum();
     }
 }

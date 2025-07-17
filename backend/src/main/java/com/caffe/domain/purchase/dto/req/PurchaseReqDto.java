@@ -9,12 +9,12 @@ public record PurchaseReqDto(
         int productId,
 
         @Positive
-        double price,
+        int price,
 
         @Positive
         int quantity,
 
         @Positive
-        double totalPrice
+        int totalPrice
 ) {
 }

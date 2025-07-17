@@ -52,12 +52,12 @@ public class PurchaseService {
 
     public PurchaseInfoDto getOrderPageInfo(int productId, int quantity) {
         Product product = productService.getProductById(productId);
-        double totalPrice = calculateTotalPrice(product.getPrice(), quantity);
+        int totalPrice = calculateTotalPrice(product.getPrice(), quantity);
 
         return new PurchaseInfoDto(product, quantity, totalPrice);
     }
 
-    public double calculateTotalPrice(double price, int quantity) {
+    public int calculateTotalPrice(int price, int quantity) {
         return price * quantity;
     }
 
