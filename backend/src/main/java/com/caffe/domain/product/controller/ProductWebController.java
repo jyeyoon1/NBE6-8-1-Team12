@@ -1,6 +1,7 @@
 package com.caffe.domain.product.controller;
 
-import com.caffe.domain.product.dto.ProductDTO;
+import com.caffe.domain.product.dto.request.ProductCreateRequest;
+import com.caffe.domain.product.dto.request.ProductUpdateRequest;
 import com.caffe.domain.product.entity.Product;
 import com.caffe.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class ProductWebController {
     // 상품 추가 폼 보여주기
     @GetMapping("/add")
     public String showAddForm(Model model) {
-        model.addAttribute("product", ProductDTO.empty());
+        model.addAttribute("product", ProductCreateRequest.empty());
         return "product/add_product";
     }
 
@@ -52,7 +53,9 @@ public class ProductWebController {
     public String showEditForm(@PathVariable int id, Model model) {
         try{
             Product product = productService.getProductById(id);
-            model.addAttribute("product", product);
+            // Entity를 UpdateRequest로 변환해서 폼에 전달
+            ProductUpdateRequest request = new ProductUpdateRequest(product);
+            model.addAttribute("product", request);
             return "product/edit_product";
         } catch (NoSuchElementException e) {
             model.addAttribute("errorMessage", "수정할 상품을 찾을 수 없습니다");
@@ -62,37 +65,37 @@ public class ProductWebController {
 
     // 폼 기반 상품 등록 처리
     @PostMapping("/add")
-    public String addProduct(@ModelAttribute ProductDTO productDTO, Model model) {
+    public String addProduct(@ModelAttribute ProductCreateRequest request, Model model) {
         try {
-            productService.saveProduct(productDTO.toEntity());
+            productService.saveProduct(request.toEntity());
             return "redirect:/products/list";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "상품 등록에 실패했습니다.");
-            model.addAttribute("product", productDTO);
+            model.addAttribute("product", request);
             return "product/add_product";
         }
     }
 
     // 폼 기반 상품 수정 처리
     @PostMapping("/edit/{id}")
-    public String updateProduct(@PathVariable int id, @ModelAttribute ProductDTO dto, Model model) {
+    public String updateProduct(@PathVariable int id, @ModelAttribute ProductUpdateRequest request, Model model) {
         try {
             Product product = productService.getProductById(id);
             
             // 상품 정보 업데이트
             product.updateProductInfo(
-                    dto.productName(),
-                    dto.price(),
-                    dto.totalQuantity(),
-                    dto.description(),
-                    dto.imageUrl()
+                    request.productName(),
+                    request.price(),
+                    request.totalQuantity(),
+                    request.description(),
+                    request.imageUrl()
             );
 
             productService.updateProduct(product);
             return "redirect:/products/" + id;
         } catch (Exception e) {
             model.addAttribute("errorMessage", "상품 수정에 실패했습니다.");
-            model.addAttribute("product", dto);
+            model.addAttribute("product", request);
             return "product/edit_product";
         }
     }

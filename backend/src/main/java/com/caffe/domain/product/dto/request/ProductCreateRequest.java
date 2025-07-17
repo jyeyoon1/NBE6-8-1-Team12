@@ -1,11 +1,14 @@
-package com.caffe.domain.product.dto;
+package com.caffe.domain.product.dto.request;
 
 import com.caffe.domain.product.entity.Product;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record ProductDTO(
+/**
+ * 상품 생성 요청 DTO
+ */
+public record ProductCreateRequest(
         @NotBlank(message = "상품명을 입력해주세요.")
         String productName,
         
@@ -20,23 +23,6 @@ public record ProductDTO(
         
         String imageUrl
 ) {
-    // 기본값으로 빈 ProductDTO 생성 (폼용)
-    public static ProductDTO empty() {
-        return new ProductDTO("", 0, 0, "", "");
-    }
-    
-    // Entity에서 DTO로 변환
-    public static ProductDTO from(Product product) {
-        return new ProductDTO(
-                product.getProductName(),
-                product.getPrice(),
-                product.getTotalQuantity(),
-                product.getDescription(),
-                product.getImageUrl()
-        );
-    }
-    
-    // DTO → Entity 변환 메서드
     public Product toEntity() {
         return new Product(
                 this.productName,
@@ -45,5 +31,9 @@ public record ProductDTO(
                 this.description,
                 this.imageUrl
         );
+    }
+    
+    public static ProductCreateRequest empty() {
+        return new ProductCreateRequest("", 0, 0, "", "");
     }
 }
