@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
-        {/* 1. 흐릿한 배경을 위한 div 추가 */}
+        {/* Header 컴포넌트 호출 */}
         <Header />
 
         {/* 1. 흐릿한 배경을 위한 div 추가 */}
@@ -36,18 +36,6 @@ export default function RootLayout({
 
         {/* 2. 콘텐츠를 담을 div (배경 위에 위치) */}
         <div className="content-wrapper">
-          {/* 상단 헤더 */}
-          <header className="header-container">
-            {/* 3. 로고 이미지 추가 */}
-            <Image
-              src="https://i.postimg.cc/PJDhy8d9/nbe6-8-team12-caffe-logo.png" // public 폴더의 로고 이미지 경로
-              alt="Caffe Logo"
-              width={50} // 로고 너비
-              height={50} // 로고 높이
-              className="header-logo"
-            />
-            <h1>Caffe 메뉴 서비스 입니다.</h1>
-          </header>
 
           {/* 메인 콘텐츠 */}
           <main className="flex-1 flex">{children}</main>

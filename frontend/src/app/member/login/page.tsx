@@ -33,7 +33,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="bg-gray-200 pt-20 min-h-screen flex items-center justify-center px-4">
+    <div className="bg-gray-200 pt-20 min-h-screen w-full flex items-center justify-center px-4">
       <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-10">
         <div className="mb-5 text-center">
           <h5 className="font-bold text-xl">관리자 로그인</h5>
