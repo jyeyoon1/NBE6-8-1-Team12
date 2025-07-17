@@ -20,7 +20,8 @@ public class ProductApiController {
 
     private final ProductService productService;
 
- //상품 다건 조회 API
+   //상품 다건 조회 API
+
     @GetMapping
     public ResponseEntity<RsData<List<Product>>> getAllProducts() {
         List<Product> products = productService.getAllProducts();
