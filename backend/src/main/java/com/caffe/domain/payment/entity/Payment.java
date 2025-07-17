@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Payment extends BaseEntity {
     private String paymentInfo;
-    private double amount;
+    private int amount;
     private char status;
     @OneToOne
     private Purchase purchase;
@@ -22,7 +22,7 @@ public class Payment extends BaseEntity {
     @ManyToOne
     private PaymentOption paymentOption;
 
-    public Payment(String paymentInfo, double amount, Purchase purchase,  PaymentOption paymentOption) {
+    public Payment(String paymentInfo, int amount, Purchase purchase,  PaymentOption paymentOption) {
         this.paymentInfo = paymentInfo;
         this.amount = amount;
         this.status = 'R';
@@ -34,7 +34,7 @@ public class Payment extends BaseEntity {
         this.status = status;
     }
 
-    public void updatePayment(PaymentOption paymentOption, String paymentInfo, double amount) {
+    public void updatePayment(PaymentOption paymentOption, String paymentInfo, int amount) {
         this.paymentOption = paymentOption;
         this.paymentInfo = paymentInfo;
         this.amount = amount;

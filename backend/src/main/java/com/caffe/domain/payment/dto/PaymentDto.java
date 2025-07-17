@@ -13,7 +13,7 @@ public class PaymentDto {
             String paymentOptionType,
             String paymentOptionName,
             String paymentInfo,
-            double amount,
+            int amount,
             char status,
             LocalDateTime createDate,
             LocalDateTime modifyDate,
@@ -38,14 +38,14 @@ public class PaymentDto {
             @NotNull int purchaseId,
             @NotNull int paymentOptionId,
             @NotNull String paymentInfo,
-            @Positive double amount
+            @Positive int amount
     ) {
     }
 
     public record PaymentUpdateDto(
             @NotNull int paymentOptionId,
             @NotNull String paymentInfo,
-            @Positive double amount
+            @Positive int amount
     ) {
     }
 }

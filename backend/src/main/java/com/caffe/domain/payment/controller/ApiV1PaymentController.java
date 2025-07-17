@@ -22,7 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/payments")
 @Tag(name = "ApiV1PaymentController", description = "API 결제 컨트롤러")
-public class PaymentController {
+public class ApiV1PaymentController {
     private final PaymentService paymentService;
     private final PurchaseService purchaseService;
 
