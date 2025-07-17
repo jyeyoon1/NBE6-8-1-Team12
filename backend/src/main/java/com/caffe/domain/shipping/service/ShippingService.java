@@ -26,18 +26,20 @@ public class ShippingService {
      - 매개변수: Purchase, ReceiverDto
      - 배송 상태는 기본적으로 BEFORE_DELIVERY가 설정됨
     */
-    public Shipping createShipping(Purchase purchase, ReceiverReqDto receiver) {
+    public Shipping createShipping(ReceiverReqDto receiver) {
         Shipping shipping = new Shipping(
                 receiver.address(),
+                receiver.postcode(),
                 receiver.phoneNumber(),
                 receiver.name(),
-                "CJ대한통운",  // TODO: carrier 선택 기능 향후 추가
-                ShippingStatus.BEFORE_DELIVERY,
-                purchase
+                "CJ대한통운", // TODO: carrier 선택 기능 향후 추가
+                ShippingStatus.valueOf(receiver.status()),
+                null // purchase를 null로 연결
         );
 
         return shippingRepository.save(shipping);
     }
+
 
     // 구매 ID로 Purchase 엔티티를 조회
     public Purchase getPurchaseById(int purchaseId) {
@@ -53,15 +55,5 @@ public class ShippingService {
     // 유저 이메일로 배송 목록 조회
     public List<Shipping> getShippingListByUserEmail(String userEmail) {
         return shippingRepository.findByPurchaseUserEmail(userEmail);
-    }
-
-    /*
-     - 유저 이메일로 가장 최근 구매 내역 조회
-     - 이메일 기준으로 가장 최신 Purchase 1건 조회
-     - 주로 배송 생성 시 어떤 구매건인지 식별용
-    */
-    public Purchase getLatestPurchaseByUserEmail(String userEmail) {
-        return purchaseRepository.findTopByUserEmailOrderByCreateDateDesc(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("구매 내역이 없습니다."));
     }
 }
