@@ -4,13 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
-
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-  const router = useRouter();
   const { setIsAuthenticated } = useAuth();
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,10 +28,10 @@ export default function LoginPage() {
     });
 
     if (res.ok) {
-      setIsAuthenticated(true);
-      router.push('/products/list'); // 로그인 성공 시 상품 목록 페이지로 이동
+      setIsAuthenticated(true); // 로그인 성공 시 인증 상태 업데이트
+      router.push('/products/list');
     } else {
-      setErrorMsg('ID 혹은 비밀번호를 잘못 입력하셨거나 등록되지 않은 ID 입니다.');
+      setErrorMsg('ID 혹은 비밀번호가 잘못되었습니다.');
     }
   };
 
@@ -72,7 +71,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full bg-gray-800 hover:bg-gray-900 text-white py-3 rounded-lg text-lg font-semibold transition-colors hover:cursor-pointer"
+            className="w-full bg-gray-800 hover:bg-gray-900 text-white py-3 rounded-lg text-lg cursor-pointer font-semibold transition-colors"
           >
             로그인
           </button>

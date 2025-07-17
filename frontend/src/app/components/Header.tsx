@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useAuth } from '@/contexts/AuthContext'; // 경로에 맞게 수정하세요
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Header() {
   const { isAuthenticated, isLoading, logout } = useAuth();
