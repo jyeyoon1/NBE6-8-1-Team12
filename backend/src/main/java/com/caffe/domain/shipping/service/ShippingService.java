@@ -26,15 +26,15 @@ public class ShippingService {
      - 매개변수: Purchase, ReceiverDto
      - 배송 상태는 기본적으로 BEFORE_DELIVERY가 설정됨
     */
-    public Shipping createShipping(ReceiverReqDto receiver) {
+    public Shipping createShipping(ReceiverReqDto receiver, Purchase purchase) {
         Shipping shipping = new Shipping(
                 receiver.address(),
                 receiver.postcode(),
                 receiver.phoneNumber(),
                 receiver.name(),
                 "CJ대한통운", // TODO: carrier 선택 기능 향후 추가
-                ShippingStatus.valueOf(receiver.status()),
-                null // purchase를 null로 연결
+                ShippingStatus.TEMPORARY,
+                purchase
         );
 
         return shippingRepository.save(shipping);

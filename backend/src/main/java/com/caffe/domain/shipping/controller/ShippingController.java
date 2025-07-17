@@ -1,15 +1,9 @@
 package com.caffe.domain.shipping.controller;
 
-import com.caffe.domain.purchase.dto.req.ReceiverReqDto;
-import com.caffe.domain.purchase.entity.Purchase;
-import com.caffe.domain.shipping.dto.ShippingDto;
-import com.caffe.domain.shipping.entity.Shipping;
-import com.caffe.domain.shipping.entity.ShippingResDto;
 import com.caffe.domain.shipping.service.ShippingService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/shippings")
@@ -24,11 +18,11 @@ public class ShippingController {
       - 프론트에서 받은 ShippingDto를 바탕으로 배송 생성
      */
 
-    @PostMapping
+    /*@PostMapping
     public ShippingResDto createShipping(@RequestBody ReceiverReqDto dto) {
         Shipping shipping = shippingService.createShipping(dto);
         return new ShippingResDto(shipping);
-    }
+    }*/
 
     /*`
       - 최신 구매 내역 조회 API
