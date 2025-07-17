@@ -1,24 +1,18 @@
 package com.caffe.domain.member.entity;
 
-import jakarta.persistence.*;
+import com.caffe.global.jpa.entity.BaseEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDateTime;
-
-import static jakarta.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PROTECTED;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
 @Entity
-public class Member {
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Setter(PROTECTED)
-    private int id;
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Member extends BaseEntity {
 
     @Column(unique = true)
     private String email;
@@ -29,8 +23,10 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @CreatedDate
-    private LocalDateTime createDate;
-    @LastModifiedDate
-    private LocalDateTime modifyDate;
+    public Member(String email, String password, String username, Role role) {
+        this.email = email;
+        this.password = password;
+        this.username = username;
+        this.role = role;
+    }
 }
