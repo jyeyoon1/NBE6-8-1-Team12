@@ -13,9 +13,9 @@ import lombok.Setter;
 public class ProductDTO {
     @NotBlank(message = "상품명을 입력해주세요.")
     private String productName;
-    @DecimalMin(value = "0.0", message = "가격은 0원 이상이어야 합니다.")
-    private double price;
-    @Min(value = 0, message = "수량은 0 이상이어야 합니다.")
+    @Min(value = 0, message = "가격은 0원 이상이어야 합니다.")
+    private int price;
+    @Min(value = 0, message = "총 수량은 0개 이상이어야 합니다.")
     private int totalQuantity;
     @Size(max = 1000, message = "설명은 최대 1000자까지 입력 가능합니다.")
     private String description;
