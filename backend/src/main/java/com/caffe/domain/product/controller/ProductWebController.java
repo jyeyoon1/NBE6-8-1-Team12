@@ -27,6 +27,26 @@ public class ProductWebController {
         return "product/list_product";
     }
 
+    // 상품 등록 폼 보여주기
+    @GetMapping("/new")
+    public String showAddForm(Model model) {
+        model.addAttribute("product", new Product());
+        return "product/add_product";
+    }
+
+    // 폼 기반 상품 등록 처리
+    @PostMapping("/new")
+    public String addProduct(@ModelAttribute ProductDTO productDTO, Model model) {
+        try {
+            productService.saveProduct(productDTO.toEntity());
+            return "redirect:/products";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "상품 등록에 실패했습니다.");
+            model.addAttribute("product", productDTO);
+            return "product/add_product";
+        }
+    }
+
     // 상품 상세 조회
     @GetMapping("/detail/{id}")
     public String getProductById(@PathVariable int id, Model model) {
@@ -40,13 +60,6 @@ public class ProductWebController {
         }
     }
 
-    // 상품 추가 폼 보여주기
-    @GetMapping("/new")
-    public String showAddForm(Model model) {
-        model.addAttribute("product", new Product());
-        return "product/add_product";
-    }
-
     // 상품 수정 폼 보여주기
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable int id, Model model) {
@@ -57,19 +70,6 @@ public class ProductWebController {
         } catch (NoSuchElementException e) {
             model.addAttribute("errorMessage", "수정할 상품을 찾을 수 없습니다");
             return "error/product_not_found";
-        }
-    }
-
-    // 폼 기반 상품 등록 처리
-    @PostMapping("/new")
-    public String addProduct(@ModelAttribute ProductDTO productDTO, Model model) {
-        try {
-            productService.saveProduct(productDTO.toEntity());
-            return "redirect:/products";
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "상품 등록에 실패했습니다.");
-            model.addAttribute("product", productDTO);
-            return "product/add_product";
         }
     }
 
