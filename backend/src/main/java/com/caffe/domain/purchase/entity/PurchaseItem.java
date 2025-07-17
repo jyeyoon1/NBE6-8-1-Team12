@@ -17,7 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PurchaseItem extends BaseEntity {
     private int quantity;
-    private double price;
+    private int price;
 
     @ManyToOne(fetch =  FetchType.LAZY)
     @JsonIgnore
@@ -40,7 +40,7 @@ public class PurchaseItem extends BaseEntity {
         this.product = product;
     }
 
-    public double getItemTotalPrice() {
+    public int getItemTotalPrice() {
         return quantity * price;
     }
 }

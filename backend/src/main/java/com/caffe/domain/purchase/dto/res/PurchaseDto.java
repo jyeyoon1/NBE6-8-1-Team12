@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public record PurchaseDto(
         int purchaseId,
         String userEmail,
-        double totalPrice,
+        int totalPrice,
         PurchaseStatus purchaseStatus,
         LocalDateTime purchaseDate
 ) {

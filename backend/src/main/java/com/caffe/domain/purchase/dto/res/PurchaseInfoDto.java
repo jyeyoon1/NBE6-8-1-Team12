@@ -5,12 +5,12 @@ import com.caffe.domain.product.entity.Product;
 public record PurchaseInfoDto(
         int productId,
         String productName,
-        double price,
+        int price,
         String imageUrl,
         int quantity,
-        double totalPrice
+        int totalPrice
 ) {
-    public PurchaseInfoDto(Product product, int quantity, double totalPrice) {
+    public PurchaseInfoDto(Product product, int quantity, int totalPrice) {
         this (
                 product.getId(),
                 product.getProductName(),

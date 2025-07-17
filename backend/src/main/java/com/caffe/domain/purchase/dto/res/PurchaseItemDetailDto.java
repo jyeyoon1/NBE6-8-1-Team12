@@ -6,7 +6,7 @@ import com.caffe.domain.purchase.entity.PurchaseItem;
 public record PurchaseItemDetailDto(
         int purchaseItemId,
         int quantity,
-        double price,
+        int price,
         String productName,
         String imageUrl
 ) {
