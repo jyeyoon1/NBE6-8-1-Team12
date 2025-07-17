@@ -20,23 +20,15 @@ public class ProductWebController {
     private final ProductService productService;
 
     // 상품 목록 조회
-    @GetMapping("/list")
+    @GetMapping({"", "/list"})
     public String listProducts(Model model) {
         List<Product> productList = productService.getAllProducts();
         model.addAttribute("products", productList);
         return "product/list_product";
     }
 
-    // 상품 목록 조회_v2
-    @GetMapping("/list_v2")
-    public String listProducts_v2(Model model) {
-        List<Product> productList = productService.getAllProducts();
-        model.addAttribute("products", productList);
-        return "product/list_product";
-    }
-
-    // GET ID로 단건 조회
-    @GetMapping("/{id}")
+    // 상품 상세 조회
+    @GetMapping("/detail/{id}")
     public String getProductById(@PathVariable int id, Model model) {
         try {
             Product product = productService.getProductById(id);
@@ -49,7 +41,7 @@ public class ProductWebController {
     }
 
     // 상품 추가 폼 보여주기
-    @GetMapping("/add")
+    @GetMapping("/new")
     public String showAddForm(Model model) {
         model.addAttribute("product", new Product());
         return "product/add_product";
@@ -69,11 +61,11 @@ public class ProductWebController {
     }
 
     // 폼 기반 상품 등록 처리
-    @PostMapping("/add")
+    @PostMapping("/new")
     public String addProduct(@ModelAttribute ProductDTO productDTO, Model model) {
         try {
             productService.saveProduct(productDTO.toEntity());
-            return "redirect:/products/list";
+            return "redirect:/products";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "상품 등록에 실패했습니다.");
             model.addAttribute("product", productDTO);
@@ -95,7 +87,7 @@ public class ProductWebController {
             product.setTotalQuantity(productDTO.getTotalQuantity());
 
             productService.updateProduct(product);
-            return "redirect:/products/" + id;
+            return "redirect:/products/detail/" + id;
         } catch (Exception e) {
             model.addAttribute("errorMessage", "상품 수정에 실패했습니다.");
             model.addAttribute("product", productDTO);
@@ -108,10 +100,10 @@ public class ProductWebController {
     public String deleteProduct(@PathVariable int id, Model model) {
         try {
             productService.deleteProduct(id);
-            return "redirect:/products/list";
+            return "redirect:/products";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "상품 삭제에 실패했습니다.");
-            return "redirect:/products/" + id;
+            return "redirect:/products/detail/" + id;
         }
     }
 }
