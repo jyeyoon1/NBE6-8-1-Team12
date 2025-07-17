@@ -123,7 +123,7 @@ export default function PurchasePage({
                 email: string;
             };
             paymentOptionId: number;
-        }
+        };
 
         const createPurchase = () => {
             const userEmail = (form.elements.namedItem("purchaser.email") as HTMLInputElement).value.trim();
@@ -152,7 +152,7 @@ export default function PurchasePage({
             fetch(`http://localhost:8080/api/purchases/checkout`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json; charset=utf-8',
                 },
                 body: JSON.stringify(body),
             })
@@ -322,7 +322,7 @@ export default function PurchasePage({
                     type="submit"
                     className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow transition-colors"
                 >
-                    구매하기
+                    구매
                 </button>
             </div>
         </form>

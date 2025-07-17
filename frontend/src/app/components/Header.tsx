@@ -35,7 +35,7 @@ export default function Header() {
             <>
               <Link href="/" className="hover:text-gray-500 transition-colors">홈</Link>
               <span className="text-gray-400">|</span>
-              <Link href="/order/form" className="hover:text-gray-500 transition-colors">주문 내역</Link>
+              <Link href="/purchase/lookup" className="hover:text-gray-500 transition-colors">주문 내역</Link>
               <span className="text-gray-400">|</span>
               <Link href="/member/login" className="hover:text-gray-500 transition-colors">관리자 로그인</Link>
             </>
