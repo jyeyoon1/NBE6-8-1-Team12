@@ -28,7 +28,7 @@ export default function LoginPage() {
     if (res.ok) {
       router.push('/products/list'); // 로그인 성공 시 상품 목록 페이지로 이동
     } else {
-      setErrorMsg('ID 혹은 비밀번호가 잘못되었습니다.');
+      setErrorMsg('ID 혹은 비밀번호를 잘못 입력하셨거나 등록되지 않은 ID 입니다.');
     }
   };
 
@@ -68,7 +68,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full bg-gray-800 hover:bg-gray-900 text-white py-3 rounded-lg text-lg font-semibold transition-colors"
+            className="w-full bg-gray-800 hover:bg-gray-900 text-white py-3 rounded-lg text-lg font-semibold transition-colors hover:cursor-pointer"
           >
             로그인
           </button>

@@ -21,6 +21,14 @@ spring:
         format_sql: true
         highlight_sql: true
         use_sql_comments: true
+  servlet:
+    session:
+      cookie:
+        same-site: lax
+        secure: false
+        http-only: true
+        max-age: 1800
+      timeout: 30m
 
 springdoc:
   default-produces-media-type: application/json;charset=UTF-8
