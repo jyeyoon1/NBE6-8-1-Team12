@@ -24,6 +24,7 @@ public class ProductApiController {
     private final ProductService productService;
 
    //상품 다건 조회 API
+
     @GetMapping
     @Operation(summary = "상품 다건 조회")
     public ResponseEntity<RsData<List<Product>>> getAllProducts() {
