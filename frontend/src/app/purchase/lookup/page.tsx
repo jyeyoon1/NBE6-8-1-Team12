@@ -51,7 +51,7 @@ export default function PurchaseLookUpPage() {
             if (!res.ok) throw new Error("응답 실패");
 
             sessionStorage.setItem('resBody', JSON.stringify(reqBody))
-            window.location.href = `/purchase/lookup/result`;
+            window.location.href = `/purchase/lookup/detail`;
         })
         .catch(err => console.error('주문 조회 실패:', err));
 

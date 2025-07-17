@@ -22,10 +22,23 @@ import java.util.List;
 @RequestMapping("/api/purchases")
 @Tag(name = "PurchaseController", description = "Api 주문 컨트롤러")
 public class PurchaseController {
-
     private final PurchaseService purchaseService;
     private final PaymentService paymentService;
+
     @PostMapping("/lookup")
+    @Operation(summary = "주문 존재 확인")
+    public RsData<Void> checkPurchaseExists(
+            @Valid @RequestBody PurchaserReqBody reqBody
+    ) {
+        purchaseService.getPurchaseByIdAndUserEmail(reqBody.purchaseId(), reqBody.userEmail());
+
+        return new RsData<>(
+                "200",
+                "주문 존재 확인 완료"
+        );
+    }
+
+    @PostMapping("/lookup/detail")
     @Operation(summary = "주문 조회")
     public RsData<PurchaseDetailDto> getPurchase(
             @Valid @RequestBody PurchaserReqBody reqBody
