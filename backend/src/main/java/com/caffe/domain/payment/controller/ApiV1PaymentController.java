@@ -45,7 +45,7 @@ public class ApiV1PaymentController {
 
     @PostMapping()
     @Transactional
-    @Operation(summary = "결제 요청")
+    @Operation(summary = "결제 생성")
     public RsData<PaymentDto.PaymentResponseDto> request(@Valid @RequestBody PaymentDto.PaymentRequestDto paymentRequestDto) {
 
         Purchase purchase = purchaseService.getPurchaseById(paymentRequestDto.purchaseId());
@@ -54,9 +54,24 @@ public class ApiV1PaymentController {
             return new RsData<>("404-1","지원하지 않는 결제방식입니다.");
         }
         // 서비스 계층에서 결제 로직 처리
-        Payment payment = paymentService.request(purchase, paymentOption.get(), paymentRequestDto.paymentInfo(), paymentRequestDto.amount());
+        Payment payment = paymentService.save(purchase, paymentOption.get(), paymentRequestDto.amount());
 
-        return new RsData<>(payment.getStatus()== PaymentStatus.SUCCESS? "201-1":"503-1", "주문번호 %d의 결제가 ".formatted(purchase.getId())+(payment.getStatus()== PaymentStatus.SUCCESS? "성공했습니다.":"실패했습니다."), new PaymentDto.PaymentResponseDto(payment));
+        return new RsData<>(payment.getStatus()== PaymentStatus.SUCCESS? "201-1":"503-1", "결제번호 %d 가 생성되었습니다.".formatted(payment.getId()), new PaymentDto.PaymentResponseDto(payment));
+    }
+
+    @PutMapping("/{id}/execute")
+    @Transactional
+    @Operation(summary = "결제 요청")
+    public RsData<PaymentDto.PaymentResponseDto> request(@Valid @RequestBody PaymentDto.PaymentExecuteDto paymentExecuteDto, @PathVariable int id) {
+
+        Payment payment = paymentService.findById(id).get();
+        if(payment.getStatus()== PaymentStatus.SUCCESS) {
+            return new RsData<>("409-1", "결제번호 %d 는 이미 결제되었습니다.".formatted(payment.getId()), new PaymentDto.PaymentResponseDto(payment));
+        }
+        // 서비스 계층에서 결제 로직 처리
+        payment = paymentService.request(payment, paymentExecuteDto.paymentInfo());
+
+        return new RsData<>(payment.getStatus()== PaymentStatus.SUCCESS? "200-1":"503-1", "주문번호 %d의 결제가 ".formatted(payment.getPurchase().getId())+(payment.getStatus()== PaymentStatus.SUCCESS? "성공했습니다.":"실패했습니다."), new PaymentDto.PaymentResponseDto(payment));
     }
 
     @DeleteMapping("/{id}")

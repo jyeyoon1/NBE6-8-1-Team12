@@ -48,9 +48,16 @@ public class PaymentService {
         return paymentRepository.findById(id);
     }
 
-    public Payment request(Purchase purchase, PaymentOption paymentOption, String paymentInfo, int amount) {
-        Payment payment = new Payment(paymentInfo, amount, purchase, paymentOption);
-        boolean isSuccess = paymentGatewayClient.charge(paymentOption.getType().toString(), paymentOption.getName(), payment.getPaymentInfo(), payment.getAmount());
+    public Payment save(Purchase purchase, PaymentOption paymentOption, int amount) {
+        Payment payment = new Payment(amount, purchase, paymentOption);
+        boolean isSuccess = paymentGatewayClient.charge(paymentOption.getParent().getName(), paymentOption.getName(), payment.getPaymentInfo(), payment.getAmount());
+        payment.isSuccess(isSuccess);
+        return paymentRepository.save(payment);
+    }
+
+    public Payment request(Payment payment, String paymentInfo) {
+        payment.updatePaymentInfo(paymentInfo);
+        boolean isSuccess = paymentGatewayClient.charge(payment.getPaymentOption().getParent().getName(), payment.getPaymentOption().getName(), payment.getPaymentInfo(), payment.getAmount());
         payment.isSuccess(isSuccess);
         return paymentRepository.save(payment);
     }
@@ -66,7 +73,7 @@ public class PaymentService {
 
     public Payment changePayment(Payment payment, PaymentOption paymentOption, String paymentInfo, int amount) {
         payment.updatePayment(paymentOption, paymentInfo, amount==0? payment.getAmount(): amount);
-        boolean isSuccess = paymentGatewayClient.charge(paymentOption.getType().toString(), paymentOption.getName(), payment.getPaymentInfo(), payment.getAmount());
+        boolean isSuccess = paymentGatewayClient.charge(paymentOption.getParent().getName(), paymentOption.getName(), payment.getPaymentInfo(), payment.getAmount());
         payment.isSuccess(isSuccess);
         return paymentRepository.save(payment);
     }

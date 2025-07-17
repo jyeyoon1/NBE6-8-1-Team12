@@ -38,8 +38,12 @@ public class PaymentDto {
     public record PaymentRequestDto(
             @NotNull int purchaseId,
             @NotNull int paymentOptionId,
-            @NotNull String paymentInfo,
             @Positive int amount
+    ) {
+    }
+
+    public record PaymentExecuteDto(
+            @NotNull String paymentInfo
     ) {
     }
 

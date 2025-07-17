@@ -21,12 +21,15 @@ public class Payment extends BaseEntity {
     @ManyToOne
     private PaymentOption paymentOption;
 
-    public Payment(String paymentInfo, int amount, Purchase purchase,  PaymentOption paymentOption) {
-        this.paymentInfo = paymentInfo;
+    public Payment(int amount, Purchase purchase,  PaymentOption paymentOption) {
         this.amount = amount;
         this.status = PaymentStatus.PENDING;
         this.purchase = purchase;
         this.paymentOption = paymentOption;
+    }
+
+    public void updatePaymentInfo(String paymentInfo) {
+        this.paymentInfo = paymentInfo;
     }
 
     public void isSuccess(boolean result) {

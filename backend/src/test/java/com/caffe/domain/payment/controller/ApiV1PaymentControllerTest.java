@@ -3,6 +3,7 @@ package com.caffe.domain.payment.controller;
 import com.caffe.domain.payment.dto.PaymentOptionDto;
 import com.caffe.domain.payment.entity.Payment;
 import com.caffe.domain.payment.entity.PaymentOption;
+import com.caffe.domain.payment.entity.PaymentStatus;
 import com.caffe.domain.payment.service.PaymentService;
 import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.service.PurchaseService;
@@ -39,7 +40,7 @@ public class ApiV1PaymentControllerTest {
     private PurchaseService purchaseService;
 
     @Test
-    @DisplayName("결제 요청")
+    @DisplayName("결제 생성")
     void t1() throws Exception {
         Purchase purchase = purchaseService.getPurchaseById(3);
         PaymentOption paymentOption = paymentService.getPaymentOption(4).get();
@@ -52,7 +53,6 @@ public class ApiV1PaymentControllerTest {
                                         {
                                             "purchaseId": %d,
                                             "paymentOptionId": %d,
-                                            "paymentInfo": "1111-2222-3333-4444",
                                             "amount": %d
                                           }
                                           """.formatted(purchase.getId(), paymentOption.getId(), (int)purchase.getTotalPrice()))
@@ -65,11 +65,10 @@ public class ApiV1PaymentControllerTest {
                 .andExpect(handler().methodName("request"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.resultCode").value("201-1"))
-                .andExpect(jsonPath("$.msg").value("주문번호 %d의 결제가 성공했습니다.".formatted(purchase.getId())))
+                .andExpect(jsonPath("$.msg").value("결제번호 %d 가 생성되었습니다.".formatted(payment.getId())))
                 .andExpect(jsonPath("$.data.id").value(payment.getId()))
                 .andExpect(jsonPath("$.data.paymentOptionType").value(paymentOption.getParent().getName()))
                 .andExpect(jsonPath("$.data.paymentOptionName").value(paymentOption.getName()))
-                .andExpect(jsonPath("$.data.paymentInfo").value("1111-2222-3333-4444"))
                 .andExpect(jsonPath("$.data.amount").value(payment.getAmount()))
                 .andExpect(jsonPath("$.data.status").value(String.valueOf(payment.getStatus())))
                 .andExpect(jsonPath("$.data.createDate").value(Matchers.startsWith(payment.getCreateDate().toString().substring(0,18))))
@@ -78,8 +77,41 @@ public class ApiV1PaymentControllerTest {
     }
 
     @Test
-    @DisplayName("결제 수정 요청")
+    @DisplayName("결제 요청")
     void t2() throws Exception {
+        Payment payment = paymentService.findLatest().get();
+        ResultActions resultActions = mvc
+                .perform(
+                        put("/api/v1/payments/%d/execute".formatted(payment.getId()))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                        {
+                                            "paymentInfo": "111-111-1110111011"
+                                        }
+                                          """)
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(ApiV1PaymentController.class))
+                .andExpect(handler().methodName("request"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("주문번호 %d의 결제가 성공했습니다.".formatted(payment.getPurchase().getId())))
+                .andExpect(jsonPath("$.data.id").value(payment.getId()))
+                .andExpect(jsonPath("$.data.paymentOptionType").value(payment.getPaymentOption().getParent().getName()))
+                .andExpect(jsonPath("$.data.paymentOptionName").value(payment.getPaymentOption().getName()))
+                .andExpect(jsonPath("$.data.paymentInfo").value("111-111-1110111011"))
+                .andExpect(jsonPath("$.data.amount").value(payment.getAmount()))
+                .andExpect(jsonPath("$.data.status").value(String.valueOf(PaymentStatus.SUCCESS)))
+                .andExpect(jsonPath("$.data.createDate").value(Matchers.startsWith(payment.getCreateDate().toString().substring(0,18))))
+                .andExpect(jsonPath("$.data.modifyDate").value(Matchers.startsWith(payment.getModifyDate().toString().substring(0,18))))
+                .andExpect(jsonPath("$.data.purchaseId").value(payment.getPurchase().getId()));
+    }
+
+    @Test
+    @DisplayName("결제 수정 요청")
+    void t3() throws Exception {
         int id = 1;
         PaymentOption paymentOption = paymentService.getPaymentOption(8).get();
 
@@ -117,7 +149,7 @@ public class ApiV1PaymentControllerTest {
 
     @Test
     @DisplayName("결제 삭제")
-    void t3() throws Exception {
+    void t4() throws Exception {
         int id = 1;
         ResultActions resultActions = mvc
                 .perform(
@@ -135,7 +167,7 @@ public class ApiV1PaymentControllerTest {
 
     @Test
     @DisplayName("결제 취소")
-    void t4() throws Exception {
+    void t5() throws Exception {
         int id = 1;
         ResultActions resultActions = mvc
                 .perform(
@@ -153,7 +185,7 @@ public class ApiV1PaymentControllerTest {
 
     @Test
     @DisplayName("결제 단건 조회")
-    void t5() throws Exception {
+    void t6() throws Exception {
         int id = 2;
         ResultActions resultActions = mvc
                 .perform(
@@ -179,7 +211,7 @@ public class ApiV1PaymentControllerTest {
 
     @Test
     @DisplayName("결제 단건 실패")
-    void t6() throws Exception {
+    void t7() throws Exception {
         int id = Integer.MAX_VALUE;
         ResultActions resultActions = mvc
                 .perform(
@@ -197,7 +229,7 @@ public class ApiV1PaymentControllerTest {
 
     @Test
     @DisplayName("결제 다건 조회")
-    void t7() throws Exception {
+    void t8() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
                         get("/api/v1/payments")
@@ -229,7 +261,7 @@ public class ApiV1PaymentControllerTest {
 
     @Test
     @DisplayName("결제 방법 조회")
-    void t8() throws Exception {
+    void t9() throws Exception {
         int optionParentId = 1;
         ResultActions resultActions = mvc
                 .perform(
@@ -255,5 +287,31 @@ public class ApiV1PaymentControllerTest {
                     .andExpect(jsonPath("$[%d].code".formatted(i)).value(paymentOptionDto.code()))
                     .andExpect(jsonPath("$[%d].sortSeq".formatted(i)).value(paymentOptionDto.sortSeq()));
         }
+    }
+
+    @Test
+    @DisplayName("결제 요청 - 409")
+    void t10() throws Exception {
+        int id = 1;
+        Payment payment = paymentService.findById(1).get();
+        payment.isSuccess(true);
+        ResultActions resultActions = mvc
+                .perform(
+                        put("/api/v1/payments/%d/execute".formatted(1))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                        {
+                                            "paymentInfo": "111-111-1110111011"
+                                        }
+                                          """)
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(ApiV1PaymentController.class))
+                .andExpect(handler().methodName("request"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.resultCode").value("409-1"))
+                .andExpect(jsonPath("$.msg").value("결제번호 %d 는 이미 결제되었습니다.".formatted(payment.getId())));
     }
 }
