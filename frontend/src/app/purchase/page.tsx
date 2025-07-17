@@ -113,11 +113,13 @@ export default function PurchasePage({
                 name: string;
                 phoneNumber: string;
                 address: string;
+                email: string;
             };
             paymentOptionId: number;
         }
 
         const createPurchase = () => {
+            const userEmail = (form.elements.namedItem("purchaser.email") as HTMLInputElement).value.trim();
 
             const body: PurchasePageReqBody = {
                 purchase: {
@@ -128,12 +130,13 @@ export default function PurchasePage({
                 },
                 purchaser: {
                   name: (form.elements.namedItem("purchaser.name") as HTMLInputElement).value.trim(),
-                  email: (form.elements.namedItem("purchaser.email") as HTMLInputElement).value.trim(),
+                  email: userEmail,
                 },
                 receiver: {
                   name: (form.elements.namedItem("receiver.name") as HTMLInputElement).value.trim(),
                   phoneNumber: (form.elements.namedItem("receiver.phoneNumber") as HTMLInputElement).value.trim(),
                   address: (form.elements.namedItem("receiver.address") as HTMLInputElement).value.trim(),
+                  email: userEmail
                 },
                 paymentOptionId: parseInt((form.elements.namedItem("paymentOptionId") as HTMLInputElement).value)
             };
