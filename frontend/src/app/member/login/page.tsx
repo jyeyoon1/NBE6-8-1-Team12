@@ -2,12 +2,15 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const router = useRouter();
+  const { setIsAuthenticated } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +29,7 @@ export default function LoginPage() {
     });
 
     if (res.ok) {
+      setIsAuthenticated(true);
       router.push('/products/list'); // 로그인 성공 시 상품 목록 페이지로 이동
     } else {
       setErrorMsg('ID 혹은 비밀번호를 잘못 입력하셨거나 등록되지 않은 ID 입니다.');

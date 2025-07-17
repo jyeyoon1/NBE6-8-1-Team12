@@ -2,26 +2,14 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
-
-// 예시: 로그인 상태 확인 (실제로는 세션, 쿠키, auth 라이브러리 등으로 구현해야 함)
-const mockAuthCheck = () => {
-  // true: 로그인 상태, false: 비로그인 상태
-  return false;
-};
+import { useAuth } from '@/contexts/AuthContext'; // 경로에 맞게 수정하세요
 
 export default function Header() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    // 실제론 쿠키, 세션, fetch 등으로 로그인 여부 확인
-    setIsAuthenticated(mockAuthCheck());
-  }, []);
+  const { isAuthenticated, isLoading, logout } = useAuth();
 
   return (
     <header className="w-full fixed top-0 left-0 bg-white/70 text-[#4a3b31] shadow-md z-50 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center gap-4">
-        {/* 로고 + 설명 */}
         <div className="flex items-center space-x-3">
           <Image
             src="https://i.postimg.cc/PJDhy8d9/nbe6-8-team12-caffe-logo.png"
@@ -33,9 +21,17 @@ export default function Header() {
           <h5 className="text-base">Caffe 메뉴 서비스 입니다.</h5>
         </div>
 
-        {/* 네비게이션 */}
         <div className="flex items-center text-sm font-medium gap-4">
-          {!isAuthenticated ? (
+          {isLoading ? (
+            // 로딩 중일 때 스켈레톤 UI
+            <div className="flex items-center gap-4">
+              <div className="w-8 h-4 bg-gray-200 animate-pulse rounded"></div>
+              <span className="text-gray-400">|</span>
+              <div className="w-12 h-4 bg-gray-200 animate-pulse rounded"></div>
+              <span className="text-gray-400">|</span>
+              <div className="w-16 h-4 bg-gray-200 animate-pulse rounded"></div>
+            </div>
+          ) : !isAuthenticated ? (
             <>
               <Link href="/" className="hover:text-gray-500 transition-colors">홈</Link>
               <span className="text-gray-400">|</span>
@@ -51,7 +47,7 @@ export default function Header() {
               <span className="text-gray-400">|</span>
               <Link href="/orders" className="hover:text-gray-500 transition-colors">주문 목록</Link>
               <span className="text-gray-400">|</span>
-              <Link href="/logout" className="hover:text-gray-500 transition-colors">로그아웃</Link>
+              <button type="button" onClick={logout} className="hover:text-gray-500 transition-colors cursor-pointer">로그아웃</button>
             </>
           )}
         </div>
