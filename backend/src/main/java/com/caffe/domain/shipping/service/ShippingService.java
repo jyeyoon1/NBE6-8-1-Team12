@@ -3,7 +3,6 @@ package com.caffe.domain.shipping.service;
 import com.caffe.domain.purchase.dto.req.ReceiverReqDto;
 import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.repository.PurchaseRepository;
-import com.caffe.domain.shipping.dto.ReceiverDto;
 import com.caffe.domain.shipping.entity.Shipping;
 import com.caffe.domain.shipping.entity.ShippingStatus;
 import com.caffe.domain.shipping.repository.ShippingRepository;
