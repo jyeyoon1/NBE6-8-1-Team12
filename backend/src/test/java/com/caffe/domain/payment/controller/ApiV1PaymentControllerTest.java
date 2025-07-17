@@ -127,15 +127,33 @@ public class ApiV1PaymentControllerTest {
 
         resultActions
                 .andExpect(handler().handlerType(ApiV1PaymentController.class))
-                .andExpect(handler().methodName("cancel"))
+                .andExpect(handler().methodName("delete"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resultCode").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("결제번호 %d 가 삭제되었습니다.".formatted(id)));
     }
 
     @Test
-    @DisplayName("결제 단건 조회")
+    @DisplayName("결제 취소")
     void t4() throws Exception {
+        int id = 1;
+        ResultActions resultActions = mvc
+                .perform(
+                        put("/api/v1/payments/%d/cancel".formatted(id))
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(ApiV1PaymentController.class))
+                .andExpect(handler().methodName("cancel"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("결제번호 %d 가 취소되었습니다.".formatted(id)));
+    }
+
+    @Test
+    @DisplayName("결제 단건 조회")
+    void t5() throws Exception {
         int id = 2;
         ResultActions resultActions = mvc
                 .perform(
@@ -161,7 +179,7 @@ public class ApiV1PaymentControllerTest {
 
     @Test
     @DisplayName("결제 단건 실패")
-    void t5() throws Exception {
+    void t6() throws Exception {
         int id = Integer.MAX_VALUE;
         ResultActions resultActions = mvc
                 .perform(
@@ -179,10 +197,10 @@ public class ApiV1PaymentControllerTest {
 
     @Test
     @DisplayName("결제 다건 조회")
-    void t6() throws Exception {
+    void t7() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
-                        get("/api/v1/payments/")
+                        get("/api/v1/payments")
                 )
                 .andDo(print());
 
@@ -211,7 +229,7 @@ public class ApiV1PaymentControllerTest {
 
     @Test
     @DisplayName("결제 방법 조회")
-    void t7() throws Exception {
+    void t8() throws Exception {
         int optionParentId = 1;
         ResultActions resultActions = mvc
                 .perform(

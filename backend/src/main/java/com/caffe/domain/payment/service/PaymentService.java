@@ -51,18 +51,23 @@ public class PaymentService {
     public Payment request(Purchase purchase, PaymentOption paymentOption, String paymentInfo, int amount) {
         Payment payment = new Payment(paymentInfo, amount, purchase, paymentOption);
         boolean isSuccess = paymentGatewayClient.charge(paymentOption.getType().toString(), paymentOption.getName(), payment.getPaymentInfo(), payment.getAmount());
-        payment.updateStatus(isSuccess ? 'S':'F');
+        payment.isSuccess(isSuccess);
         return paymentRepository.save(payment);
     }
 
-    public void cancel(Payment payment) {
+    public void delete(Payment payment) {
         paymentRepository.delete(payment);
+    }
+
+    public void cancel(Payment payment) {
+        payment.cancel();
+        paymentRepository.save(payment);
     }
 
     public Payment changePayment(Payment payment, PaymentOption paymentOption, String paymentInfo, int amount) {
         payment.updatePayment(paymentOption, paymentInfo, amount==0? payment.getAmount(): amount);
         boolean isSuccess = paymentGatewayClient.charge(paymentOption.getType().toString(), paymentOption.getName(), payment.getPaymentInfo(), payment.getAmount());
-        payment.updateStatus(isSuccess ? 'S':'F');
+        payment.isSuccess(isSuccess);
         return paymentRepository.save(payment);
     }
 
