@@ -26,7 +26,7 @@ export default function LoginPage() {
     });
 
     if (res.ok) {
-      router.push('/products');
+      router.push('/products/list'); // 로그인 성공 시 상품 목록 페이지로 이동
     } else {
       setErrorMsg('ID 혹은 비밀번호가 잘못되었습니다.');
     }

@@ -15,21 +15,21 @@ public class ProductDTO {
     private String productName;
     @Min(value = 0, message = "가격은 0원 이상이어야 합니다.")
     private int price;
-    @Min(value = 0, message = "총 수량은 0개 이상이어야 합니다.")
+    @Min(value = 0, message = "수량은 0 이상이어야 합니다.")
     private int totalQuantity;
     @Size(max = 1000, message = "설명은 최대 1000자까지 입력 가능합니다.")
     private String description;
 
     private String imageUrl;
 
-    // DTO → Entity 변환 메서드 (예시)
+    // DTO → Entity 변환 메서드
     public Product toEntity() {
-        Product p = new Product();
-        p.setProductName(this.productName);
-        p.setDescription(this.description);
-        p.setPrice(this.price);
-        p.setTotalQuantity(this.totalQuantity);
-        p.setImageUrl(this.imageUrl);
-        return p;
+        return new Product(
+                this.productName,
+                this.price,
+                this.totalQuantity,
+                this.description,
+                this.imageUrl
+        );
     }
 }

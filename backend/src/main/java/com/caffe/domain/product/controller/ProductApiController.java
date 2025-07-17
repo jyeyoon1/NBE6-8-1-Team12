@@ -60,11 +60,13 @@ public class ProductApiController {
         Product product = productService.getProductById(id);
         
         // 상품 정보 업데이트
-        product.setProductName(dto.getProductName());
-        product.setPrice(dto.getPrice());
-        product.setDescription(dto.getDescription());
-        product.setImageUrl(dto.getImageUrl());
-        product.setTotalQuantity(dto.getTotalQuantity());
+        product.updateProductInfo(
+                dto.getProductName(),
+                dto.getPrice(),
+                dto.getTotalQuantity(),
+                dto.getDescription(),
+                dto.getImageUrl()
+        );
 
         Product updatedProduct = productService.updateProduct(product);
         return ResponseEntity.ok(new RsData<>("200-3", "상품이 성공적으로 수정되었습니다.", updatedProduct));
