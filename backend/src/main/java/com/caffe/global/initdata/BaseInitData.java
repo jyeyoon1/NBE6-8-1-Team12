@@ -51,10 +51,14 @@ public class BaseInitData {
     @Transactional
     public void newAdmin() {
         if (memberRepository.count() > 0) return;
-        Member member = new Member();
-        member.setEmail("test@test.com");
-        member.setPassword(passwordEncoder.encode("test"));
-        member.setRole(Role.ADMIN);
+
+        Member member = new Member(
+                "test@test.com",
+                passwordEncoder.encode("test"),
+                "관리자",
+                Role.ADMIN
+        );
+
         memberRepository.save(member);
         System.out.println("초기 멤버 생성 완료");
     }
@@ -63,19 +67,21 @@ public class BaseInitData {
     public void initProducts() {
         if (productRepository.count() > 0) return;
 
-        Product product1 = new Product();
-        product1.setProductName("Columbia Nariñó");
-        product1.setPrice(5000);
-        product1.setTotalQuantity(100);
-        product1.setDescription("고소한 맛이 특징인 콜롬비아 나리뇨 커피입니다.");
-        product1.setImageUrl("https://i.imgur.com/HKOFQYa.jpeg");
+        Product product1 = new Product(
+                "Columbia Nariñó",
+                5000,
+                100,
+                "고소한 맛이 특징인 콜롬비아 나리뇨 커피입니다.",
+                "https://i.imgur.com/HKOFQYa.jpeg"
+        );
 
-        Product product2 = new Product();
-        product2.setProductName("Ethiopian Yirgacheffe");
-        product2.setPrice(6500);
-        product2.setTotalQuantity(50);
-        product2.setDescription("플로럴 향이 풍부한 에티오피아 예가체프 커피입니다.");
-        product2.setImageUrl("https://m.media-amazon.com/images/I/71LN-graGzL._UF894%2C1000_QL80_.jpg");
+        Product product2 = new Product(
+                "Ethiopian Yirgacheffe",
+                6500,
+                50,
+                "플로럴 향이 풍부한 에티오피아 예가체프 커피입니다.",
+                "https://m.media-amazon.com/images/I/71LN-graGzL._UF894%2C1000_QL80_.jpg"
+        );
 
         productRepository.saveAll(List.of(product1, product2));
         System.out.println("기본 상품 2개 생성 완료");
@@ -136,7 +142,7 @@ public class BaseInitData {
         paymentOption32.setSortSeq(2);
         paymentOption32.setParent(paymentOption3);
 
-        paymentOptionRepository.saveAll(List.of(paymentOption1, paymentOption2, paymentOption3, paymentOption11, paymentOption12, paymentOption21, paymentOption22,paymentOption31, paymentOption32));
+        paymentOptionRepository.saveAll(List.of(paymentOption1, paymentOption2, paymentOption3, paymentOption11, paymentOption12, paymentOption21, paymentOption22, paymentOption31, paymentOption32));
         System.out.println("결제 옵션 데이터 9개  생성 완료");
 
     }
@@ -205,7 +211,7 @@ public class BaseInitData {
 
     @Transactional
     public void initPayment() {
-        if(paymentRepository.count() > 0) return;
+        if (paymentRepository.count() > 0) return;
         Purchase purchase1 = purchaseRepository.findById(1).get();
         PaymentOption paymentOption1 = paymentOptionRepository.findById(4).get();
 

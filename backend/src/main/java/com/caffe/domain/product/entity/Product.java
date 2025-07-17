@@ -1,35 +1,36 @@
 package com.caffe.domain.product.entity;
 
+import com.caffe.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDateTime;
-
-import static jakarta.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PROTECTED;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
 @Entity
-public class Product {
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Setter(PROTECTED)
-    private int id;
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Product extends BaseEntity {
 
     private String productName;
-    private double price;
+    private int price;
     private int totalQuantity;
     private String description;
     private String imageUrl;
 
-    @CreatedDate
-    private LocalDateTime createDate;
-    @LastModifiedDate
-    private LocalDateTime modifyDate;
+    public Product(String productName, int price, int totalQuantity, String description, String imageUrl) {
+        this.productName = productName;
+        this.price = price;
+        this.totalQuantity = totalQuantity;
+        this.description = description;
+        this.imageUrl = imageUrl;
+    }
+
+    // 상품 정보 업데이트를 위한 비즈니스 메서드
+    public void updateProductInfo(String productName, int price, int totalQuantity, String description, String imageUrl) {
+        this.productName = productName;
+        this.price = price;
+        this.totalQuantity = totalQuantity;
+        this.description = description;
+        this.imageUrl = imageUrl;
+    }
 }
