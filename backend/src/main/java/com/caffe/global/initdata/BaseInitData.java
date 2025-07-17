@@ -141,13 +141,13 @@ public class BaseInitData {
         Purchase purchase1 = purchaseRepository.findById(1).get();
         PaymentOption paymentOption1 = paymentOptionRepository.findById(4).get();
 
-        Payment payment1 = new Payment("1234-5678-9012-3123", 15000, purchase1, paymentOption1);
+        Payment payment1 = new Payment((int)purchase1.getTotalPrice(), purchase1, paymentOption1);
         paymentRepository.save(payment1);
 
         Purchase purchase2 = purchaseRepository.findById(2).get();
         PaymentOption paymentOption2 = paymentOptionRepository.findById(7).get();
 
-        Payment payment2 = new Payment("111-222-3333-4444", 40000, purchase2, paymentOption2);
+        Payment payment2 = new Payment((int)purchase2.getTotalPrice(), purchase2, paymentOption2);
         paymentRepository.save(payment2);
 
         System.out.println("결제  데이터 2개  생성 완료");
