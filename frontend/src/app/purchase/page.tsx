@@ -95,6 +95,12 @@ export default function PurchasePage({
         if(!validateInput(form, "purchaser.email", "구매자 이메일")) return;
         if(!validateInput(form, "receiver.name", "배송지 이름")) return;
         if(!validateInput(form, "receiver.phoneNumber", "배송지 연락처")) return;
+        if(!validateInput(form, "receiver.postcode", "배송지 우편번호")) return;
+        const postcodeStr = (form.elements.namedItem("receiver.postcode") as HTMLInputElement).value.trim();
+        if (!/^\d{5}$/.test(postcodeStr)) {
+            alert("우편번호는 숫자 5자리여야 합니다.");
+            return;
+        }
         if(!validateInput(form, "receiver.address", "배송지 주소")) return;
         if(!validateInput(form, "paymentOptionId", "상세 결제 수단")) return;
         
@@ -113,6 +119,7 @@ export default function PurchasePage({
                 name: string;
                 phoneNumber: string;
                 address: string;
+                postcode: number;
                 email: string;
             };
             paymentOptionId: number;
@@ -136,6 +143,7 @@ export default function PurchasePage({
                   name: (form.elements.namedItem("receiver.name") as HTMLInputElement).value.trim(),
                   phoneNumber: (form.elements.namedItem("receiver.phoneNumber") as HTMLInputElement).value.trim(),
                   address: (form.elements.namedItem("receiver.address") as HTMLInputElement).value.trim(),
+                  postcode: parseInt((form.elements.namedItem("receiver.postcode") as HTMLInputElement).value.trim()),
                   email: userEmail
                 },
                 paymentOptionId: parseInt((form.elements.namedItem("paymentOptionId") as HTMLInputElement).value)
@@ -243,14 +251,27 @@ export default function PurchasePage({
                     </label>
                 </div>
                 <div className="mt-4">
-                    <label className="flex flex-col font-medium text-gray-900">
-                        <span className="mb-1">주소</span>
-                        <input
-                            type="text"
-                            name="receiver.address"
-                            className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900"
-                        />
-                    </label>
+                    <div className="flex gap-2">
+                        <label className="flex flex-col font-medium text-gray-900 w-32">
+                            <span className="mb-1">우편번호</span>
+                            <input
+                                type="text"
+                                name="receiver.postcode"
+                                placeholder="우편번호"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900"
+                            />
+                        </label>
+                        <label className="flex flex-col font-medium text-gray-900 flex-1">
+                            <span className="mb-1">주소</span>
+                            <input
+                                type="text"
+                                name="receiver.address"
+                                className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900"
+                            />
+                        </label>
+                    </div>
                 </div>
             </div>
 
