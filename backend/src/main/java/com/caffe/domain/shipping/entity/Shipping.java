@@ -3,7 +3,9 @@ package com.caffe.domain.shipping.entity;
 import com.caffe.domain.purchase.entity.Purchase;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -14,8 +16,8 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
-@Setter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Shipping {
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -45,4 +47,16 @@ public class Shipping {
     @JoinColumn(name = "purchase_id")
     @JsonBackReference
     private Purchase purchase; // 주문 번호
+
+
+    public Shipping(String address, String contactNumber, String contactName,
+                    String carrier, ShippingStatus status, Purchase purchase) {
+        this.address = address;
+        this.contactNumber = contactNumber;
+        this.contactName = contactName;
+        this.carrier = carrier;
+        this.status = status;
+        this.purchase = purchase;
+        this.createDate = LocalDateTime.now();
+    }
 }
