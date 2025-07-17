@@ -2,6 +2,8 @@ package com.caffe.global.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,29 +38,17 @@ public class SecurityConfig {
                                 ))
                 //HTTP Basic 인증 방식 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable)
-                //Form 기반 로그인/로그아웃 비활성화
-                .formLogin(form -> form
-                        .loginPage("/api/member/login")               // 로그인 폼 GET 경로
-                        .loginProcessingUrl("/api/member/login")      // 로그인 폼 제출(POST) 처리 경로
-                        .failureUrl("/api/member/login?error=true")  // 로그인 실패 시 리다이렉트 URL
-                        .defaultSuccessUrl("/api/products/list", true)
-                        .permitAll()
-                )
-                // 로그아웃 설정
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/api/member/login")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                )
                 //세션 관리 정책 설정 : STATELESS (세션을 사용하지 않음)
+                //세션 관리 정책 설정: 세션 사용
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .maximumSessions(1) // 최대 세션 수
+                        .maxSessionsPreventsLogin(false) // 새 로그인 시 기존 세션 무효화
                 )
                 //요청 경로별 인가 설정
                 .authorizeHttpRequests(auth -> auth
                         // 로그인 페이지, 정적 리소스는 허용
-                        .requestMatchers("/", "/api/member/login", "/css/**", "/js/**","/h2-console/**","/apidoc/**","/swagger-ui/**").permitAll()
+                        .requestMatchers("/", "/api/member/login", "/api/member/logout", "/css/**", "/js/**","/h2-console/**","/apidoc/**","/swagger-ui/**").permitAll()
                         // 상품 관련 페이지는 인증 필요
                         .requestMatchers("/api/products/**").authenticated()
                         .anyRequest().permitAll()  // 그 외 요청은 모두 승인(필요 시 변경)
@@ -90,6 +80,12 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    // 직접 로그인 인증에 사용
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class).build();
     }
 
 }
