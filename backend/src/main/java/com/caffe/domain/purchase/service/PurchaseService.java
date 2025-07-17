@@ -82,7 +82,7 @@ public class PurchaseService {
         purchaseRepository.save(purchase);
 
         // Shipping 저장
-        shippingService.createShipping(receiver);
+        shippingService.createShipping(receiver, purchase);
 
         // 결제 담당자 논의 필요
         // 결제 연동 로직

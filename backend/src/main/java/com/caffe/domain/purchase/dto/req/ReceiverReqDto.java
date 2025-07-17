@@ -1,19 +1,24 @@
 package com.caffe.domain.purchase.dto.req;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 public record ReceiverReqDto(
         @NotBlank
         String name,
+
         @NotBlank
         String phoneNumber,
+
         @NotBlank
         String address, // 주소
-        @NotBlank
+
+        @NotNull
+        @Positive
         int postcode, // 우편번호
+
         @NotBlank
-        String email,
-        @NotBlank
-        String status // 배송 상태
+        String email
 ) {
 }
