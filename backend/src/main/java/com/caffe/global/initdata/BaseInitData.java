@@ -114,53 +114,21 @@ public class BaseInitData {
         Product product = productRepository.findById(1).get();
         Product product2 = productRepository.findById(2).get();
 
-        // Purchase1 저장
-        int quantity1 = 2;
-        Purchase purchase1 = new Purchase();
-        purchase1.setUserEmail("test1@email.com");
-        purchase1.setTotalPrice(product.getPrice() * quantity1);
+        Purchase purchase1 = new Purchase("test1@email.com");
         purchase1.setStatus(PurchaseStatus.ORDERED);
-
-        // PurchaseItem1 저장
-        PurchaseItem purchaseItem1 = new PurchaseItem();
-        purchaseItem1.setPrice(product.getPrice());
-        purchaseItem1.setQuantity(quantity1);
-        purchaseItem1.setProduct(product);
-
+        PurchaseItem purchaseItem1 = new PurchaseItem(2, product);
         purchase1.addPurchaseItem(purchaseItem1);
         purchaseRepository.save(purchase1);
 
-
-        // Purchase2 저장
-        int quantity2 = 5;
-        Purchase purchase2 = new Purchase();
-        purchase2.setUserEmail("test2@email.com");
-        purchase2.setTotalPrice(product.getPrice() * quantity2);
+        Purchase purchase2 = new Purchase("test2@email.com");
         purchase2.setStatus(PurchaseStatus.ORDERED);
-
-        // PurchaseItem2 저장
-        PurchaseItem purchaseItem2 = new PurchaseItem();
-        purchaseItem2.setPrice(product.getPrice());
-        purchaseItem2.setQuantity(quantity2);
-        purchaseItem2.setProduct(product);
-
+        PurchaseItem purchaseItem2 = new PurchaseItem(5, product);
         purchase2.addPurchaseItem(purchaseItem2);
         purchaseRepository.save(purchase2);
 
-
-        // Purchase3 저장
-        int quantity3 = 12;
-        Purchase purchase3 = new Purchase();
-        purchase3.setUserEmail("test3@email.com");
-        purchase3.setTotalPrice(product2.getPrice() * quantity3);
+        Purchase purchase3 = new Purchase("test3@email.com");
         purchase3.setStatus(PurchaseStatus.ORDERED);
-
-        // PurchaseItem3 저장
-        PurchaseItem purchaseItem3 = new PurchaseItem();
-        purchaseItem3.setPrice(product2.getPrice());
-        purchaseItem3.setQuantity(quantity3);
-        purchaseItem3.setProduct(product2);
-
+        PurchaseItem purchaseItem3 = new PurchaseItem(12, product2);
         purchase3.addPurchaseItem(purchaseItem3);
         purchaseRepository.save(purchase3);
 
