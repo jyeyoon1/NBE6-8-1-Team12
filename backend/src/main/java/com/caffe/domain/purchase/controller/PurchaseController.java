@@ -19,13 +19,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/purchases")
+@RequestMapping("/api/purchases")
 @Tag(name = "PurchaseController", description = "Api 주문 컨트롤러")
 public class PurchaseController {
 
     private final PurchaseService purchaseService;
     private final PaymentService paymentService;
-    @PostMapping("/search")
+    @PostMapping("/lookup")
     @Operation(summary = "주문 조회")
     public RsData<PurchaseDetailDto> getPurchase(
             @Valid @RequestBody PurchaserReqBody reqBody
@@ -39,7 +39,7 @@ public class PurchaseController {
         );
     }
 
-    @GetMapping("/checkout")
+    @GetMapping("/purchaseInfo")
     @Operation(summary = "주문 페이지 조회")
     public PurchasePageResBody showPurchasePage(
             @RequestParam int productId,
