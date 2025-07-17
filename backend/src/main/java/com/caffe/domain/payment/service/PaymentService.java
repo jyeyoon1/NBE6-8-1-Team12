@@ -48,7 +48,7 @@ public class PaymentService {
         return paymentRepository.findById(id);
     }
 
-    public Payment request(Purchase purchase, PaymentOption paymentOption, String paymentInfo, double amount) {
+    public Payment request(Purchase purchase, PaymentOption paymentOption, String paymentInfo, int amount) {
         Payment payment = new Payment(paymentInfo, amount, purchase, paymentOption);
         boolean isSuccess = paymentGatewayClient.charge(paymentOption.getType().toString(), paymentOption.getName(), payment.getPaymentInfo(), payment.getAmount());
         payment.updateStatus(isSuccess ? 'S':'F');
@@ -59,10 +59,14 @@ public class PaymentService {
         paymentRepository.delete(payment);
     }
 
-    public Payment changePayment(Payment payment, PaymentOption paymentOption, String paymentInfo, double amount) {
+    public Payment changePayment(Payment payment, PaymentOption paymentOption, String paymentInfo, int amount) {
         payment.updatePayment(paymentOption, paymentInfo, amount==0? payment.getAmount(): amount);
         boolean isSuccess = paymentGatewayClient.charge(paymentOption.getType().toString(), paymentOption.getName(), payment.getPaymentInfo(), payment.getAmount());
         payment.updateStatus(isSuccess ? 'S':'F');
         return paymentRepository.save(payment);
+    }
+
+    public Optional<Payment> findLatest() {
+        return paymentRepository.findFirstByOrderByIdDesc();
     }
 }

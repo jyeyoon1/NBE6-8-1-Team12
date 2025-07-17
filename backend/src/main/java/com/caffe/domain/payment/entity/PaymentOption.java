@@ -3,11 +3,12 @@ package com.caffe.domain.payment.entity;
 import com.caffe.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
+@NoArgsConstructor
 public class PaymentOption extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String name;
@@ -25,4 +26,19 @@ public class PaymentOption extends BaseEntity {
     private String code;
 
     private int sortSeq;
+
+    public PaymentOption(String name, PaymentOptionType type, String code, int sortSeq) {
+        this.name = name;
+        this.type = type;
+        this.code = code;
+        this.sortSeq = sortSeq;
+    }
+
+    public PaymentOption(String name, PaymentOptionType type, String code, int sortSeq, PaymentOption parent) {
+        this.name = name;
+        this.type = type;
+        this.code = code;
+        this.sortSeq = sortSeq;
+        this.parent = parent;
+    }
 }

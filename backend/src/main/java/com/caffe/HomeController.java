@@ -5,8 +5,6 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
-
 @Controller
 public class HomeController {
 
