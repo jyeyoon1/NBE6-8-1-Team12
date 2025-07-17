@@ -97,16 +97,6 @@ public class PurchaseService {
         purchase.addPurchaseItem(purchaseItem);
         purchaseRepository.save(purchase);
 
-        // 배송 담당자 논의 필요
-        // Shipping 저장 -> 해당 서비스의 저장 로직 필요 (매개변수 : Purchase, ReceiverDto)
-        Shipping shipping = new Shipping();
-        shipping.setPurchase(purchase);
-        shipping.setAddress(receiver.address());
-        shipping.setContactNumber(receiver.phoneNumber());
-        shipping.setContactName(receiver.name());
-        shipping.setStatus(ShippingStatus.BEFORE_DELIVERY); // 임시 상태 필요 -> 결제 후 배송전으로 변경
-        shippingRepository.save(shipping);
-
         // 회원 담당자 논의 필요
         // User 저장 - PurchaserReqDto
 

@@ -1,5 +1,6 @@
 package com.caffe.domain.shipping.controller;
 
+import com.caffe.domain.purchase.dto.req.ReceiverReqDto;
 import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.shipping.dto.ShippingDto;
 import com.caffe.domain.shipping.entity.Shipping;
@@ -22,11 +23,13 @@ public class ShippingController {
       - 프론트에서 받은 ShippingDto를 바탕으로 배송 생성
      */
     @PostMapping
-    public Shipping createShipping(@RequestBody ShippingDto dto) {
-        return shippingService.createShipping(dto);
+    public Shipping createShipping(@RequestParam int purchaseId, @RequestBody ReceiverReqDto receiverReqDto) {
+        Purchase purchase = shippingService.getPurchaseById(purchaseId);
+        return shippingService.createShipping(purchase, receiverReqDto);
     }
 
-    /*
+
+    /*`
       - 최신 구매 내역 조회 API
       - 특정 이메일로 가장 최근에 생성된 구매 내역을 조회
       - 프론트에서 이메일 입력 후 blur 이벤트 시 호출
