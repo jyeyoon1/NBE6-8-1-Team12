@@ -1,7 +1,6 @@
 package com.caffe.domain.product.dto;
 
 import com.caffe.domain.product.entity.Product;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
