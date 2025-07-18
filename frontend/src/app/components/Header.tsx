@@ -38,7 +38,7 @@ export default function Header() {
               </Link>
               <span className="text-gray-400">|</span>
               <Link
-                href="/order/form"
+                href="/purchase/lookup"
                 className="hover:text-gray-500 transition-colors"
               >
                 주문 내역
