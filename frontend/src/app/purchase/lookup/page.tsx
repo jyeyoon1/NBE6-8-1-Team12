@@ -51,11 +51,18 @@ export default function PurchaseLookUpPage() {
             });
 
             if (!res.ok) throw new Error("응답 실패");
-                
-            const data: PurchaseLookupResBody = await res.json();
+            
+            interface ServerResponse {
+                resultCode: string;
+                statusCode: number;
+                msg: string;
+                data: PurchaseLookupResBody;
+            }
 
-            // data 처리 확인 필요
-            //router.push(`/purchase/lookup/detail?id=${data.purchaseId}&email=${encodeURIComponent(data.userEmail)}`);
+            const fullResponse: ServerResponse = await res.json();
+            const data: PurchaseLookupResBody = fullResponse.data;
+            
+            router.push(`/purchase/lookup/detail?id=${data.purchaseId}&email=${encodeURIComponent(data.userEmail)}`);
         } 
         catch(err) {
             console.error('주문 조회 실패:', err);

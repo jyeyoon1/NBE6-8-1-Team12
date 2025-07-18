@@ -61,7 +61,7 @@ export interface ReceiverResDto {
 export type ShippingStatus = "TEMPORARY" | "BEFORE_DELIVERY" | "DELIVERING" | "DELIVERED";
 
 export interface PurchaseDetailDto {
-    purchaseDto: PurchaseDto;
-    purchaseItemDetailDto: PurchaseItemDetailDto;
-    receiverResDto: ReceiverResDto;
+    purchase: PurchaseDto;
+    purchaseItem: PurchaseItemDetailDto;
+    receiver: ReceiverResDto;
 }

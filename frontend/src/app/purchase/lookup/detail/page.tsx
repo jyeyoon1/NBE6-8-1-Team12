@@ -9,8 +9,8 @@ import { PurchaseDetailDto, PurchaseDto, PurchaseItemDetailDto, ReceiverResDto }
 
 export default function PurchaseLookUpResultPage() {
     const searchParams = useSearchParams();
-    const paramPurchaseId = searchParams.get('purchaseId'); // nullable
-    const paramUserEmail = searchParams.get('userEmail')
+    const paramPurchaseId = searchParams.get('id'); // nullable
+    const paramUserEmail = searchParams.get('email')
 
     const [purchaseDto, setPurchaseDto] = useState<PurchaseDto | null>(null);
     const [purchaseItemDetailDto, setPurchaseItemDetailDto] = useState<PurchaseItemDetailDto | null>(null);
@@ -44,10 +44,21 @@ export default function PurchaseLookUpResultPage() {
 
                 if (!res.ok) throw new Error("응답 실패");
                 
-                const data: PurchaseDetailDto = await res.json();
-                setPurchaseDto(data.purchaseDto);
-                setPurchaseItemDetailDto(data.purchaseItemDetailDto);
-                setReceiverResDto(data.receiverResDto);
+                interface ServerResponse {
+                    resultCode: string;
+                    statusCode: number;
+                    msg: string;
+                    data: PurchaseDetailDto;
+                }
+    
+                const fullResponse: ServerResponse = await res.json();
+                const data: PurchaseDetailDto = fullResponse.data;
+                console.log("주문 상세 조회 서버 응답 데이터:", data);
+
+
+                setPurchaseDto(data.purchase);
+                setPurchaseItemDetailDto(data.purchaseItem);
+                setReceiverResDto(data.receiver);
             }
             catch(err) {
                 console.error('주문 조회 실패:', err);
