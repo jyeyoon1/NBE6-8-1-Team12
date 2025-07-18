@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface RsData<T> {
   resultCode: string;
@@ -41,15 +41,15 @@ export default function ProductListPage() {
         setLoading(true); // 로딩 시작
         setError(null); // 이전 에러 초기화
 
-        const response = await fetch('/api/products', {
-          method: 'GET',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
+        const response = await fetch("/api/products", {
+          method: "GET",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
         });
 
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) {
-            router.push('/member/login');
+            router.push("/member/login");
             return;
           }
           throw new Error(`서버 오류: ${response.status}`);
@@ -57,17 +57,22 @@ export default function ProductListPage() {
 
         const json: RsData<PageResponseDto> = await response.json();
 
-        if (json && typeof json === 'object' && 'data' in json && Array.isArray(json.data.content)) {
+        if (
+          json &&
+          typeof json === "object" &&
+          "data" in json &&
+          Array.isArray(json.data.content)
+        ) {
           setProducts(json.data.content);
         } else {
-          console.error('상품 목록이 배열이 아닙니다:', json);
-          setError('상품 데이터 형식이 올바르지 않습니다.');
+          console.error("상품 목록이 배열이 아닙니다:", json);
+          setError("상품 데이터 형식이 올바르지 않습니다.");
         }
       } catch (err) {
         if (err instanceof Error) {
           setError(err.message);
         } else {
-          setError('알 수 없는 오류가 발생했습니다.');
+          setError("알 수 없는 오류가 발생했습니다.");
         }
       } finally {
         setLoading(false); // 성공 또는 실패와 관계없이 로딩 종료
@@ -128,8 +133,12 @@ export default function ProductListPage() {
                     className="w-20 h-20 rounded-md object-cover bg-gray-200 mr-6"
                   />
                   <div className="flex-grow">
-                    <div className="text-lg font-semibold">{product.productName}</div>
-                    <div className="text-sm text-gray-500 mb-1">{product.description}</div>
+                    <div className="text-lg font-semibold">
+                      {product.productName}
+                    </div>
+                    <div className="text-sm text-gray-500 mb-1">
+                      {product.description}
+                    </div>
                     <div className="text-base font-bold text-gray-700">
                       {product.price.toLocaleString()}원
                     </div>
