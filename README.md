@@ -70,63 +70,93 @@
 
 ### DB ERD
 
-erDiagram
-    MEMBER {
-        Long member_id PK
-        String email UK "이메일(아이디)"
-        String password "비밀번호"
-        String name "이름"
-        String role "권한 (USER, ADMIN)"
-    }
+@startuml
+!theme plain
 
-    PRODUCT {
-        Long product_id PK
-        String product_name "상품명"
-        String category "카테고리"
-        Integer price "가격"
-        String description "상품 설명"
-        Integer stock_quantity "재고 수량"
-    }
+entity MEMBER {
+    id: Integer <<PK>>
+    email: String <<UK>> "이메일(아이디)"
+    password: String
+    username: String "이름"
+    role: String "권한 (USER, ADMIN)"
+    createDate: LocalDateTime
+    modifyDate: LocalDateTime
+}
 
-    PURCHASE {
-        Long purchase_id PK
-        Long member_id FK "주문자 ID"
-        String status "주문 상태 (PENDING, PAID, SHIPPED...)"
-        Integer total_amount "총 주문 금액"
-        datetime created_at "주문 시각"
-    }
+entity PRODUCT {
+    id: Integer <<PK>>
+    product_name: String "상품명"
+    price: Integer "가격"
+    total_quantity: Integer "재고 수량"
+    description: String "상품 설명"
+    image_url: String "이미지 정보"
+    createDate: LocalDateTime
+    modifyDate: LocalDateTime
+}
 
-    PURCHASE_ITEM {
-        Long purchase_item_id PK
-        Long purchase_id FK "주문 ID"
-        Long product_id FK "상품 ID"
-        Integer quantity "주문 수량"
-        Integer order_price "주문 당시 가격"
-    }
+entity PURCHASE {
+    id: Integer <<PK>>
+    user_email: String "주문자 이메일"
+    totalPrice: Integer "총 주문 가격"
+    status: String "주문 상태"
+    createDate: LocalDateTime
+    modifyDate: LocalDateTime
+}
 
-    PAYMENT {
-        Long payment_id PK
-        Long purchase_id FK "주문 ID"
-        String payment_method "결제 수단"
-        String status "결제 상태 (COMPLETED, FAILED)"
-        datetime paid_at "결제 완료 시각"
-    }
+entity PURCHASE_ITEM {
+    id: Integer <<PK>>
+    purchase_id: Integer <<FK>> "주문 ID"
+    product_id: Integer <<FK>> "상품 ID"
+    quantity: Integer "주문 수량"
+    price: Integer "주문 당시 가격"
+    createDate: LocalDateTime
+    modifyDate: LocalDateTime
+}
 
-    SHIPPING {
-        Long shipping_id PK
-        Long purchase_id FK "주문 ID"
-        String recipient_name "수령인 이름"
-        String address "배송 주소"
-        String zip_code "우편번호"
-        String tracking_number "운송장 번호"
-        String status "배송 상태 (PREPARING, IN_TRANSIT...)"
-    }
+entity PAYMENT {
+    id: Integer <<PK>>
+    purchase_id: Integer <<FK>> "주문 ID"
+    payment_option_id: Integer <<FK>> "결제 수단 정보"
+    payment_info: String "결제 정보"
+    status: String "결제 상태 (PENDING, CANCELED, SUCCESS, FAILED)"
+    amount: Integer "결제 금액"
+    createDate: LocalDateTime
+    modifyDate: LocalDateTime
+}
 
-    MEMBER ||--o{ PURCHASE : "has"
-    PURCHASE ||--|{ PURCHASE_ITEM : "contains"
-    PRODUCT ||--o{ PURCHASE_ITEM : "is part of"
-    PURCHASE ||--|| PAYMENT : "is paid by"
-    PURCHASE ||--|| SHIPPING : "is shipped via"
+entity PAYMENT_OPTION {
+    id: Integer <<PK>>
+    parent_id: Integer <<FK>> "상위 결제 옵션 ID"
+    code: Integer "결제 수단 코드"
+    name: String "결제 수단 명"
+    type: String "결제 수단의 타입"
+    sort_seq: Integer "정렬 순서"
+    createDate: LocalDateTime
+    modifyDate: LocalDateTime
+}
+
+entity SHIPPING {
+    id: Integer <<PK>>
+    purchase_id: Integer <<FK>> "주문 ID"
+    contact_name: String "수령인 이름"
+    contact_number: String "수령인 전화 번호"
+    address: String "배송 주소"
+    postcode: String "우편 번호"
+    carrier: String "배송 업체"
+    email: String "수령인 이메일"
+    status: String "배송 상태 (PREPARING, IN_TRANSIT...)"
+    createDate: LocalDateTime
+    modifyDate: LocalDateTime
+}
+
+MEMBER ||--o{ PURCHASE : has
+PURCHASE ||--|{ PURCHASE_ITEM : contains
+PRODUCT ||--o{ PURCHASE_ITEM : "is part of"
+PURCHASE ||--|| PAYMENT : "is paid by"
+PURCHASE ||--|| SHIPPING : "is shipped via"
+PAYMENT ||--|{ PAYMENT_OPTION : contains
+
+@enduml
 
 ---
 ### 전체 시스템 흐름
