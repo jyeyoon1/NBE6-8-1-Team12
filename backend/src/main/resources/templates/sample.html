@@ -168,43 +168,45 @@
 <script>
 
   // 선택된 구매 ID
-  let selectedPurchaseId = null;
+let selectedPurchaseId = null;
 
-  // 다음 주소 API를 실행하여 우편번호와 주소를 입력받는 함수
-  function execDaumPostcode() {
-      new daum.Postcode({
-          oncomplete: function(data) {
-              let fullAddr = data.roadAddress ? data.roadAddress : data.jibunAddress;
-              if (data.userSelectedType === 'R') {
-                  let extraAddr = '';
-                  if (data.bname) extraAddr += data.bname;
-                  if (data.buildingName) extraAddr += (extraAddr ? ', ' + data.buildingName : data.buildingName);
-                  if (extraAddr) fullAddr += ' (' + extraAddr + ')';
-              }
-              document.getElementById('postcode').value = data.zonecode;
-              document.getElementById('address').value = fullAddr;
-          }
-      }).open();
-  }
+// 다음 주소 API를 실행하여 우편번호와 주소를 입력받는 함수
+function execDaumPostcode() {
+    new daum.Postcode({
+        oncomplete: function(data) {
+            let fullAddr = data.roadAddress ? data.roadAddress : data.jibunAddress;
+            if (data.userSelectedType === 'R') {
+                let extraAddr = '';
+                if (data.bname) extraAddr += data.bname;
+                if (data.buildingName) extraAddr += (extraAddr ? ', ' + data.buildingName : data.buildingName);
+                if (extraAddr) fullAddr += ' (' + extraAddr + ')';
+            }
+            document.getElementById('postcode').value = data.zonecode;
+            document.getElementById('address').value = fullAddr;
+        }
+    }).open();
+}
 
- // 이메일 입력창에서 포커스가 빠져나갈 때(blur 이벤트 발생)
- document.getElementById('email').addEventListener('blur', () => {
+// 이메일 입력창에서 포커스 아웃
+document.getElementById('email').addEventListener('blur', () => {
     const email = document.getElementById('email').value;
-    if (!email) return; // 이메일이 없으면 종료
+    if (!email) return;
 
-    // 서버에 최신 구매 내역 요청 (이메일로)
-    fetch(`/api/shippings/latest-purchase/${email}`)
-        .then(response => response.json())
-        .then(purchase => {
-
-            // 받아온 구매 정보의 id를 selectedPurchaseId에 저장
-            selectedPurchaseId = purchase.id;
+    fetch(`/api/shippings/purchases/${email}`)
+    .then(response => response.json())
+    .then(purchases => {
+        if (purchases.length > 0) {
+            selectedPurchaseId = purchases[0].id;
             console.log("최신 구매 ID:", selectedPurchaseId);
-        });
-  });
+        } else {
+            alert("구매 내역이 없습니다.");
+        }
+    })
+    .catch(error => console.error('구매 내역 조회 중 오류 발생:', error));
+});
 
-  // 결제하기 버튼 클릭 이벤트
- document.querySelector('.btn-dark').addEventListener('click', () => {
+// 결제 버튼 클릭
+document.querySelector('.btn-dark').addEventListener('click', () => {
     const email = document.getElementById('email').value.trim();
     const name = document.getElementById('name').value.trim();
     const phoneNumber = document.getElementById('phoneNumber').value.trim();
@@ -223,10 +225,15 @@
         return;
     }
 
-    // 연락처 형식 검사
     const phoneRegex = /^010-\d{4}-\d{4}$/;
     if (!phoneRegex.test(phoneNumber)) {
         showInfoModal("연락처는 010-xxxx-yyyy 형식으로 입력해주세요.");
+        return;
+    }
+
+    // selectedPurchaseId가 null이면 차단
+    if (selectedPurchaseId === null) {
+        showInfoModal("구매 내역이 없습니다. 이메일을 다시 확인해주세요.");
         return;
     }
 
@@ -235,37 +242,31 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
             email: email,
-            name: name,
-            phoneNumber: phoneNumber,
+            contactName: name,
+            contactNumber: phoneNumber,
             address: address,
             postcode: postcode,
             status: 'DELIVERING'
         })
     })
-    .then(response => {
-        if (response.ok) {
-            showInfoModal('배송지가 저장되었습니다!');
-            return response.json();
-        } else {
-            showInfoModal('배송 저장 실패!!');
-        }
+    .then(response => response.json())
+    .then(shippings => {
+        console.log("배송이 생성된 목록:", shippings);
+        showInfoModal('결제가 완료되었습니다!');
     })
     .catch(error => {
-        console.error('배송 저장 중 에러 발생:', error);
-        showInfoModal('배송 저장 중 오류가 발생했습니다.');
+        console.error('배송 생성 중 오류 발생:', error);
+        showInfoModal('결제를 실패했습니다.');
     });
 });
 
-
-
-
-
-  // 안내 메시지를 모달로 보여주는 함수
-  function showInfoModal(message) {
+// 모달 표시 함수
+function showInfoModal(message) {
     document.getElementById('infoModalMessage').textContent = message;
     let modal = new bootstrap.Modal(document.getElementById('infoModal'));
     modal.show();
-  }
+}
+
 
 </script>
 

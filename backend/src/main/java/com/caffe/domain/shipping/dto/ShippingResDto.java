@@ -1,5 +1,9 @@
-package com.caffe.domain.shipping.entity;
+package com.caffe.domain.shipping.dto;
 
+import com.caffe.domain.shipping.entity.Shipping;
+import lombok.Getter;
+
+@Getter
 public class ShippingResDto {
 
     private int id;
@@ -13,7 +17,7 @@ public class ShippingResDto {
     public ShippingResDto(Shipping shipping) {
         this.id = shipping.getId();
         this.address = shipping.getAddress();
-        this.postcode = shipping.getPostcode(); // Shipping 엔티티에 postcode 필드 있어야 함
+        this.postcode = shipping.getPostcode();
         this.contactName = shipping.getContactName();
         this.contactNumber = shipping.getContactNumber();
         this.carrier = shipping.getCarrier();

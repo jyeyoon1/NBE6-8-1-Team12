@@ -14,4 +14,6 @@ public interface ShippingRepository extends JpaRepository<Shipping, Integer> {
 
     // 이 이메일 가진 사람이 시킨 배송 목록 가져오기
     List<Shipping> findByPurchaseUserEmail(String userEmail);
+
+    List<Shipping> findByEmail(String email);
 }

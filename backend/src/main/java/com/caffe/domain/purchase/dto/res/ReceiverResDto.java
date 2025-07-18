@@ -1,7 +1,7 @@
 package com.caffe.domain.purchase.dto.res;
 
 import com.caffe.domain.shipping.entity.Shipping;
-import com.caffe.domain.shipping.entity.ShippingStatus;
+import com.caffe.domain.shipping.constant.ShippingStatus;
 
 public record ReceiverResDto(
         String name,
