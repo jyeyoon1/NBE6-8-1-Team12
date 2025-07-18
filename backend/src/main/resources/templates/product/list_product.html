@@ -19,6 +19,27 @@
         </a>
     </div>
 
+    <!-- 정렬 선택 UI -->
+    <div class="flex justify-center items-center mb-6 space-x-2">
+        <span class="text-gray-600 font-medium">정렬:</span>
+        <a th:href="@{/products/list(sort='price,asc')}"
+           class="px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors">
+            가격 낮은순↓
+        </a>
+        <a th:href="@{/products/list(sort='price,desc')}"
+           class="px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors">
+            가격 높은순↑
+        </a>
+        <a th:href="@{/products/list(sort='createDate,desc')}"
+           class="px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors">
+            최신순↓
+        </a>
+        <a th:href="@{/products/list(sort='createDate,asc')}"
+           class="px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors">
+            오래된순↑
+        </a>
+    </div>
+
     <ul class="space-y-4">
         <li th:each="product : ${products}">
             <a th:href="@{/api/products/{id}(id=${product.id})}" class="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
@@ -37,7 +58,7 @@
     <div class="flex justify-center items-center mt-8 space-x-2">
         <!-- 이전 버튼 -->
         <a th:if="${page.hasPrevious()}"
-           th:href="@{/products/list(page=${page.number - 1}, size=${page.size})}"
+           th:href="@{/products/list(page=${page.number - 1}, size=${page.size}, sort=${param.sort})}"
            class="px-3 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
             이전
         </a>
@@ -46,7 +67,7 @@
         <span th:each="pageNum : ${#numbers.sequence(0, page.totalPages - 1)}"
               th:if="${page.totalPages > 0}">
             <a th:if="${pageNum != page.number}"
-               th:href="@{/products/list(page=${pageNum}, size=${page.size})}"
+               th:href="@{/products/list(page=${pageNum}, size=${page.size}, sort=${param.sort})}"
                th:text="${pageNum + 1}"
                class="px-3 py-2 bg-white border text-gray-700 rounded hover:bg-gray-100">
             </a>
@@ -58,7 +79,7 @@
 
         <!-- 다음 버튼 -->
         <a th:if="${page.hasNext()}"
-           th:href="@{/products/list(page=${page.number + 1}, size=${page.size})}"
+           th:href="@{/products/list(page=${page.number + 1}, size=${page.size}, sort=${param.sort})}"
            class="px-3 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
             다음
         </a>
