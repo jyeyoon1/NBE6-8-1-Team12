@@ -5,6 +5,8 @@ import com.caffe.domain.product.dto.request.ProductUpdateRequest;
 import com.caffe.domain.product.entity.Product;
 import com.caffe.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +24,10 @@ public class ProductWebController {
 
     // 상품 목록 조회
     @GetMapping({"", "/list"})
-    public String listProducts(Model model) {
-        List<Product> productList = productService.getAllProducts();
-        model.addAttribute("products", productList);
+    public String listProducts(Pageable pageable, Model model) {
+        Page<Product> productPage = productService.getAllProducts(pageable);
+        model.addAttribute("products", productPage.getContent());
+        model.addAttribute("page", productPage);
         return "product/list_product";
     }
 
