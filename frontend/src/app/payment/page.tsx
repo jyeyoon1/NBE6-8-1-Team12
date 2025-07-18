@@ -8,8 +8,7 @@ import { PaymentHistoryItem } from "./types/paymentData";
 
 export default function Page() {
   const router = useRouter();
-  //const { isAuthenticated } = useAuth();
-  const isAuthenticated = true;
+  const { isAuthenticated } = useAuth();
   const [pageData, setPageData] = useState<PageResponse<PaymentHistoryItem> | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [error, setError] = useState('');
