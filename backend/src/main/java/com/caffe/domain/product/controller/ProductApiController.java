@@ -27,8 +27,8 @@ public class ProductApiController {
 
     private final ProductService productService;
 
-    //상품 다건 조회 API
-    @GetMapping
+    //상품 다건 조회 API (목록용 - 간단한 정보만)
+    @GetMapping("/list")
     @Operation(summary = "상품 목록 조회")
     public ResponseEntity<RsData<ProductListResponse>> getAllProducts() {
 //        List<Product> products = productService.getAllProducts();
@@ -36,15 +36,8 @@ public class ProductApiController {
 //                .map(ProductSummaryResponse::new)
 //                .toList();
 //
-//        ProductListResponse response = ProductListResponse.of(
-//                productSummaries,
-//                (int) products.getTotalElements(),
-//                products.getNumber() + 1,
-//                products.getSize()
-//        );
-
-
-        return ResponseEntity.ok(new RsData<>("200-0", "상품 목록 조회 성공"));
+//        ProductListResponse response = ProductListResponse.of(productSummaries);
+//        return ResponseEntity.ok(new RsData<>("200-0", "상품 목록 조회 성공"));
     }
 
     //상품 단건 조회 API (상세 정보)
