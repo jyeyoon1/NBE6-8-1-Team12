@@ -7,11 +7,14 @@ import com.caffe.domain.product.dto.response.ProductListResponse;
 import com.caffe.domain.product.dto.response.ProductSummaryResponse;
 import com.caffe.domain.product.entity.Product;
 import com.caffe.domain.product.service.ProductService;
+import com.caffe.global.dto.PageResponseDto;
 import com.caffe.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,17 +30,17 @@ public class ProductApiController {
 
     private final ProductService productService;
 
-    //상품 다건 조회 API (목록용 - 간단한 정보만)
-    @GetMapping("/list")
+    //상품 다건 조회 API
+    @GetMapping
     @Operation(summary = "상품 목록 조회")
-    public ResponseEntity<RsData<ProductListResponse>> getAllProducts() {
-//        List<Product> products = productService.getAllProducts();
-//        List<ProductSummaryResponse> productSummaries = products.stream()
-//                .map(ProductSummaryResponse::new)
-//                .toList();
-//
-//        ProductListResponse response = ProductListResponse.of(productSummaries);
-//        return ResponseEntity.ok(new RsData<>("200-0", "상품 목록 조회 성공"));
+    public ResponseEntity<RsData<PageResponseDto<ProductSummaryResponse>>> getAllProducts(Pageable pageable) {
+        Page<Product> products = productService.getAllProducts(pageable);
+
+        Page<ProductSummaryResponse> productSummaryPage = products.map(ProductSummaryResponse::new);
+
+        PageResponseDto<ProductSummaryResponse> response = new PageResponseDto<>(productSummaryPage);
+
+        return ResponseEntity.ok(new RsData<>("200-0", "상품 목록 조회 성공", response));
     }
 
     //상품 단건 조회 API (상세 정보)
