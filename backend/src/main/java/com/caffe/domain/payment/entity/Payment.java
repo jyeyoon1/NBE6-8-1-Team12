@@ -2,6 +2,7 @@ package com.caffe.domain.payment.entity;
 
 
 import com.caffe.domain.purchase.entity.Purchase;
+import com.caffe.global.constant.PaymentStatus;
 import com.caffe.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.caffe.domain.payment.entity;
+package com.caffe.global.constant;
 
 public enum PaymentStatus {
     PENDING,

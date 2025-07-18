@@ -2,7 +2,7 @@ package com.caffe.domain.payment.dto;
 
 
 import com.caffe.domain.payment.entity.PaymentOption;
-import com.caffe.domain.payment.entity.PaymentOptionType;
+import com.caffe.global.constant.PaymentOptionType;
 
 public record PaymentOptionDto(
         int id,
