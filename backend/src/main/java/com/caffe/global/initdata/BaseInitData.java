@@ -14,6 +14,9 @@ import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.entity.PurchaseItem;
 import com.caffe.domain.purchase.entity.PurchaseStatus;
 import com.caffe.domain.purchase.repository.PurchaseRepository;
+import com.caffe.domain.shipping.constant.ShippingStatus;
+import com.caffe.domain.shipping.entity.Shipping;
+import com.caffe.domain.shipping.repository.ShippingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
@@ -33,6 +36,7 @@ public class BaseInitData {
     private final PaymentOptionRepository paymentOptionRepository;
     private final PurchaseRepository purchaseRepository;
     private final PaymentRepository paymentRepository;
+    private final ShippingRepository shippingRepository;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationContext applicationContext;
 
@@ -106,7 +110,6 @@ public class BaseInitData {
     }
 
     // 상세페이지에서 주문 (주문:구매제품 1:1)
-    // setter -> 생성자로 변경 필요해 보임
     @Transactional
     public void initPurchase() {
         if (purchaseRepository.count() > 0) return;
@@ -132,7 +135,73 @@ public class BaseInitData {
         purchase3.addPurchaseItem(purchaseItem3);
         purchaseRepository.save(purchase3);
 
-        // 배송 정보 데이터 필요
+        Purchase purchase4 = new Purchase("test4@email.com");
+        purchase4.setStatus(PurchaseStatus.TEMPORARY);
+        PurchaseItem purchaseItem4 = new PurchaseItem(33, product);
+        purchase4.addPurchaseItem(purchaseItem4);
+        purchaseRepository.save(purchase4);
+
+        Purchase purchase5 = new Purchase("test5@email.com");
+        purchase5.setStatus(PurchaseStatus.TEMPORARY);
+        PurchaseItem purchaseItem5 = new PurchaseItem(1, product2);
+        purchase5.addPurchaseItem(purchaseItem5);
+        purchaseRepository.save(purchase5);
+
+        // 배송 정보
+        Shipping shipping = Shipping.builder()
+                .address("경기도 시흥시")
+                .postcode(12345)
+                .contactNumber("010-1234-4567")
+                .contactName("이아무개")
+                .carrier("CJ대한통운")
+                .status(ShippingStatus.DELIVERED)
+                .purchase(purchase1)
+                .build();
+        shippingRepository.save(shipping);
+
+        Shipping shipping2 = Shipping.builder()
+                .address("경기도 시흥시")
+                .postcode(65423)
+                .contactNumber("010-5432-4567")
+                .contactName("홍길동")
+                .carrier("CJ대한통운")
+                .status(ShippingStatus.DELIVERING)
+                .purchase(purchase2)
+                .build();
+        shippingRepository.save(shipping2);
+
+        Shipping shipping3 = Shipping.builder()
+                .address("서울특별시 도봉구")
+                .postcode(23456)
+                .contactNumber("010-9876-1234")
+                .contactName("짱구")
+                .carrier("CJ대한통운")
+                .status(ShippingStatus.BEFORE_DELIVERY)
+                .purchase(purchase3)
+                .build();
+        shippingRepository.save(shipping3);
+
+        Shipping shipping4 = Shipping.builder()
+                .address("서울특별시 도봉구")
+                .postcode(76432)
+                .contactNumber("010-7643-2345")
+                .contactName("고길동")
+                .carrier("CJ대한통운")
+                .status(ShippingStatus.TEMPORARY)
+                .purchase(purchase4)
+                .build();
+        shippingRepository.save(shipping4);
+
+        Shipping shipping5 = Shipping.builder()
+                .address("전라남도 해남군")
+                .postcode(87543)
+                .contactNumber("010-9993-6643")
+                .contactName("대흥사")
+                .carrier("CJ대한통운")
+                .status(ShippingStatus.TEMPORARY)
+                .purchase(purchase5)
+                .build();
+        shippingRepository.save(shipping5);
     }
 
     @Transactional

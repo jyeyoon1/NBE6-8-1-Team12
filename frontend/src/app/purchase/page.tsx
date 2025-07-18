@@ -42,7 +42,15 @@ export default function PurchasePage({
 
         fetch(`http://localhost:8080/api/v1/payments/options/${selectedTopOptId}`)
             .then(res => res.json())
-            .then(data => setDetailOpts(data))
+            .then(data => {
+                setDetailOpts(data);
+
+                if(data.length > 0) {
+                    setSelectedDetailOptId(data[0].id);
+                } else {
+                    setSelectedDetailOptId('');
+                }
+            })
             .catch(err => console.error('상세 결제수단 불러오기 실패:', err));
     }, [selectedTopOptId]);
 
@@ -100,10 +108,10 @@ export default function PurchasePage({
                   name: (form.elements.namedItem("receiver.name") as HTMLInputElement).value.trim(),
                   phoneNumber: (form.elements.namedItem("receiver.phoneNumber") as HTMLInputElement).value.trim(),
                   address: (form.elements.namedItem("receiver.address") as HTMLInputElement).value.trim(),
-                  postcode: parseInt((form.elements.namedItem("receiver.postcode") as HTMLInputElement).value.trim()),
+                  postcode: parseInt((form.elements.namedItem("receiver.postcode") as HTMLInputElement).value.trim(), 10),
                   email: userEmail
                 },
-                paymentOptionId: parseInt((form.elements.namedItem("paymentOptionId") as HTMLInputElement).value)
+                paymentOptionId: parseInt((form.elements.namedItem("paymentOptionId") as HTMLInputElement).value, 10)
             };
 
             fetch(`http://localhost:8080/api/purchases/checkout`, {
@@ -257,7 +265,7 @@ export default function PurchasePage({
                     <select
                         name="paymentOptionId"
                         value={selectedDetailOptId ?? ''}
-                        onChange={(e) => setSelectedDetailOptId(parseInt(e.target.value))}
+                        onChange={(e) => setSelectedDetailOptId(parseInt(e.target.value, 10))}
                         required
                         className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900"
                     >

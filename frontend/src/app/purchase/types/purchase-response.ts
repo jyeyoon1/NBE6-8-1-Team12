@@ -55,12 +55,13 @@ export interface ReceiverResDto {
     postcode: number;
     address: string;
     status: ShippingStatus;
+    modifyDate: string;
 }
 
 export type ShippingStatus = "TEMPORARY" | "BEFORE_DELIVERY" | "DELIVERING" | "DELIVERED";
 
 export interface PurchaseDetailDto {
-    purchaseDto: PurchaseDto;
-    purchaseItemDetailDto: PurchaseItemDetailDto;
-    receiverResDto: ReceiverResDto;
+    purchase: PurchaseDto;
+    purchaseItem: PurchaseItemDetailDto;
+    receiver: ReceiverResDto;
 }
