@@ -2,6 +2,8 @@ package com.caffe.domain.product.entity;
 
 import com.caffe.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,20 +19,25 @@ public class Product extends BaseEntity {
     private String description;
     private String imageUrl;
 
-    public Product(String productName, int price, int totalQuantity, String description, String imageUrl) {
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status; // 상품 상태 추가
+
+    public Product(String productName, int price, int totalQuantity, String description, String imageUrl, ProductStatus status) {
         this.productName = productName;
         this.price = price;
         this.totalQuantity = totalQuantity;
         this.description = description;
         this.imageUrl = imageUrl;
+        this.status = status != null ? status : ProductStatus.ON_SALE; // 상태가 null인 경우 기본값 설정
     }
 
-    // 상품 정보 업데이트를 위한 비즈니스 메서드
-    public void updateProductInfo(String productName, int price, int totalQuantity, String description, String imageUrl) {
+    // 상품 정보 업데이트
+    public void updateProductInfo(String productName, int price, int totalQuantity, String description, String imageUrl, ProductStatus status) {
         this.productName = productName;
         this.price = price;
         this.totalQuantity = totalQuantity;
         this.description = description;
         this.imageUrl = imageUrl;
+        this.status = status != null ? status : ProductStatus.ON_SALE; // 상태가 null인 경우 기본값 설정
     }
 }

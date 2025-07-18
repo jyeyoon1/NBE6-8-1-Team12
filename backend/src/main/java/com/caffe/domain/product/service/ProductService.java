@@ -1,10 +1,13 @@
 package com.caffe.domain.product.service;
 
 import com.caffe.domain.product.entity.Product;
+import com.caffe.domain.product.entity.ProductStatus;
 import com.caffe.domain.product.repository.ProductRepository;
+import com.caffe.global.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,13 +21,23 @@ import java.util.NoSuchElementException;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final SecurityUtil securityUtil;
 
-        // 상품 전체조회 (페이징)
-        public Page<Product> getAllProducts(Pageable pageable) {
-            return productRepository.findAll(pageable);
+        // 상품 전체조회 (관리자 권한 체크)
+        public Page<Product> getAllProducts(Pageable pageable, Authentication authentication) {
+            boolean isAdmin = securityUtil.isAdmin(authentication);
+
+            if (isAdmin) {
+                // 관리자: 모든 상품 조회
+                return productRepository.findAll(pageable);
+            } else {
+                // 일반 사용자: 판매중 또는 재고없음 상품만 조회
+                return productRepository.findByStatusIn(
+                        List.of(ProductStatus.ON_SALE, ProductStatus.OUT_OF_STOCK),
+                        pageable
+                );
+            }
         }
-
-
 
 
         //상품 단건조회

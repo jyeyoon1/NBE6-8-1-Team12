@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,8 @@ public class ProductApiController {
     //상품 다건 조회 API
     @GetMapping
     @Operation(summary = "상품 목록 조회")
-    public ResponseEntity<RsData<PageResponseDto<ProductSummaryResponse>>> getAllProducts(Pageable pageable) {
-        Page<Product> products = productService.getAllProducts(pageable);
+    public ResponseEntity<RsData<PageResponseDto<ProductSummaryResponse>>> getAllProducts(Pageable pageable, Authentication authentication) {
+        Page<Product> products = productService.getAllProducts(pageable, authentication);
 
         Page<ProductSummaryResponse> productSummaryPage = products.map(ProductSummaryResponse::new);
 
@@ -76,7 +77,8 @@ public class ProductApiController {
                 request.price(),
                 request.totalQuantity(),
                 request.description(),
-                request.imageUrl()
+                request.imageUrl(),
+                request.status()
         );
 
         Product updatedProduct = productService.updateProduct(product);

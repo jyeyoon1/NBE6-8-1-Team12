@@ -12,6 +12,7 @@ interface Product {
   price: number;
   totalQuantity: number;
   imageUrl: string;
+  status: 'ON_SALE' | 'OUT_OF_STOCK' | 'NOT_FOR_SALE'; // 상품 상태
 }
 
 export default function ProductDetailPage() {
@@ -151,10 +152,24 @@ export default function ProductDetailPage() {
               <p className="text-sm text-gray-500 mb-2">상품 이미지를 보여줄 URL을 입력해주세요.</p>
             </div>
 
+            <div>
+              <select
+                id="status"
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value as Product['status'] })}
+                className="w-full border px-2 py-1 rounded mb-1"
+              >
+                <option value="ON_SALE">판매중</option>
+                <option value="OUT_OF_STOCK">재고소진</option>
+                <option value="NOT_FOR_SALE">판매불가</option>
+              </select>
+              <p className="text-sm text-gray-500 mb-2">상품의 상태를 선택해주세요.</p>
+            </div>
+
             <div className="flex space-x-4 mt-4">
               <button
                 onClick={handleSave}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg transition"
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 cursor-pointer rounded-lg transition"
               >
                 저장
               </button>
@@ -163,7 +178,7 @@ export default function ProductDetailPage() {
                   setFormData(product);
                   setIsEditing(false);
                 }}
-                className="flex-1 bg-gray-400 hover:bg-gray-500 text-white py-3 rounded-lg transition"
+                className="flex-1 bg-gray-400 hover:bg-gray-500 text-white py-3 cursor-pointer rounded-lg transition"
               >
                 취소
               </button>

@@ -1,6 +1,7 @@
 package com.caffe.domain.product.dto.request;
 
 import com.caffe.domain.product.entity.Product;
+import com.caffe.domain.product.entity.ProductStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -21,7 +22,9 @@ public record ProductUpdateRequest(
         @Size(max = 1000, message = "설명은 최대 1000자까지 입력 가능합니다.")
         String description,
         
-        String imageUrl
+        String imageUrl,
+
+        ProductStatus status
 ) {
     public ProductUpdateRequest(Product product) {
         this(
@@ -29,7 +32,8 @@ public record ProductUpdateRequest(
                 product.getPrice(),
                 product.getTotalQuantity(),
                 product.getDescription(),
-                product.getImageUrl()
+                product.getImageUrl(),
+                product.getStatus()
         );
     }
 }

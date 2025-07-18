@@ -20,6 +20,7 @@ interface Product {
   totalQuantity: number;
   description: string;
   imageUrl: string;
+  status: 'ON_SALE' | 'OUT_OF_STOCK' | 'NOT_FOR_SALE'; // 상품 상태
 }
 
 interface PageResponseDto {
@@ -57,12 +58,11 @@ export default function ProductListPage() {
 
         const response = await fetch(`http://localhost:8080/api/products?page=${currentPage}&size=10`, {
           method: "GET",
-          // credentials: "include", // 로그인이 필요없으므로 제거할 수 있음
+          credentials: "include", // 로그인이 필요없으므로 제거할 수 있음
           headers: { "Content-Type": "application/json" },
         });
 
         if (!response.ok) {
-          // 로그인 리다이렉트 로직 제거
           throw new Error(`서버 오류: ${response.status}`);
         }
 
@@ -143,30 +143,58 @@ export default function ProductListPage() {
           </a>
         </div>
 
+        {/* 상품 목록 */}
         {products.length === 0 ? (
           <p className="text-gray-500 text-center">등록된 상품이 없습니다.</p>
         ) : (
           <ul className="space-y-4">
-            {products.map((product) => (
-              <li key={product.id}>
-                <Link href={`/products/${product.id}`}>
-                  <div className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <img
-                      src={product.imageUrl}
-                      alt={product.productName}
-                      className="w-20 h-20 rounded-md object-cover bg-gray-200 mr-6"
-                    />
-                    <div className="flex-grow">
-                      <div className="text-lg font-semibold">{product.productName}</div>
-                      <div className="text-sm text-gray-500 mb-1">{product.description}</div>
-                      <div className="text-base font-bold text-gray-700">
-                        {product.price.toLocaleString()}원
+            {products.map((product) => {
+              // 상태별 클래스 분기
+              let statusClass = "";
+              let statusText = "";
+
+              switch(product.status) {
+                case "NOT_FOR_SALE":
+                  statusClass = "opacity-50 cursor-not-allowed";
+                  statusText = "판매불가";
+                  break;
+                case "OUT_OF_STOCK":
+                  statusClass = "opacity-70";
+                  statusText = "재고소진";
+                  break;
+                case "ON_SALE":
+                default:
+                  statusClass = "";
+                  statusText = "";
+              }
+
+              return (
+                <li key={product.id} className={statusClass}>
+                  <Link href={`/products/${product.id}`}>
+                    <div className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors relative">
+                      <img
+                        src={product.imageUrl}
+                        alt={product.productName}
+                        className="w-20 h-20 rounded-md object-cover bg-gray-200 mr-6"
+                      />
+                      <div className="flex-grow">
+                        <div className="text-lg font-semibold">{product.productName}</div>
+                        <div className="text-sm text-gray-500 mb-1">{product.description}</div>
+                        <div className="text-base font-bold text-gray-700">
+                          {product.price.toLocaleString()}원
+                        </div>
                       </div>
+                      {/* 상태 표시 태그 */}
+                      {statusText && (
+                        <span className="absolute top-2 right-2 px-2 py-1 text-xs font-semibold rounded bg-red-400 text-white">
+                          {statusText}
+                        </span>
+                      )}
                     </div>
-                  </div>
-                </Link>
-              </li>
-            ))}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         )}
         {/* 페이징 UI */}
