@@ -4,10 +4,7 @@ import com.caffe.domain.payment.dto.PaymentOptionDto;
 import com.caffe.domain.payment.service.PaymentService;
 import com.caffe.domain.purchase.dto.req.PurchasePageReqBody;
 import com.caffe.domain.purchase.dto.req.PurchaserReqBody;
-import com.caffe.domain.purchase.dto.res.PurchaseDetailDto;
-import com.caffe.domain.purchase.dto.res.PurchaseInfoDto;
-import com.caffe.domain.purchase.dto.res.PurchaseLookupResBody;
-import com.caffe.domain.purchase.dto.res.PurchasePageResBody;
+import com.caffe.domain.purchase.dto.res.*;
 import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.service.PurchaseService;
 import com.caffe.global.rsData.RsData;
@@ -69,15 +66,13 @@ public class PurchaseController {
 
     @PostMapping("/checkout")
     @Operation(summary = "주문")
-    public RsData<Void> createPurchase(
+    public RsData<PurchaseCheckoutResBody> createPurchase(
             @Valid @RequestBody PurchasePageReqBody reqBody
     ) {
-        purchaseService.createPurchase(reqBody);
-
-        // 임시
         return new RsData<>(
                 "201",
-                "주문이 완료되었습니다."
+                "주문이 완료되었습니다.",
+                purchaseService.createPurchase(reqBody)
         );
     }
 }

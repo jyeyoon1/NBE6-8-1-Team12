@@ -1,17 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-import { PurchaseInfo, PaymentOption, PurchasePageResBody } from '@/purchase/types/purchase-response'
+import { PurchaseInfo, PaymentOption, PurchasePageResBody, PurchaseCheckoutResBody } from '@/purchase/types/purchase-response'
 import { PurchasePageReqBody } from '@/purchase/types/purchase-request'
 
-export default function PurchasePage({
-    params,
-    searchParams
-}: {
-    params: {productId: string;};
-    searchParams: {quantity: number};
-}) {
+export default function PurchasePage() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const paramProducteId = searchParams.get('id');
+    const paramQuantity = searchParams.get('quantity');
+
     const [purchaseInfo, setPurchaseInfo] = useState<PurchaseInfo | null>(null);
     const [topOpts, setTopOpts] = useState<PaymentOption[]>([]);
     const [selectedTopOptId, setSelectedTopOptId] = useState<number | null>(null);
@@ -19,20 +19,20 @@ export default function PurchasePage({
     const [selectedDetailOptId, setSelectedDetailOptId] = useState<number | ''>('');
 
     useEffect(() => {
-        const productId = params.productId;
-        const quantity = searchParams.quantity;
+        if (!paramProducteId) return;
+        const quantity = paramQuantity ? parseInt(paramQuantity, 10) : 1;
         
-        fetch(`http://localhost:8080/api/purchases/checkout?productId=${productId}&quantity=${quantity}`)
+        fetch(`http://localhost:8080/api/purchases/purchaseInfo?productId=${paramProducteId}&quantity=${quantity}`)
             .then(res => res.json())
             .then((data: PurchasePageResBody) => {
                 setPurchaseInfo(data.purchaseInfo);
                 setTopOpts(data.paymentOptions);
             })
             .catch(err => console.error('구매 제품 정보 불러오기 실패:', err));
-    }, [params.productId, searchParams.quantity]);
+    }, [paramProducteId, paramQuantity]);
 
     useEffect(() => {
-        if (topOpts.length > 0 && selectedTopOptId === null) {
+        if (Array.isArray(topOpts) && topOpts.length > 0 && selectedTopOptId === null) {
             setSelectedTopOptId(topOpts[0].id);
         }
     }, [topOpts, selectedTopOptId]);
@@ -56,7 +56,7 @@ export default function PurchasePage({
 
     if(!purchaseInfo) return <div>Loading...</div>;
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const form = e.target as HTMLFormElement;
@@ -89,11 +89,15 @@ export default function PurchasePage({
         }
         if(!validateInput(form, "receiver.address", "배송지 주소")) return;
         if(!validateInput(form, "paymentOptionId", "상세 결제 수단")) return;
+        if(selectedDetailOptId === '') {
+            alert("상세 결제 수단을 선택해주세요.");
+            return;
+        }
 
-        const createPurchase = () => {
+        try {
             const userEmail = (form.elements.namedItem("purchaser.email") as HTMLInputElement).value.trim();
 
-            const body: PurchasePageReqBody = {
+            const purchasePageReqBody: PurchasePageReqBody = {
                 purchase: {
                   productId: purchaseInfo!.productId,
                   price: purchaseInfo!.price,
@@ -114,24 +118,44 @@ export default function PurchasePage({
                 paymentOptionId: parseInt((form.elements.namedItem("paymentOptionId") as HTMLInputElement).value, 10)
             };
 
-            fetch(`http://localhost:8080/api/purchases/checkout`, {
+            const purchaseRes = await fetch(`http://localhost:8080/api/purchases/checkout`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',
                 },
-                body: JSON.stringify(body),
-            })
-            .then(res => {
-                if (!res.ok) throw new Error("응답 실패");
-                return res.json();
-            })
-            .then(data => {
-                //window.location.href = `/purchase/search`;
-            })
-            .catch(err => console.error('주문 실패:', err));
-        };
+                body: JSON.stringify(purchasePageReqBody),
+            });
+            if (!purchaseRes.ok) throw new Error("주문 실패");
+            
+            interface ServerResponse {
+                resultCode: string;
+                statusCode: number;
+                msg: string;
+                data: PurchaseCheckoutResBody;
+            }
+            
+            const fullResponse: ServerResponse = await purchaseRes.json();
+            const paymentRequestBody: PurchaseCheckoutResBody = fullResponse.data;
+            console.log('주문 생성 성공:', fullResponse);
+            
+            const paymentRes = await fetch(`http://localhost:8080/api/v1/payments`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+                body: JSON.stringify(paymentRequestBody),
+            });
+            if (!paymentRes.ok) throw new Error("결제 실패");
 
-        createPurchase();
+            const paymentData = await paymentRes.json();
+            console.log('결제 정보 생성 성공:', paymentData);
+            console.log('paymentData.data :', paymentData.data);
+            console.log('stringify:', JSON.stringify(paymentData.data));
+
+            router.push(`/payment?paymentData=${encodeURIComponent(JSON.stringify(paymentData.data))}`);
+        } catch(err) {
+            console.error('주문 실패:', err);
+        }
     };
 
     return (
