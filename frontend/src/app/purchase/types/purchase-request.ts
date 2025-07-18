@@ -18,3 +18,8 @@ export type PurchasePageReqBody = {
     };
     paymentOptionId: number;
 };
+
+export type PurchaserReqBody = {
+    userEmail: string;
+    purchaseId: number;
+};

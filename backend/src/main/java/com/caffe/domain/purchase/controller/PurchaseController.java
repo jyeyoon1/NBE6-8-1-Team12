@@ -6,7 +6,9 @@ import com.caffe.domain.purchase.dto.req.PurchasePageReqBody;
 import com.caffe.domain.purchase.dto.req.PurchaserReqBody;
 import com.caffe.domain.purchase.dto.res.PurchaseDetailDto;
 import com.caffe.domain.purchase.dto.res.PurchaseInfoDto;
+import com.caffe.domain.purchase.dto.res.PurchaseLookupResBody;
 import com.caffe.domain.purchase.dto.res.PurchasePageResBody;
+import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.service.PurchaseService;
 import com.caffe.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,15 +28,16 @@ public class PurchaseController {
     private final PaymentService paymentService;
 
     @PostMapping("/lookup")
-    @Operation(summary = "주문 존재 확인")
-    public RsData<Void> checkPurchaseExists(
+    @Operation(summary = "주문번호, 이메일로 주문 존재 확인")
+    public RsData<PurchaseLookupResBody> checkPurchaseExists(
             @Valid @RequestBody PurchaserReqBody reqBody
     ) {
-        purchaseService.getPurchaseByIdAndUserEmail(reqBody.purchaseId(), reqBody.userEmail());
+        Purchase purchase = purchaseService.getPurchaseByIdAndUserEmail(reqBody.purchaseId(), reqBody.userEmail());
 
         return new RsData<>(
                 "200",
-                "주문 존재 확인 완료"
+                "주문 존재 확인",
+                new PurchaseLookupResBody(purchase)
         );
     }
 

@@ -1,8 +1,14 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
+import { PurchaserReqBody } from '@/purchase/types/purchase-request';
+import { PurchaseLookupResBody } from '@/purchase/types/purchase-response'; 
+
 export default function PurchaseLookUpPage() {
+    const router = useRouter();
     
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const form = e.target as HTMLFormElement;
@@ -30,30 +36,28 @@ export default function PurchaseLookUpPage() {
             return;
         }
 
-        type PurchaserReqBody = {
-            userEmail: string;
-            purchaseId: number;
-        };
-
         const reqBody: PurchaserReqBody = {
             userEmail: userEmailInput.value,
             purchaseId: purchaseIdNumber
         };
 
-        fetch(`http://localhost:8080/api/purchases/lookup`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json; charset=utf-8',
-            },
-            body: JSON.stringify(reqBody)
-        })
-        .then(res => {
-            if (!res.ok) throw new Error("응답 실패");
+        try {
+            const res = await fetch(`http://localhost:8080/api/purchases/lookup`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+                body: JSON.stringify(reqBody)
+            });
 
-            sessionStorage.setItem('resBody', JSON.stringify(reqBody))
-            window.location.href = `/purchase/lookup/detail`;
-        })
-        .catch(err => console.error('주문 조회 실패:', err));
+            if (!res.ok) throw new Error("응답 실패");
+                
+            const data: PurchaseLookupResBody = await res.json();
+            router.push(`/purchase/lookup/detail?id=${data.purchaseId}&email=${encodeURIComponent(data.userEmail)}`);
+        } 
+        catch(err) {
+            console.error('주문 조회 실패:', err);
+        }
 
     }
 
