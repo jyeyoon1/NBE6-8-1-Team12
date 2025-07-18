@@ -33,8 +33,8 @@ export default function Header() {
             </div>
           ) : !isAuthenticated ? (
             <>
-              <Link href="/" className="hover:text-gray-500 transition-colors">
-                홈
+              <Link href="/products/list" className="hover:text-gray-500 transition-colors">
+                상품 목록
               </Link>
               <span className="text-gray-400">|</span>
               <Link

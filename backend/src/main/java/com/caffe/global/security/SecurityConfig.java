@@ -2,6 +2,7 @@ package com.caffe.global.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -50,6 +51,11 @@ public class SecurityConfig {
                         // 로그인 페이지, 정적 리소스는 허용
                         .requestMatchers("/", "/api/member/login", "/api/member/status", "/css/**", "/js/**","/h2-console/**","/swagger-ui/**").permitAll()
                         // 상품 관련 페이지는 인증 필요
+                        // 상품 목록 조회는 인증 없이 허용
+                        .requestMatchers(HttpMethod.GET, "/api/products").permitAll()
+                        // 상품 상세 조회도 허용하려면 추가
+                        .requestMatchers(HttpMethod.GET, "/api/products/*").permitAll()
+                        // 나머지 상품 관련 API(POST, PUT, DELETE)는 인증 필요
                         .requestMatchers("/api/products/**").authenticated()
                         .anyRequest().permitAll()  // 그 외 요청은 모두 승인(필요 시 변경)
                 );

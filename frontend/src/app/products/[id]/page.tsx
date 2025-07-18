@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useRequireAuth } from "@/hooks/useRequireAuth";
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Product {
   id: number;
@@ -18,6 +20,7 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<Product | null>(null);
+  const { isAuthenticated } = useAuth(); // 로그인 상태 받아오기
 
   useEffect(() => {
     if (!id) return;
@@ -168,6 +171,7 @@ export default function ProductDetailPage() {
           </>
         ) : (
           <>
+            {/* 상품 정보 */}
             <div className="text-3xl font-bold text-gray-900">{product.productName}</div>
             <div className="text-2xl font-extrabold text-gray-800 mt-4">
               {product.price.toLocaleString()}원
@@ -178,22 +182,19 @@ export default function ProductDetailPage() {
             <div className="flex justify-between mt-10 space-x-4">
               <button
                 onClick={() => router.push('/products/list')}
-                className="flex-1 text-center bg-gray-400 hover:bg-gray-500 text-white py-3 cursor-pointer rounded-lg transition"
+                className={`${!isAuthenticated ? 'w-full' : 'flex-1'} text-center bg-gray-400 hover:bg-gray-500 text-white py-3 cursor-pointer rounded-lg transition`}
               >
                 목록으로
               </button>
-              <button
-                onClick={() => setIsEditing(true)}
-                className="flex-1 text-center bg-yellow-400 hover:bg-yellow-500 text-white cursor-pointer py-3 rounded-lg transition"
-              >
-                수정
-              </button>
-              <button
-                onClick={handleDelete}
-                className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg cursor-pointer transition"
-              >
-                삭제
-              </button>
+
+              {isAuthenticated && (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="flex-1 text-center bg-yellow-400 hover:bg-yellow-500 text-white cursor-pointer py-3 rounded-lg transition"
+                >
+                  수정
+                </button>
+              )}
             </div>
           </>
         )}
