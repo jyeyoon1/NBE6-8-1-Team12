@@ -27,6 +27,13 @@ public class Member extends BaseEntity {
         this.email = email;
         this.password = password;
         this.username = username;
-        this.role = role;
+        this.role = role != null ? role : Role.USER;
+    }
+
+    // 회원 정보 업데이트
+    public void updateInfo(String password, String username, Role role) {
+        this.password = password;
+        this.username = username;
+        this.role = role != null ? role : Role.USER;
     }
 }
