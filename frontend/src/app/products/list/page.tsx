@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface RsData<T> {
   resultCode: string;
@@ -123,27 +124,22 @@ export default function ProductListPage() {
           <ul className="space-y-4">
             {products.map((product) => (
               <li key={product.id}>
-                <a
-                  href={`/api/products/${product.id}`} // Next.js 내부 라우팅을 사용한다면 `/products/${product.id}`처럼 변경하는 것을 고려해보세요.
-                  className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <img
-                    src={product.imageUrl}
-                    alt={product.productName}
-                    className="w-20 h-20 rounded-md object-cover bg-gray-200 mr-6"
-                  />
-                  <div className="flex-grow">
-                    <div className="text-lg font-semibold">
-                      {product.productName}
-                    </div>
-                    <div className="text-sm text-gray-500 mb-1">
-                      {product.description}
-                    </div>
-                    <div className="text-base font-bold text-gray-700">
-                      {product.price.toLocaleString()}원
+                <Link href={`/products/${product.id}`}>
+                  <div className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <img
+                      src={product.imageUrl}
+                      alt={product.productName}
+                      className="w-20 h-20 rounded-md object-cover bg-gray-200 mr-6"
+                    />
+                    <div className="flex-grow">
+                      <div className="text-lg font-semibold">{product.productName}</div>
+                      <div className="text-sm text-gray-500 mb-1">{product.description}</div>
+                      <div className="text-base font-bold text-gray-700">
+                        {product.price.toLocaleString()}원
+                      </div>
                     </div>
                   </div>
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
