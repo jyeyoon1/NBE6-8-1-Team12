@@ -3,7 +3,7 @@ package com.caffe.domain.payment.controller;
 import com.caffe.domain.payment.dto.*;
 import com.caffe.domain.payment.entity.Payment;
 import com.caffe.domain.payment.entity.PaymentOption;
-import com.caffe.global.constant.PaymentStatus;
+import com.caffe.domain.payment.constant.PaymentStatus;
 import com.caffe.domain.payment.service.PaymentService;
 import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.service.PurchaseService;
@@ -85,7 +85,7 @@ public class ApiV1PaymentController {
     public RsData<Void> delete(@PathVariable int id) {
         Payment payment = paymentService.findById(id);
         paymentService.delete(payment);
-        return new RsData<>("204-1", "결제번호 %d 가 삭제되었습니다.".formatted(id));
+        return new RsData<>("200-1", "결제번호 %d 가 삭제되었습니다.".formatted(id));
     }
 
     @PutMapping("/{id}/cancel") //post or fetch
@@ -94,7 +94,7 @@ public class ApiV1PaymentController {
     public RsData<Void> cancel(@PathVariable int id) {
         Payment payment = paymentService.findById(id);
         paymentService.cancel(payment);
-        return new RsData<>("204-1", "결제번호 %d 가 취소되었습니다.".formatted(id));
+        return new RsData<>("200-1", "결제번호 %d 가 취소되었습니다.".formatted(id));
     }
 
     @PutMapping("/{id}")

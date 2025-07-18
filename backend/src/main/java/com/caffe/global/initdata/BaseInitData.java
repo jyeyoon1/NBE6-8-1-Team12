@@ -5,7 +5,7 @@ import com.caffe.domain.member.entity.Role;
 import com.caffe.domain.member.repository.MemberRepository;
 import com.caffe.domain.payment.entity.Payment;
 import com.caffe.domain.payment.entity.PaymentOption;
-import com.caffe.global.constant.PaymentOptionType;
+import com.caffe.domain.payment.constant.PaymentOptionType;
 import com.caffe.domain.payment.repository.PaymentOptionRepository;
 import com.caffe.domain.payment.repository.PaymentRepository;
 import com.caffe.domain.product.entity.Product;
