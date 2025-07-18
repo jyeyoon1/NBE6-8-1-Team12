@@ -1,8 +1,7 @@
 package com.caffe.domain.payment.dto;
 
 import com.caffe.domain.payment.entity.Payment;
-import com.caffe.domain.purchase.entity.Purchase;
-import com.caffe.global.constant.PaymentStatus;
+import com.caffe.domain.payment.constant.PaymentStatus;
 
 import java.time.LocalDateTime;
 

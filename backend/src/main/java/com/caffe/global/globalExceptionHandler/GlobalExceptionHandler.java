@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -131,6 +132,17 @@ public class GlobalExceptionHandler {
                 new RsData<>(
                         "400-2",  // 기존 400-1과 구분하기 위해 400-2 사용
                         ex.getMessage()
+                ),
+                BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<RsData<Void>> handle(DataIntegrityViolationException ex) {
+        return new ResponseEntity<>(
+                new RsData<>(
+                        "400-3",  // 기존 400-1과 구분하기 위해 400-2 사용
+                        "could not execute statement [Unique index or primary key violation]"
                 ),
                 BAD_REQUEST
         );
