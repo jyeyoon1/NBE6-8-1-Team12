@@ -3,14 +3,21 @@ package com.caffe.domain.payment.service;
 import com.caffe.domain.payment.dto.PaymentOptionDto;
 import com.caffe.domain.payment.entity.Payment;
 import com.caffe.domain.payment.entity.PaymentOption;
-import com.caffe.domain.payment.entity.PaymentOptionType;
+import com.caffe.global.constant.PaymentOptionType;
 import com.caffe.domain.payment.repository.PaymentOptionRepository;
 import com.caffe.domain.payment.repository.PaymentRepository;
 import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.global.component.MockPaymentGatewayClient;
+import com.caffe.global.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,13 +46,26 @@ public class PaymentService {
     public List<Payment> getAll(){
         return paymentRepository.findAll();
     }
+    public Page<Payment> getAllPage(int page, int size, String sortField, String sortOrder) {
+        Pageable pageable;
 
-    public Optional<PaymentOption> getPaymentOption(int paymentOptionId) {
-        return paymentOptionRepository.findById(paymentOptionId);
+        if (StringUtils.hasText(sortField)) {
+            Sort.Direction direction = "asc".equalsIgnoreCase(sortOrder) ? Sort.Direction.ASC : Sort.Direction.DESC;
+            Sort sort = Sort.by(direction, sortField);
+            pageable = PageRequest.of(page, size, sort);
+        } else {
+            pageable = PageRequest.of(page, size);
+        }
+
+        return paymentRepository.findAll(pageable);
     }
 
-    public Optional<Payment> findById(int id) {
-        return paymentRepository.findById(id);
+    public PaymentOption getPaymentOption(int paymentOptionId) {
+        return paymentOptionRepository.findById(paymentOptionId).orElseThrow(() -> new ResourceNotFoundException("404-2","%d 에 해당하는 결제 옵션을 찾을 수 없습니다.".formatted(paymentOptionId)));
+    }
+
+    public Payment findById(int id) {
+        return paymentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("404-1", "%d에 해당하는 결제 정보를 찾을 수 없습니다.".formatted(id)));
     }
 
     public Payment save(Purchase purchase, PaymentOption paymentOption, int amount) {
@@ -78,7 +98,7 @@ public class PaymentService {
         return paymentRepository.save(payment);
     }
 
-    public Optional<Payment> findLatest() {
-        return paymentRepository.findFirstByOrderByIdDesc();
+    public Payment findLatest() {
+        return paymentRepository.findFirstByOrderByIdDesc().orElseThrow(() -> new ResourceNotFoundException("404-1", "최근 결제 정보가 없습니다."));
     }
 }

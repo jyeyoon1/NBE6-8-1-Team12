@@ -1,7 +1,7 @@
 package com.caffe.domain.payment.repository;
 
 import com.caffe.domain.payment.entity.PaymentOption;
-import com.caffe.domain.payment.entity.PaymentOptionType;
+import com.caffe.global.constant.PaymentOptionType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

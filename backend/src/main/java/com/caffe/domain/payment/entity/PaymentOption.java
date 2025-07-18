@@ -1,10 +1,10 @@
 package com.caffe.domain.payment.entity;
 
+import com.caffe.global.constant.PaymentOptionType;
 import com.caffe.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Entity

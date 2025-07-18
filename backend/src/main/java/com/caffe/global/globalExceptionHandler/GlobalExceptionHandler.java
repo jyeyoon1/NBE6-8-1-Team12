@@ -1,5 +1,7 @@
 package com.caffe.global.globalExceptionHandler;
 
+import com.caffe.global.exception.BusinessLogicException;
+import com.caffe.global.exception.ResourceNotFoundException;
 import com.caffe.global.exception.ServiceException;
 import com.caffe.global.rsData.RsData;
 import jakarta.servlet.http.HttpServletResponse;
@@ -142,4 +144,24 @@ public class GlobalExceptionHandler {
 
         return rsData;
     }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public RsData<Void> handle(ResourceNotFoundException ex, HttpServletResponse response) {
+        RsData<Void> rsData = ex.getRsData();
+
+        response.setStatus(rsData.statusCode());
+
+        return rsData;
+    }
+
+    @ExceptionHandler(BusinessLogicException.class)
+    public RsData<Void> handle(BusinessLogicException ex, HttpServletResponse response) {
+        RsData<Void> rsData = ex.getRsData();
+
+        response.setStatus(rsData.statusCode());
+
+        return rsData;
+    }
+
+
 }

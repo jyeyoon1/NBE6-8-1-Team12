@@ -1,23 +1,23 @@
 package com.caffe.domain.payment.controller;
 
-import com.caffe.domain.payment.dto.PaymentDto;
-import com.caffe.domain.payment.dto.PaymentOptionDto;
+import com.caffe.domain.payment.dto.*;
 import com.caffe.domain.payment.entity.Payment;
 import com.caffe.domain.payment.entity.PaymentOption;
-import com.caffe.domain.payment.entity.PaymentStatus;
+import com.caffe.global.constant.PaymentStatus;
 import com.caffe.domain.payment.service.PaymentService;
 import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.service.PurchaseService;
+import com.caffe.global.dto.PageResponseDto;
 import com.caffe.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,88 +27,85 @@ public class ApiV1PaymentController {
     private final PaymentService paymentService;
     private final PurchaseService purchaseService;
 
-    @GetMapping()
+    @GetMapping("/list")
     @Transactional(readOnly = true)
     @Operation(summary = "다건조회")
-    public List<PaymentDto.PaymentResponseDto> getAll() {
+    public List<PaymentResponseDto> getAllPayments() {
         List<Payment> payments = paymentService.getAll();
-        return payments.stream().map(PaymentDto.PaymentResponseDto::new).toList();
+        return payments.stream().map(PaymentResponseDto::new).toList();
+    }
+
+    @GetMapping()
+    @Transactional(readOnly = true)
+    @Operation(summary = "다건조회 - Page")
+    public PageResponseDto<PaymentResponseDto> getAllPayments(@RequestParam(value = "page", defaultValue = "0")int page, @RequestParam(value = "size", defaultValue = "10")int size, @RequestParam(value = "sortField", defaultValue = "")String sortField, @RequestParam(value = "sortOrder", defaultValue = "")String sortOrder) {
+        Page<Payment> paging = paymentService.getAllPage(page, size, sortField, sortOrder);
+        return new PageResponseDto<>(paging.map(PaymentResponseDto::new));
     }
 
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
     @Operation(summary = "단건조회")
-    public PaymentDto.PaymentResponseDto getOne(@PathVariable int id) {
-        Payment payment = paymentService.findById(id).get();
-        return new PaymentDto.PaymentResponseDto(payment);
+    public PaymentResponseDto getPayment(@PathVariable int id) {
+        Payment payment = paymentService.findById(id);
+        return new PaymentResponseDto(payment);
     }
 
     @PostMapping()
     @Transactional
     @Operation(summary = "결제 생성")
-    public RsData<PaymentDto.PaymentResponseDto> request(@Valid @RequestBody PaymentDto.PaymentRequestDto paymentRequestDto) {
+    public RsData<PaymentRequestResponseDto> request(@Valid @RequestBody PaymentRequestDto paymentRequestDto) {
 
         Purchase purchase = purchaseService.getPurchaseById(paymentRequestDto.purchaseId());
-        Optional<PaymentOption> paymentOption = paymentService.getPaymentOption(paymentRequestDto.paymentOptionId());
-        if(paymentOption.isEmpty()) {
-            return new RsData<>("404-1","지원하지 않는 결제방식입니다.");
-        }
-        // 서비스 계층에서 결제 로직 처리
-        Payment payment = paymentService.save(purchase, paymentOption.get(), paymentRequestDto.amount());
+        PaymentOption paymentOption = paymentService.getPaymentOption(paymentRequestDto.paymentOptionId());
+        if (paymentOption.getParent() == null) return new RsData<>("400-2", "잘못된 결제 옵션입니다. 상위 카테고리가 존재하지 않습니다.");
+        Payment payment = paymentService.save(purchase, paymentOption, paymentRequestDto.amount());
 
-        return new RsData<>(payment.getStatus()== PaymentStatus.SUCCESS? "201-1":"503-1", "결제번호 %d 가 생성되었습니다.".formatted(payment.getId()), new PaymentDto.PaymentResponseDto(payment));
+        return new RsData<>("201-1", "결제번호 %d 가 생성되었습니다.".formatted(payment.getId()), new PaymentRequestResponseDto(payment));
     }
 
-    @PutMapping("/{id}/execute")
+    @PostMapping("/{id}/execute") //post or fetch
     @Transactional
     @Operation(summary = "결제 요청")
-    public RsData<PaymentDto.PaymentResponseDto> request(@Valid @RequestBody PaymentDto.PaymentExecuteDto paymentExecuteDto, @PathVariable int id) {
+    public RsData<Void> request(@Valid @RequestBody PaymentExecuteDto paymentExecuteDto, @PathVariable int id) {
 
-        Payment payment = paymentService.findById(id).get();
+        Payment payment = paymentService.findById(id);
         if(payment.getStatus()== PaymentStatus.SUCCESS) {
-            return new RsData<>("409-1", "결제번호 %d 는 이미 결제되었습니다.".formatted(payment.getId()), new PaymentDto.PaymentResponseDto(payment));
+            return new RsData<>("409-1", "결제번호 %d 는 이미 결제되었습니다.".formatted(payment.getId()));
         }
         // 서비스 계층에서 결제 로직 처리
         payment = paymentService.request(payment, paymentExecuteDto.paymentInfo());
 
-        return new RsData<>(payment.getStatus()== PaymentStatus.SUCCESS? "200-1":"503-1", "주문번호 %d의 결제가 ".formatted(payment.getPurchase().getId())+(payment.getStatus()== PaymentStatus.SUCCESS? "성공했습니다.":"실패했습니다."), new PaymentDto.PaymentResponseDto(payment));
+        return new RsData<>(payment.getStatus()== PaymentStatus.SUCCESS? "200-1":"503-1", "주문번호 %d의 결제가 ".formatted(payment.getPurchase().getId())+(payment.getStatus()== PaymentStatus.SUCCESS? "성공했습니다.":"실패했습니다."));
     }
 
     @DeleteMapping("/{id}")
     @Transactional
     @Operation(summary = "결제 삭제")
     public RsData<Void> delete(@PathVariable int id) {
-        Payment payment = paymentService.findById(id).get();
+        Payment payment = paymentService.findById(id);
         paymentService.delete(payment);
-        return new RsData<>("200-1", "결제번호 %d 가 삭제되었습니다.".formatted(id));
+        return new RsData<>("204-1", "결제번호 %d 가 삭제되었습니다.".formatted(id));
     }
 
-    @PutMapping("/{id}/cancel")
+    @PutMapping("/{id}/cancel") //post or fetch
     @Transactional
     @Operation(summary = "결제 취소")
     public RsData<Void> cancel(@PathVariable int id) {
-        Payment payment = paymentService.findById(id).get();
+        Payment payment = paymentService.findById(id);
         paymentService.cancel(payment);
-        return new RsData<>("200-1", "결제번호 %d 가 취소되었습니다.".formatted(id));
+        return new RsData<>("204-1", "결제번호 %d 가 취소되었습니다.".formatted(id));
     }
 
     @PutMapping("/{id}")
     @Transactional
     @Operation(summary = "결제 방법 수정")
-    public RsData<PaymentDto.PaymentResponseDto> update(@PathVariable int id, @Valid @RequestBody PaymentDto.PaymentUpdateDto paymentUpdateDto) {
-        Optional<Payment> payment = paymentService.findById(id);
-        if(payment.isEmpty()) {
-            return new RsData<>("404-1","결제정보를 찾을 수 없습니다.",null);
-        }
-        Optional<PaymentOption> paymentOption = paymentService.getPaymentOption(paymentUpdateDto.paymentOptionId());
-        if(paymentOption.isEmpty()) {
-            return new RsData<>("400-1","잘못된 결제방법입니다.",null);
-        }
-        Payment updatedPayment = paymentService.changePayment(payment.get(), paymentOption.get(), paymentUpdateDto.paymentInfo(), paymentUpdateDto.amount());
-        return new RsData<>(
-                updatedPayment.getStatus()==PaymentStatus.SUCCESS? "201-1":"503-1",
-                "주문번호 %d의 결제가 ".formatted(updatedPayment.getPurchase().getId())+(updatedPayment.getStatus()==PaymentStatus.SUCCESS? "성공했습니다.":"실패했습니다."),
-                new PaymentDto.PaymentResponseDto(updatedPayment));
+    public RsData<PaymentUpdateResponseDto> update(@PathVariable int id, @Valid @RequestBody PaymentUpdateDto paymentUpdateDto) {
+        Payment payment = paymentService.findById(id);
+        PaymentOption paymentOption = paymentService.getPaymentOption(paymentUpdateDto.paymentOptionId());
+        if (paymentOption.getParent() == null) return new RsData<>("400-2", "잘못된 결제 옵션입니다. 상위 카테고리가 존재하지 않습니다.");
+        Payment updatedPayment = paymentService.changePayment(payment, paymentOption, paymentUpdateDto.paymentInfo(), paymentUpdateDto.amount());
+        return new RsData<>("200-1", "결제번호 %d 가 수정되었습니다.".formatted(updatedPayment.getId()), new PaymentUpdateResponseDto(updatedPayment));
     }
 
     @GetMapping("/options/{id}")
