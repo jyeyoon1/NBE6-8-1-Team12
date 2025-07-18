@@ -90,4 +90,12 @@ public class ProductApiController {
         productService.deleteProduct(id);
         return ResponseEntity.ok(new RsData<>("200-4", "상품이 성공적으로 삭제되었습니다."));
     }
+
+    // 상품 등록 폼 정보 조회 API
+    @GetMapping("/form")
+    @Operation(summary = "상품 등록 폼 정보 조회")
+    public ResponseEntity<RsData<ProductCreateRequest>> getAddFormDefaults() {
+        ProductCreateRequest emptyForm = ProductCreateRequest.empty();
+        return ResponseEntity.ok(new RsData<>("200-3", "상품 등록 폼 정보 조회", emptyForm));
+    }
 }

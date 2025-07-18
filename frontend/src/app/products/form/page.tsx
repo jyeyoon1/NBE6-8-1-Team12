@@ -1,0 +1,122 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function ProductAddPage() {
+    const router = useRouter();
+
+    const [form, setForm] = useState({
+        productName: '',
+        description: '',
+        price: '',
+        totalQuantity: '',
+        imageUrl: ''
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setForm(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const productData = {
+            productName: form.productName.trim(),
+            description: form.description.trim(),
+            price: parseInt(form.price),
+            totalQuantity: parseInt(form.totalQuantity),
+            imageUrl: form.imageUrl.trim()
+        };
+
+
+
+    }
+
+  return (
+    <div className="bg-gray-200 pt-20 min-h-screen w-full flex items-center justify-center px-4">
+      <div className="bg-white p-10 rounded-xl shadow-lg w-full max-w-lg">
+        <h1 className="text-3xl font-bold text-center mb-8">상품 등록</h1>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-6">
+            <label htmlFor="productName" className="block mb-2 font-semibold text-gray-700">상품명</label>
+            <input
+              type="text"
+              id="productName"
+              name="productName"
+              placeholder="예: Columbia Nariñó"
+              value={form.productName}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
+            />
+          </div>
+
+          <div className="mb-6">
+            <label htmlFor="description" className="block mb-2 font-semibold text-gray-700">설명</label>
+            <input
+              type="text"
+              id="description"
+              name="description"
+              placeholder="예: 커피콩"
+              value={form.description}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
+            />
+          </div>
+
+          <div className="mb-6">
+            <label htmlFor="price" className="block mb-2 font-semibold text-gray-700">가격 (원)</label>
+            <input
+              type="number"
+              id="price"
+              name="price"
+              placeholder="예: 5000"
+              value={form.price}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
+            />
+          </div>
+
+          <div className="mb-6">
+            <label htmlFor="totalQuantity" className="block mb-2 font-semibold text-gray-700">재고 수량</label>
+            <input
+              type="number"
+              id="totalQuantity"
+              name="totalQuantity"
+              placeholder="예: 100"
+              value={form.totalQuantity}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
+            />
+          </div>
+
+          <div className="mb-8">
+            <label htmlFor="imageUrl" className="block mb-2 font-semibold text-gray-700">이미지 URL</label>
+            <input
+              type="url"
+              id="imageUrl"
+              name="imageUrl"
+              placeholder="예: https://i.imgur.com/HKOFQYa.jpeg"
+              value={form.imageUrl}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-gray-800 text-white py-3 rounded-md hover:bg-gray-700 transition-colors font-semibold"
+          >
+            상품 추가
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
