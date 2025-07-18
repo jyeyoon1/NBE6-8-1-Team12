@@ -1,6 +1,6 @@
 # 1차 프로젝트: Caffe 온라인 스토어
 
-[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.java.com)
+[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.java.com)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Next.js](https://img.shields.io/badge/Next.js-14.x-black?logo=next.js)](https://nextjs.org/)
 [![JPA](https://img.shields.io/badge/JPA-Hibernate-blue.svg)](https://hibernate.org/orm/)
