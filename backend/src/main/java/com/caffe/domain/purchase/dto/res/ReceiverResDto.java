@@ -6,6 +6,7 @@ import com.caffe.domain.shipping.entity.ShippingStatus;
 public record ReceiverResDto(
         String name,
         String phoneNumber,
+        int postcode,
         String address,
         ShippingStatus status
 ) {
@@ -13,6 +14,7 @@ public record ReceiverResDto(
         this (
                 shipping.getContactName(),
                 shipping.getContactNumber(),
+                shipping.getPostcode(),
                 shipping.getAddress(),
                 shipping.getStatus()
         );

@@ -52,8 +52,9 @@ export interface PurchaseItemDetailDto {
 export interface ReceiverResDto {
     name: string;
     phoneNumber: string;
+    postcode: number;
     address: string;
-    shippingStatus: ShippingStatus;
+    status: ShippingStatus;
 }
 
 export type ShippingStatus = "TEMPORARY" | "BEFORE_DELIVERY" | "DELIVERING" | "DELIVERED";

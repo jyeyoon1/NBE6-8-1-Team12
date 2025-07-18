@@ -53,7 +53,9 @@ export default function PurchaseLookUpPage() {
             if (!res.ok) throw new Error("응답 실패");
                 
             const data: PurchaseLookupResBody = await res.json();
-            router.push(`/purchase/lookup/detail?id=${data.purchaseId}&email=${encodeURIComponent(data.userEmail)}`);
+
+            // data 처리 확인 필요
+            //router.push(`/purchase/lookup/detail?id=${data.purchaseId}&email=${encodeURIComponent(data.userEmail)}`);
         } 
         catch(err) {
             console.error('주문 조회 실패:', err);
