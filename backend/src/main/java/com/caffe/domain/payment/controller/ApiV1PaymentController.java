@@ -41,7 +41,6 @@ public class ApiV1PaymentController {
     @Operation(summary = "다건조회 - Page")
     public PageResponseDto<PaymentResponseDto> getAllPayments(@RequestParam(value = "page", defaultValue = "0")int page, @RequestParam(value = "size", defaultValue = "10")int size, @RequestParam(value = "sortField", defaultValue = "")String sortField, @RequestParam(value = "sortOrder", defaultValue = "")String sortOrder) {
         Page<Payment> paging = paymentService.getAllPage(page, size, sortField, sortOrder);
-        System.out.println(Util.json.toString(new PageResponseDto<>(paging.map(PaymentResponseDto::new))));
         return new PageResponseDto<>(paging.map(PaymentResponseDto::new));
     }
 
@@ -50,7 +49,6 @@ public class ApiV1PaymentController {
     @Operation(summary = "단건조회")
     public PaymentResponseDto getPayment(@PathVariable int id) {
         Payment payment = paymentService.findById(id);
-        System.out.println(Util.json.toString(new PaymentResponseDto(payment)));
         return new PaymentResponseDto(payment);
     }
 
