@@ -29,7 +29,7 @@ public class ProductApiController {
     private final ProductService productService;
 
     //상품 다건 조회 API
-    @GetMapping("/list")
+    @GetMapping
     @Operation(summary = "상품 목록 조회")
     public ResponseEntity<RsData<PageResponseDto<ProductSummaryResponse>>> getAllProducts(Pageable pageable) {
         Page<Product> products = productService.getAllProducts(pageable);
