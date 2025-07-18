@@ -1,10 +1,10 @@
-#Commit Message Convention
+# Commit Message Convention
 커밋 메시지 양식
 Feat: "로그인 함수 추가" -> 제목
 
 로그인 요청을 위한 함수 구현 -> 본문
 
-##제목 작성 두 가지 방식
+## 제목 작성 두 가지 방식
 둘 중 본인이 편한 방식으로 진행해주시면 됩니다.
 1. Feat: "로그인 함수 추가"
 2. be-feat-1 : "작업내용" -> 강사님 추천 방식
@@ -22,7 +22,7 @@ Chore : 빌드 관련 코드 수정
 Rename : 파일 및 폴더명 수정
 Remove : 파일 삭제
 
-###Commit Message Convention의 자세한 설명은 아래 링크를 참고바랍니다.
+### Commit Message Convention의 자세한 설명은 아래 링크를 참고바랍니다.
 https://projectlog.tistory.com/57
 
 ---
