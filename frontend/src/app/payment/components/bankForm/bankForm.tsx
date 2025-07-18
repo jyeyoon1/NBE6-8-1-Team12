@@ -1,10 +1,7 @@
 "use client";
 
-export default function BankForm({ setPaymentInfo }) {
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setPaymentInfo(prev => ({ ...prev, [name]: value }));
-  }
+export default function BankForm({ setPaymentInfo, validationErrors }: { setPaymentInfo: (info: any) => void, validationErrors: any }) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setPaymentInfo(prev => ({ ...prev, [e.target.name]: e.target.value }));
   return (
     <div className="space-y-4">
       <div>
@@ -13,12 +10,13 @@ export default function BankForm({ setPaymentInfo }) {
           type="text"
           name="accountHolder"
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-        />
+          className={`mt-1 block w-full px-3 py-2 border rounded-md ${validationErrors.accountHolder ? 'border-red-500':'border-gray-300'}`} />
+          {validationErrors.accountHolder && <p className="text-red-500 text-sm mt-1">{validationErrors.accountHolder}</p>}
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700">계좌번호</label>
-        <input name="accountNumber" onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+        <input name="accountNumber" onChange={handleChange} className={`mt-1 block w-full px-3 py-2 border rounded-md ${validationErrors.accountNumber ? 'border-red-500' : 'border-gray-300'}`} />
+        {validationErrors.accountNumber && <p className="text-red-500 text-sm mt-1">{validationErrors.accountNumber}</p>}
       </div>
     </div>
   );
