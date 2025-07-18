@@ -1,8 +1,10 @@
+
 "use client";
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface RsData<T> {
   resultCode: string;
@@ -34,6 +36,7 @@ export default function ProductListPage() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const { isAuthenticated } = useAuth();
 
   const [pageInfo, setPageInfo] = useState({
     pageNumber: 0,
@@ -54,15 +57,12 @@ export default function ProductListPage() {
 
         const response = await fetch(`http://localhost:8080/api/products?page=${currentPage}&size=10`, {
           method: "GET",
-          credentials: "include",
+          // credentials: "include", // 로그인이 필요없으므로 제거할 수 있음
           headers: { "Content-Type": "application/json" },
         });
 
         if (!response.ok) {
-          if (response.status === 401 || response.status === 403) {
-            router.push("/member/login");
-            return;
-          }
+          // 로그인 리다이렉트 로직 제거
           throw new Error(`서버 오류: ${response.status}`);
         }
 
@@ -125,12 +125,21 @@ export default function ProductListPage() {
       <div className="bg-white rounded-xl shadow-lg w-full max-w-4xl p-10">
         <h1 className="text-3xl font-bold text-center mb-8">상품 목록</h1>
 
+        {/* 상품 추가 및 구매 페이지 버튼 */}
         <div className="flex justify-end mb-6">
+          {isAuthenticated && (
+            <a
+              href="/products/form"
+              className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors mr-4"
+            >
+              상품 추가
+            </a>
+          )}
           <a
-            href="/products/form"
-            className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors"
+            href="/purchase"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 transition-colors"
           >
-            상품 추가
+            구매 페이지
           </a>
         </div>
 

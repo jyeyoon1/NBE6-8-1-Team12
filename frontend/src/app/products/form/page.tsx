@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 
 export default function ProductAddPage() {
   const router = useRouter();
+  const { isAuthenticated, isLoading } = useRequireAuth();
 
   const [form, setForm] = useState({
     productName: "",
@@ -15,6 +17,12 @@ export default function ProductAddPage() {
   });
 
   const [errorMsg, setErrorMsg] = useState("");
+
+  // 인증 상태 확인 후 로딩 중이면 로딩 메시지 표시
+  if (isLoading) return <div className="bg-gray-200 flex items-center justify-center w-screen h-screen">로딩 중...</div>;
+
+  // 인증되지 않은 상태면 아무것도 렌더링하지 않음
+  if (!isAuthenticated) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
