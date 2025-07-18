@@ -3,7 +3,6 @@ package com.caffe.domain.product.controller;
 import com.caffe.domain.product.dto.request.ProductCreateRequest;
 import com.caffe.domain.product.dto.request.ProductUpdateRequest;
 import com.caffe.domain.product.dto.response.ProductDetailResponse;
-import com.caffe.domain.product.dto.response.ProductListResponse;
 import com.caffe.domain.product.dto.response.ProductSummaryResponse;
 import com.caffe.domain.product.entity.Product;
 import com.caffe.domain.product.service.ProductService;
@@ -17,8 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 //상품 관리 REST API 컨트롤러
 
