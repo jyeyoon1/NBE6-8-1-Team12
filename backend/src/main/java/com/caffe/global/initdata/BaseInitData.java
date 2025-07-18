@@ -12,7 +12,7 @@ import com.caffe.domain.product.entity.Product;
 import com.caffe.domain.product.repository.ProductRepository;
 import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.entity.PurchaseItem;
-import com.caffe.domain.purchase.entity.PurchaseStatus;
+import com.caffe.domain.purchase.constant.PurchaseStatus;
 import com.caffe.domain.purchase.repository.PurchaseRepository;
 import com.caffe.domain.shipping.constant.ShippingStatus;
 import com.caffe.domain.shipping.entity.Shipping;

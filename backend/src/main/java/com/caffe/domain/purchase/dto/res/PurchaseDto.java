@@ -1,7 +1,7 @@
 package com.caffe.domain.purchase.dto.res;
 
 import com.caffe.domain.purchase.entity.Purchase;
-import com.caffe.domain.purchase.entity.PurchaseStatus;
+import com.caffe.domain.purchase.constant.PurchaseStatus;
 
 import java.time.LocalDateTime;
 

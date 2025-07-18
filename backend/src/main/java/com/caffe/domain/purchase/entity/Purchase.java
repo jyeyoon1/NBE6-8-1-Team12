@@ -1,5 +1,6 @@
 package com.caffe.domain.purchase.entity;
 
+import com.caffe.domain.purchase.constant.PurchaseStatus;
 import com.caffe.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
