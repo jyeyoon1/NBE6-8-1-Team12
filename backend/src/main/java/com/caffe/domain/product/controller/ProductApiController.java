@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 //상품 관리 REST API 컨트롤러
 
 @RestController
@@ -28,7 +29,7 @@ public class ProductApiController {
     private final ProductService productService;
 
     //상품 다건 조회 API
-    @GetMapping
+    @GetMapping("/list")
     @Operation(summary = "상품 목록 조회")
     public ResponseEntity<RsData<PageResponseDto<ProductSummaryResponse>>> getAllProducts(Pageable pageable) {
         Page<Product> products = productService.getAllProducts(pageable);
