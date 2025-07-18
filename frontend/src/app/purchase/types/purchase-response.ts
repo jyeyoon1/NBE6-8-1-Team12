@@ -55,6 +55,7 @@ export interface ReceiverResDto {
     postcode: number;
     address: string;
     status: ShippingStatus;
+    modifyDate: string;
 }
 
 export type ShippingStatus = "TEMPORARY" | "BEFORE_DELIVERY" | "DELIVERING" | "DELIVERED";
