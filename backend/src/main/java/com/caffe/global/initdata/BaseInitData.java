@@ -3,16 +3,17 @@ package com.caffe.global.initdata;
 import com.caffe.domain.member.entity.Member;
 import com.caffe.domain.member.entity.Role;
 import com.caffe.domain.member.repository.MemberRepository;
+import com.caffe.domain.payment.constant.PaymentOptionType;
 import com.caffe.domain.payment.entity.Payment;
 import com.caffe.domain.payment.entity.PaymentOption;
-import com.caffe.domain.payment.constant.PaymentOptionType;
 import com.caffe.domain.payment.repository.PaymentOptionRepository;
 import com.caffe.domain.payment.repository.PaymentRepository;
 import com.caffe.domain.product.entity.Product;
+import com.caffe.domain.product.entity.ProductStatus;
 import com.caffe.domain.product.repository.ProductRepository;
+import com.caffe.domain.purchase.constant.PurchaseStatus;
 import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.entity.PurchaseItem;
-import com.caffe.domain.purchase.constant.PurchaseStatus;
 import com.caffe.domain.purchase.repository.PurchaseRepository;
 import com.caffe.domain.shipping.constant.ShippingStatus;
 import com.caffe.domain.shipping.entity.Shipping;
@@ -76,7 +77,8 @@ public class BaseInitData {
                 5000,
                 100,
                 "고소한 맛이 특징인 콜롬비아 나리뇨 커피입니다.",
-                "https://i.imgur.com/HKOFQYa.jpeg"
+                "https://i.imgur.com/HKOFQYa.jpeg",
+                ProductStatus.ON_SALE    // 상태 추가
         );
 
         Product product2 = new Product(
@@ -84,11 +86,30 @@ public class BaseInitData {
                 6500,
                 50,
                 "플로럴 향이 풍부한 에티오피아 예가체프 커피입니다.",
-                "https://m.media-amazon.com/images/I/71LN-graGzL._UF894%2C1000_QL80_.jpg"
+                "https://m.media-amazon.com/images/I/71LN-graGzL._UF894%2C1000_QL80_.jpg",
+                ProductStatus.ON_SALE
         );
 
-        productRepository.saveAll(List.of(product1, product2));
-        System.out.println("기본 상품 2개 생성 완료");
+        Product product3 = new Product(
+                "Sumatra Mandheling",
+                6000,
+                0,
+                "묵직하고 깊은 바디감의 수마트라 만델링 커피입니다.",
+                "https://images.unsplash.com/photo-1621971866884-4459f3b116d6",
+                ProductStatus.OUT_OF_STOCK
+        );
+
+        Product product4 = new Product(
+                "Guatemala Antigua",
+                5500,
+                20,
+                "밸런스가 뛰어난 과테말라 안티구아 커피입니다.",
+                "https://images.unsplash.com/photo-1621971667209-ff90c4b92146",
+                ProductStatus.NOT_FOR_SALE
+        );
+
+        productRepository.saveAll(List.of(product1, product2, product3, product4));
+        System.out.println("기본 상품 4개 생성 완료");
     }
 
     @Transactional

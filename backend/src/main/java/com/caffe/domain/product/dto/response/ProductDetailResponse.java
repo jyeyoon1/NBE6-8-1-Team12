@@ -1,6 +1,7 @@
 package com.caffe.domain.product.dto.response;
 
 import com.caffe.domain.product.entity.Product;
+import com.caffe.domain.product.entity.ProductStatus;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +19,8 @@ public record ProductDetailResponse(
         LocalDateTime createDate,
         LocalDateTime modifyDate,
         String priceFormatted,  // 가격 포맷팅 (예: "1,000원")
-        String stockStatus      // 재고 상태 (예: "충분", "부족", "품절")
+        String stockStatus,      // 재고 상태 (예: "충분", "부족", "품절")
+        ProductStatus status
 ) {
     public ProductDetailResponse(Product product) {
         this(
@@ -32,7 +34,8 @@ public record ProductDetailResponse(
                 product.getCreateDate(),
                 product.getModifyDate(),
                 String.format("%,d원", product.getPrice()),
-                getStockStatus(product.getTotalQuantity())
+                getStockStatus(product.getTotalQuantity()),
+                product.getStatus()
         );
     }
     
