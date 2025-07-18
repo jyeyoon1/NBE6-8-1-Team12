@@ -1,14 +1,8 @@
 "use client";
 
-<<<<<<< Updated upstream
-
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-=======
-import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
->>>>>>> Stashed changes
 
 interface RsData<T> {
   resultCode: string;
