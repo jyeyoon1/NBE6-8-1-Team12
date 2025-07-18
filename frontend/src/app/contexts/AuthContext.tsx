@@ -1,6 +1,12 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -15,13 +21,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const BACKEND_URL = 'http://localhost:8080';
+  const BACKEND_URL = "http://localhost:8080";
 
   const checkAuthStatus = async () => {
     try {
       const res = await fetch(`${BACKEND_URL}/api/member/status`, {
-        method: 'GET',
-        credentials: 'include',
+        method: "GET",
+        credentials: "include",
       });
       const data = await res.json();
       setIsAuthenticated(data.authenticated === true);
@@ -36,15 +42,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       const res = await fetch(`${BACKEND_URL}/api/member/logout`, {
-        method: 'POST',
-        credentials: 'include',
+        method: "POST",
+        credentials: "include",
       });
       if (res.ok) {
         setIsAuthenticated(false);
-        window.location.href = '/member/login';
+        window.location.href = "/member/login";
       }
     } catch (e) {
-      console.error('로그아웃 실패', e);
+      console.error("로그아웃 실패", e);
     }
   };
 
@@ -53,13 +59,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{
-      isAuthenticated,
-      isLoading,
-      setIsAuthenticated,
-      checkAuthStatus,
-      logout
-    }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        isLoading,
+        setIsAuthenticated,
+        checkAuthStatus,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -68,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }
