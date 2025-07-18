@@ -1,25 +1,25 @@
 export type PurchasePageReqBody = {
-    purchase: {
-        productId: number;
-        price: number;
-        quantity: number;
-        totalPrice: number;
-    };
-    purchaser: {
-        name: string;
-        email: string;
-    };
-    receiver: {
-        name: string;
-        phoneNumber: string;
-        address: string;
-        postcode: number;
-        email: string;
-    };
-    paymentOptionId: number;
+  purchase: {
+    productId: number;
+    price: number;
+    quantity: number;
+    totalPrice: number;
+  };
+  purchaser: {
+    name: string;
+    email: string;
+  };
+  receiver: {
+    name: string;
+    phoneNumber: string;
+    address: string;
+    postcode: number;
+    email: string;
+  };
+  paymentOptionId: number;
 };
 
 export type PurchaserReqBody = {
-    userEmail: string;
-    purchaseId: number;
+  userEmail: string;
+  purchaseId: number;
 };
