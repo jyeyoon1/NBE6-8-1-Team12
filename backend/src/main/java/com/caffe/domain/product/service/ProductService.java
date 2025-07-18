@@ -3,6 +3,8 @@ package com.caffe.domain.product.service;
 import com.caffe.domain.product.entity.Product;
 import com.caffe.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +19,12 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-        // 상품 전체조회
-        public List<Product> getAllProducts() {
-            return productRepository.findAll();
+        // 상품 전체조회 (페이징)
+        public Page<Product> getAllProducts(Pageable pageable) {
+            return productRepository.findAll(pageable);
         }
+
+
 
 
         //상품 단건조회

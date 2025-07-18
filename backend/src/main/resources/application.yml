@@ -9,6 +9,11 @@ spring:
   datasource:
     hikari:
       auto-commit: false
+  data:
+    web:
+      pageable:
+        default-page-size: 10
+        max-page-size: 50
   jackson:
     serialization:
       fail-on-empty-beans: false
