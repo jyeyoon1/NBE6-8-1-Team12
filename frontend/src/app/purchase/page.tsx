@@ -2,30 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
-interface PurchaseInfo {
-    productId: number;
-    productName: string;
-    price: number;
-    imageUrl: string;
-    quantity: number;
-    totalPrice: number;
-}
-
-type PaymentOptionType = "TOP_LEVEL" | "DETAIL";
-
-interface PaymentOption {
-    id: number;
-    parentId: number | null;
-    name: string;
-    type: PaymentOptionType;
-    code: string;
-    sortSeq: number;
-}
-
-interface PurchasePageResBody {
-    purchaseInfo: PurchaseInfo;
-    paymentOptions: PaymentOption[];
-}
+import { PurchaseInfo, PaymentOption, PurchasePageResBody } from '@/purchase/types/purchase-response'
+import { PurchasePageReqBody } from '@/purchase/types/purchase-request'
 
 export default function PurchasePage({
     params,
@@ -103,27 +81,6 @@ export default function PurchasePage({
         }
         if(!validateInput(form, "receiver.address", "배송지 주소")) return;
         if(!validateInput(form, "paymentOptionId", "상세 결제 수단")) return;
-        
-        type PurchasePageReqBody = {
-            purchase: {
-                productId: number;
-                price: number;
-                quantity: number;
-                totalPrice: number;
-            };
-            purchaser: {
-                name: string;
-                email: string;
-            };
-            receiver: {
-                name: string;
-                phoneNumber: string;
-                address: string;
-                postcode: number;
-                email: string;
-            };
-            paymentOptionId: number;
-        }
 
         const createPurchase = () => {
             const userEmail = (form.elements.namedItem("purchaser.email") as HTMLInputElement).value.trim();
@@ -152,7 +109,7 @@ export default function PurchasePage({
             fetch(`http://localhost:8080/api/purchases/checkout`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json; charset=utf-8',
                 },
                 body: JSON.stringify(body),
             })
@@ -322,7 +279,7 @@ export default function PurchasePage({
                     type="submit"
                     className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow transition-colors"
                 >
-                    구매하기
+                    구매
                 </button>
             </div>
         </form>

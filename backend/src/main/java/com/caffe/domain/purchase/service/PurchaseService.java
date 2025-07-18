@@ -28,14 +28,14 @@ public class PurchaseService {
                 .orElseThrow(() -> new IllegalArgumentException(purchaseId + "번 주문을 찾을 수 없습니다."));
     }
 
-    public Purchase getPurchaseByUserEmailAndPurchaseId(int id, String userEmail) {
+    public Purchase getPurchaseByIdAndUserEmail(int id, String userEmail) {
         return purchaseRepository.findByIdAndUserEmail(id, userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("이메일과 주문 번호를 확인해주십시오."));
     }
 
     public PurchaseDetailDto getPurchaseDetail(PurchaserReqBody reqBody) {
         // 주문 정보
-        Purchase purchase = getPurchaseByUserEmailAndPurchaseId(reqBody.purchaseId(), reqBody.userEmail());
+        Purchase purchase = getPurchaseByIdAndUserEmail(reqBody.purchaseId(), reqBody.userEmail());
         PurchaseDto purchaseDto = new PurchaseDto(purchase);
 
         // 임시 조치 -> 현재 상세페이지에서 구매하는 1:1 관계임. 추후 변경 예정 (아직 개발전)

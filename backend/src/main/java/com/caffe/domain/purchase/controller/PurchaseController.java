@@ -6,7 +6,9 @@ import com.caffe.domain.purchase.dto.req.PurchasePageReqBody;
 import com.caffe.domain.purchase.dto.req.PurchaserReqBody;
 import com.caffe.domain.purchase.dto.res.PurchaseDetailDto;
 import com.caffe.domain.purchase.dto.res.PurchaseInfoDto;
+import com.caffe.domain.purchase.dto.res.PurchaseLookupResBody;
 import com.caffe.domain.purchase.dto.res.PurchasePageResBody;
+import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.service.PurchaseService;
 import com.caffe.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,13 +21,27 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/purchases")
+@RequestMapping("/api/purchases")
 @Tag(name = "PurchaseController", description = "Api 주문 컨트롤러")
 public class PurchaseController {
-
     private final PurchaseService purchaseService;
     private final PaymentService paymentService;
-    @PostMapping("/search")
+
+    @PostMapping("/lookup")
+    @Operation(summary = "주문번호, 이메일로 주문 존재 확인")
+    public RsData<PurchaseLookupResBody> checkPurchaseExists(
+            @Valid @RequestBody PurchaserReqBody reqBody
+    ) {
+        Purchase purchase = purchaseService.getPurchaseByIdAndUserEmail(reqBody.purchaseId(), reqBody.userEmail());
+
+        return new RsData<>(
+                "200",
+                "주문 존재 확인",
+                new PurchaseLookupResBody(purchase)
+        );
+    }
+
+    @PostMapping("/lookup/detail")
     @Operation(summary = "주문 조회")
     public RsData<PurchaseDetailDto> getPurchase(
             @Valid @RequestBody PurchaserReqBody reqBody
@@ -39,7 +55,7 @@ public class PurchaseController {
         );
     }
 
-    @GetMapping("/checkout")
+    @GetMapping("/purchaseInfo")
     @Operation(summary = "주문 페이지 조회")
     public PurchasePageResBody showPurchasePage(
             @RequestParam int productId,
