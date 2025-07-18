@@ -43,7 +43,7 @@ export default function Header() {
             <>
               <Link href="/products/list" className="hover:text-gray-500 transition-colors">상품 목록</Link>
               <span className="text-gray-400">|</span>
-              <Link href="/products/add" className="hover:text-gray-500 transition-colors">상품 등록</Link>
+              <Link href="/products/form" className="hover:text-gray-500 transition-colors">상품 등록</Link>
               <span className="text-gray-400">|</span>
               <Link href="/orders" className="hover:text-gray-500 transition-colors">주문 목록</Link>
               <span className="text-gray-400">|</span>

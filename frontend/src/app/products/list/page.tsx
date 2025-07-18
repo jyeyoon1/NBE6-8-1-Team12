@@ -19,6 +19,15 @@ interface Product {
   imageUrl: string;
 }
 
+interface ProductListResponse {
+  products: Product[];
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+}
+
 export default function ProductListPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,19 +54,17 @@ export default function ProductListPage() {
           throw new Error(`서버 오류: ${response.status}`);
         }
 
-        const json = await response.json();
-        if (json && typeof json === 'object' && 'data' in json) {
-          if (Array.isArray(json.data)) {
-            setProducts(json.data);
-          } else {
+        const json: RsData<ProductListResponse> = await response.json();
+
+        if (json && typeof json === 'object' &&
+            'data' in json &&
+            Array.isArray(json.data.products)
+            ) {
+            setProducts(json.data.products);
+        } else {
             console.error('상품 목록이 배열이 아닙니다:', json);
             setError('상품 데이터 형식이 올바르지 않습니다.');
-          }
-        } else if (Array.isArray(json)) {
-          setProducts(json);
-        } else {
-          console.error('예상하지 못한 응답 형식:', json);
-          setError('예상하지 못한 응답 형식입니다.');
+
         }
       } catch (err) {
         console.error('상품 목록 불러오기 실패:', err);
@@ -93,7 +100,7 @@ export default function ProductListPage() {
 
         <div className="flex justify-end mb-6">
           <a
-            href="/api/products/add"
+            href="/products/form"
             className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors"
           >
             상품 추가
