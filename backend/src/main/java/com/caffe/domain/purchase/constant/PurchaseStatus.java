@@ -1,4 +1,4 @@
-package com.caffe.domain.purchase.entity;
+package com.caffe.domain.purchase.constant;
 
 public enum PurchaseStatus {
     TEMPORARY, // 결제 전 임시 저장

@@ -24,6 +24,13 @@ export interface PurchasePageResBody {
     paymentOptions: PaymentOption[];
 }
 
+export interface PurchaseCheckoutResBody {
+    purchaseId: number;
+    paymentOptionId: number;
+    amount: number;
+}
+
+
 
 export interface PurchaseLookupResBody {
     userEmail: string;

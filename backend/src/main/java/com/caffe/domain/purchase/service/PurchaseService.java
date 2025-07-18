@@ -10,7 +10,6 @@ import com.caffe.domain.purchase.repository.PurchaseItemRepository;
 import com.caffe.domain.purchase.repository.PurchaseRepository;
 import com.caffe.domain.shipping.entity.Shipping;
 import com.caffe.domain.shipping.service.ShippingService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +63,7 @@ public class PurchaseService {
 
     // 결제 전 임시 저장 - 결제 취소 버튼 클릭 시 롤백 필요
     @Transactional
-    public void createPurchase(PurchasePageReqBody reqBody) {
+    public PurchaseCheckoutResBody createPurchase(PurchasePageReqBody reqBody) {
         // 구매자
         PurchaserReqDto purchaser = reqBody.purchaser();
         String userEmail = purchaser.email();
@@ -85,7 +84,6 @@ public class PurchaseService {
         // Shipping 저장
         shippingService.createShipping(receiver, purchase);
 
-        // 결제 담당자 논의 필요
-        // 결제 연동 로직
+        return new PurchaseCheckoutResBody(purchase, reqBody.paymentOptionId());
     }
 }
