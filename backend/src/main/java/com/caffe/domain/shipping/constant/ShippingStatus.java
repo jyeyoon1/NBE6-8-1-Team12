@@ -1,4 +1,4 @@
-package com.caffe.domain.shipping.entity;
+package com.caffe.domain.shipping.constant;
 
 // 배송 상태를 나타내는 Enum
 public enum ShippingStatus {

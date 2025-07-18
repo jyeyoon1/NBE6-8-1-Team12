@@ -1,9 +1,15 @@
 package com.caffe.domain.shipping.controller;
 
+import com.caffe.domain.purchase.entity.Purchase;
+import com.caffe.domain.purchase.service.PurchaseService;
+import com.caffe.domain.shipping.dto.ShippingDto;
+import com.caffe.domain.shipping.dto.ShippingResDto;
+import com.caffe.domain.shipping.entity.Shipping;
 import com.caffe.domain.shipping.service.ShippingService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/shippings")
@@ -11,27 +17,46 @@ import org.springframework.web.bind.annotation.RestController;
 public class ShippingController {
 
     private final ShippingService shippingService;
+    private final PurchaseService purchaseService;
 
-    /*
-      - 배송 생성 API
-      - 결제하기 버튼 클릭 시 호출
-      - 프론트에서 받은 ShippingDto를 바탕으로 배송 생성
-     */
+    // 이메일로 해당 유저의 구매 목록 조회
+    @GetMapping("/purchases/{email}")
+    public List<Purchase> getPurchasesByEmail(@PathVariable("email") String userEmail) {
+        return shippingService.getPurchasesByUserEmail(userEmail);
+    }
 
-    /*@PostMapping
-    public ShippingResDto createShipping(@RequestBody ReceiverReqDto dto) {
-        Shipping shipping = shippingService.createShipping(dto);
-        return new ShippingResDto(shipping);
-    }*/
+    // 배송 생성 (ShippingDto -> Shipping)
+    @PostMapping
+    public List<ShippingResDto> createShippingsForAllPurchases(@RequestBody ShippingDto dto) {
+        List<Purchase> purchases = shippingService.getPurchasesByUserEmail(dto.getEmail());
 
-    /*`
-      - 최신 구매 내역 조회 API
-      - 특정 이메일로 가장 최근에 생성된 구매 내역을 조회
-      - 프론트에서 이메일 입력 후 blur 이벤트 시 호출
-     */
-    /*@GetMapping("/latest-purchase/{email}")
-    public Purchase getLatestPurchase(@PathVariable("email") String userEmail) {
-        return shippingService.getLatestPurchaseByUserEmail(userEmail);
-    }*/
+        List<Shipping> shippings = purchases.stream().map(purchase ->
+                Shipping.builder()
+                        .email(dto.getEmail())
+                        .address(dto.getAddress())
+                        .postcode(dto.getPostcode())
+                        .contactName(dto.getContactName())
+                        .contactNumber(dto.getContactNumber())
+                        .carrier("CJ대한통운")
+                        .status(dto.getStatus())
+                        .purchase(purchase)
+                        .build()
+        ).toList();
+
+        shippings.forEach(shippingService::saveShipping);
+
+        return shippings.stream()
+                .map(ShippingResDto::new)
+                .toList();
+    }
+
+
+    @GetMapping("/{email}")
+    public List<ShippingResDto> getShippingByEmail(@PathVariable String email) {
+        return shippingService.getShippingListByUserEmail(email).stream()
+                .map(ShippingResDto::new)
+                .toList();
+    }
 
 }
+

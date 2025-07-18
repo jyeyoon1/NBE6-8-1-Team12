@@ -10,6 +10,7 @@ import com.caffe.domain.purchase.repository.PurchaseItemRepository;
 import com.caffe.domain.purchase.repository.PurchaseRepository;
 import com.caffe.domain.shipping.entity.Shipping;
 import com.caffe.domain.shipping.service.ShippingService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
