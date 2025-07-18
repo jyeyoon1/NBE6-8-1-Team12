@@ -91,10 +91,15 @@ public class ApiV1PaymentControllerTest {
 
         resultActions
                 .andExpect(handler().handlerType(ApiV1PaymentController.class))
-                .andExpect(handler().methodName("request"))
+                .andExpect(handler().methodName("execute"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resultCode").value("200-1"))
-                .andExpect(jsonPath("$.msg").value("주문번호 %d의 결제가 성공했습니다.".formatted(payment.getPurchase().getId())));
+                .andExpect(jsonPath("$.msg").value("주문번호 %d의 결제가 성공했습니다.".formatted(payment.getPurchase().getId())))
+                .andExpect(jsonPath("$.data.id").value(payment.getId()))
+                .andExpect(jsonPath("$.data.status").value(payment.getStatus()))
+                .andExpect(jsonPath("$.data.purchaseId").value(payment.getPurchase().getId()))
+                .andExpect(jsonPath("$.data.userEmail").value(payment.getPurchase().getUserEmail()))
+                .andExpect(jsonPath("$.data.date").value(Matchers.startsWith(payment.getModifyDate().toString().substring(0,18))));
     }
 
     @Test

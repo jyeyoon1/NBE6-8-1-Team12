@@ -9,6 +9,7 @@ import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.service.PurchaseService;
 import com.caffe.global.dto.PageResponseDto;
 import com.caffe.global.rsData.RsData;
+import com.caffe.standard.util.Util;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
@@ -40,6 +41,7 @@ public class ApiV1PaymentController {
     @Operation(summary = "다건조회 - Page")
     public PageResponseDto<PaymentResponseDto> getAllPayments(@RequestParam(value = "page", defaultValue = "0")int page, @RequestParam(value = "size", defaultValue = "10")int size, @RequestParam(value = "sortField", defaultValue = "")String sortField, @RequestParam(value = "sortOrder", defaultValue = "")String sortOrder) {
         Page<Payment> paging = paymentService.getAllPage(page, size, sortField, sortOrder);
+        System.out.println(Util.json.toString(new PageResponseDto<>(paging.map(PaymentResponseDto::new))));
         return new PageResponseDto<>(paging.map(PaymentResponseDto::new));
     }
 
@@ -48,6 +50,7 @@ public class ApiV1PaymentController {
     @Operation(summary = "단건조회")
     public PaymentResponseDto getPayment(@PathVariable int id) {
         Payment payment = paymentService.findById(id);
+        System.out.println(Util.json.toString(new PaymentResponseDto(payment)));
         return new PaymentResponseDto(payment);
     }
 
@@ -67,16 +70,16 @@ public class ApiV1PaymentController {
     @PostMapping("/{id}/execute") //post or fetch
     @Transactional
     @Operation(summary = "결제 요청")
-    public RsData<Void> request(@Valid @RequestBody PaymentExecuteDto paymentExecuteDto, @PathVariable int id) {
+    public RsData<PaymentExecuteResponseDto> execute(@Valid @RequestBody PaymentExecuteRequestDto paymentExecuteRequestDto, @PathVariable int id) {
 
         Payment payment = paymentService.findById(id);
         if(payment.getStatus()== PaymentStatus.SUCCESS) {
             return new RsData<>("409-1", "결제번호 %d 는 이미 결제되었습니다.".formatted(payment.getId()));
         }
         // 서비스 계층에서 결제 로직 처리
-        payment = paymentService.request(payment, paymentExecuteDto.paymentInfo());
+        payment = paymentService.request(payment, paymentExecuteRequestDto.paymentInfo());
 
-        return new RsData<>(payment.getStatus()== PaymentStatus.SUCCESS? "200-1":"503-1", "주문번호 %d의 결제가 ".formatted(payment.getPurchase().getId())+(payment.getStatus()== PaymentStatus.SUCCESS? "성공했습니다.":"실패했습니다."));
+        return new RsData<>(payment.getStatus()== PaymentStatus.SUCCESS? "200-1":"503-1", "주문번호 %d의 결제가 ".formatted(payment.getPurchase().getId())+(payment.getStatus()== PaymentStatus.SUCCESS? "성공했습니다.":"실패했습니다."), new PaymentExecuteResponseDto(payment));
     }
 
     @DeleteMapping("/{id}")
