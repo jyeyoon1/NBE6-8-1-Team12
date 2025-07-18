@@ -12,7 +12,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center gap-4">
         <div className="flex items-center space-x-3">
           <Image
-            src="https://i.postimg.cc/PJDhy8d9/nbe6-8-team12-caffe-logo.png"
+            src="/team12.png"
             alt="Caffe Logo"
             width={40}
             height={40}
@@ -72,6 +72,13 @@ export default function Header() {
                 className="hover:text-gray-500 transition-colors"
               >
                 주문 목록
+              </Link>
+               <span className="text-gray-400">|</span>
+              <Link
+                href="/shipping/list"
+                className="hover:text-gray-500 transition-colors"
+              >
+                배송 목록
               </Link>
               <span className="text-gray-400">|</span>
               <button
