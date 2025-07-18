@@ -70,80 +70,95 @@ export default function PurchaseLookUpResultPage() {
     if(!purchaseDto || !purchaseItemDetailDto || !receiverResDto) return <div>Loading...</div>;
 
     return (
-        <div>
-            {/* 구매자 정보 */}
-            <div>
-                <h2 className="text-xl font-bold mb-4 text-gray-900">구매자 정보</h2>
-                <div>
-                    <span className="mb-1">주문번호</span>
-                    <span>{purchaseDto.purchaseId}</span>
+        <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8 mt-12 space-y-10 border border-gray-200">
+            {/* 주문 정보 */}
+            <section>
+                <h2 className="text-2xl font-bold mb-4 text-gray-900">주문 정보</h2>
+                <div className="flex flex-col gap-2 text-gray-800">
+                    <div className="flex gap-8">
+                        <div>
+                            <div className="text-sm text-gray-500 mb-1">주문번호</div>
+                            <div className="font-medium">{purchaseDto.purchaseId}</div>
+                        </div>
+                        <div>
+                            <div className="text-sm text-gray-500 mb-1">이메일</div>
+                            <div className="font-medium">{purchaseDto.userEmail}</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="text-sm text-gray-500 mb-1">주문일시</div>
+                        <div className="font-medium">
+                            {new Date(purchaseDto.purchaseDate).toLocaleDateString()} {new Date(purchaseDto.purchaseDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <span className="mb-1">이메일</span>
-                    <span>{purchaseDto.userEmail}</span>
-                </div>
-            </div>
+            </section>
 
             {/* 구매 제품 정보 */}
-            <div>
-                <h2 className="text-xl font-bold mb-4 text-black">구매 제품 정보</h2>
-                <table className="w-full border rounded-lg overflow-hidden mb-3">
-                    <thead>
-                        <tr className="bg-gray-100 text-black">
-                            <th className="py-2 px-3">제품명</th>
-                            <th className="py-2 px-3">이미지</th>
-                            <th className="py-2 px-3">제품 가격</th>
-                            <th className="py-2 px-3">제품 수량</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="text-center text-black">
-                            <td className="py-2 px-3"></td>
-                            <td className="py-2 px-3">
-                                <img 
-                                    src={purchaseItemDetailDto.imageUrl} 
-                                    alt={purchaseItemDetailDto.imageUrl} 
-                                    className="w-32 h-32 object-cover mx-auto rounded-md border"
-                                />
-                            </td>
-                            <td className="py-2 px-3">{purchaseItemDetailDto.price.toLocaleString()}원</td>
-                            <td className="py-2 px-3">{purchaseItemDetailDto.quantity}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <h5 className="text-right text-lg font-semibold text-blue-700">
-                    총 가격: {purchaseDto.totalPrice.toLocaleString()}원
-                </h5>
-            </div>
+            <section>
+                <h2 className="text-2xl font-bold mb-4 text-gray-900">구매 제품</h2>
+                <div className="flex items-center gap-6 bg-gray-50 rounded-lg p-4 border">
+                    <img
+                        src={purchaseItemDetailDto.imageUrl}
+                        alt={purchaseItemDetailDto.productName}
+                        className="w-32 h-32 object-cover rounded-md border"
+                    />
+                    <div className="flex-1">
+                        <div className="text-lg font-semibold text-gray-900 mb-2">{purchaseItemDetailDto.productName}</div>
+                        <div className="flex flex-col gap-1 text-gray-700">
+                            <div>
+                                <span className="text-gray-500 mr-2">가격</span>
+                                <span className="font-medium">{purchaseItemDetailDto.price.toLocaleString()}원</span>
+                            </div>
+                            <div>
+                                <span className="text-gray-500 mr-2">수량</span>
+                                <span className="font-medium">{purchaseItemDetailDto.quantity}개</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="text-right mt-4">
+                    <span className="text-lg font-bold text-blue-700">총 결제금액: {purchaseDto.totalPrice.toLocaleString()}원</span>
+                </div>
+            </section>
 
             {/* 배송지 정보 */}
-            <div>
-                <h2 className="text-xl font-bold mb-4 text-gray-900">배송지 정보</h2>
-                <div>
+            <section>
+                <h2 className="text-2xl font-bold mb-4 text-gray-900">배송지 정보</h2>
+                <div className="grid grid-cols-2 gap-4 text-gray-800">
                     <div>
-                        <span className="mb-1">이름</span>
-                        <span>{receiverResDto.name}</span>
+                        <div className="text-sm text-gray-500 mb-1">수령인</div>
+                        <div className="font-medium">{receiverResDto.name}</div>
                     </div>
                     <div>
-                        <span className="mb-1">연락처</span>
-                        <span>{receiverResDto.phoneNumber}</span>
+                        <div className="text-sm text-gray-500 mb-1">연락처</div>
+                        <div className="font-medium">{receiverResDto.phoneNumber}</div>
+                    </div>
+                    <div>
+                        <div className="text-sm text-gray-500 mb-1">우편번호</div>
+                        <div className="font-medium">{receiverResDto.postcode}</div>
+                    </div>
+                    <div className="col-span-2">
+                        <div className="text-sm text-gray-500 mb-1">주소</div>
+                        <div className="font-medium break-words">{receiverResDto.address}</div>
+                    </div>
+                    <div>
+                        <div className="text-sm text-gray-500 mb-1">배송상태</div>
+                        <div className="font-medium">
+                            {receiverResDto.status === "TEMPORARY" && "배송준비중"}
+                            {receiverResDto.status === "BEFORE_DELIVERY" && "배송전"}
+                            {receiverResDto.status === "DELIVERING" && "배송중"}
+                            {receiverResDto.status === "DELIVERED" && "배송완료"}
+                        </div>
+                    </div>
+                    <div>
+                        <div className="text-sm text-gray-500 mb-1">최종수정일</div>
+                        <div className="font-medium">
+                            {new Date(receiverResDto.modifyDate).toLocaleDateString()} {new Date(receiverResDto.modifyDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <div>
-                        <span className="mb-1">우편번호</span>
-                        <span>{receiverResDto.postcode}</span>
-                    </div>
-                    <div>
-                        <span className="mb-1">주소</span>
-                        <span>{receiverResDto.address}</span>
-                    </div>
-                    <div>
-                        <span className="mb-1">배송 상태</span>
-                        <span>{receiverResDto.status}</span>
-                    </div>
-                </div>
-            </div>
+            </section>
         </div>
     );
 }
