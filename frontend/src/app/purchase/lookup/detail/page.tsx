@@ -22,7 +22,7 @@ export default function PurchaseLookUpResultPage() {
                 alert("주문 정보 조회 실패");
                 return;
             }
-            const paramPurchaseIdNumber = parseInt(paramPurchaseId);
+            const paramPurchaseIdNumber = parseInt(paramPurchaseId, 10);
             if(isNaN(paramPurchaseIdNumber)) {
                 alert("유효하지 않은 주문번호");
                 return;

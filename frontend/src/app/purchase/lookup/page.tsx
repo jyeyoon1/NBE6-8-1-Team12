@@ -29,7 +29,7 @@ export default function PurchaseLookUpPage() {
             purchaseIdInput.focus();
             return;
         }
-        const purchaseIdNumber = parseInt(purchaseIdInput.value);
+        const purchaseIdNumber = parseInt(purchaseIdInput.value, 10);
         if (isNaN(purchaseIdNumber)) {
             alert("주문번호는 숫자여야 합니다.");
             purchaseIdInput.focus();
