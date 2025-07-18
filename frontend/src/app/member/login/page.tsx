@@ -1,13 +1,13 @@
-'use client'; // 꼭 필요함 (Client Component로 선언)
+"use client"; // 꼭 필요함 (Client Component로 선언)
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
   const { setIsAuthenticated } = useAuth();
   const router = useRouter();
 
@@ -15,26 +15,29 @@ export default function LoginPage() {
     e.preventDefault();
 
     const formData = new URLSearchParams();
-    formData.append('username', username);
-    formData.append('password', password);
+    formData.append("username", username);
+    formData.append("password", password);
 
-    const res = await fetch('http://localhost:8080/api/member/login', {
-      method: 'POST',
+    const response = await fetch("/api/member/login", {
+      method: "POST",
       body: formData,
-      credentials: 'include', // 세션 기반 로그인 유지
+      credentials: "include", // 세션 기반 로그인 유지
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        "Content-Type": "application/x-www-form-urlencoded",
       },
     });
 
-    if (res.ok) {
+    if (response.ok) {
       setIsAuthenticated(true); // 로그인 성공 시 인증 상태 업데이트
-      router.push('/products/list');
+      router.push("/products/list"); // 상품 목록 페이지로 이동
     } else {
-      setErrorMsg('ID 혹은 비밀번호가 잘못되었습니다.');
+      setErrorMsg(
+        "ID 혹은 비밀번호를 잘못 입력하셨거나 등록되지 않은 ID 입니다.",
+      );
     }
   };
 
+  // UI 렌더링하는 부분
   return (
     <div className="bg-gray-200 pt-20 min-h-screen w-full flex items-center justify-center px-4">
       <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-10">

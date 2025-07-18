@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { useAuth } from '@/contexts/AuthContext';
+import Link from "next/link";
+import Image from "next/image";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Header() {
   const { isAuthenticated, isLoading, logout } = useAuth();
@@ -33,21 +33,54 @@ export default function Header() {
             </div>
           ) : !isAuthenticated ? (
             <>
-              <Link href="/" className="hover:text-gray-500 transition-colors">홈</Link>
+              <Link href="/" className="hover:text-gray-500 transition-colors">
+                홈
+              </Link>
               <span className="text-gray-400">|</span>
-              <Link href="/purchase/lookup" className="hover:text-gray-500 transition-colors">주문 내역</Link>
+              <Link
+                href="/order/form"
+                className="hover:text-gray-500 transition-colors"
+              >
+                주문 내역
+              </Link>
               <span className="text-gray-400">|</span>
-              <Link href="/member/login" className="hover:text-gray-500 transition-colors">관리자 로그인</Link>
+              <Link
+                href="/member/login"
+                className="hover:text-gray-500 transition-colors"
+              >
+                관리자 로그인
+              </Link>
             </>
           ) : (
             <>
-              <Link href="/products/list" className="hover:text-gray-500 transition-colors">상품 목록</Link>
+              <Link
+                href="/products/list"
+                className="hover:text-gray-500 transition-colors"
+              >
+                상품 목록
+              </Link>
               <span className="text-gray-400">|</span>
-              <Link href="/products/form" className="hover:text-gray-500 transition-colors">상품 등록</Link>
+              <Link
+                href="/products/form"
+                className="hover:text-gray-500 transition-colors"
+              >
+                상품 등록
+              </Link>
               <span className="text-gray-400">|</span>
-              <Link href="/orders" className="hover:text-gray-500 transition-colors">주문 목록</Link>
+              <Link
+                href="/orders"
+                className="hover:text-gray-500 transition-colors"
+              >
+                주문 목록
+              </Link>
               <span className="text-gray-400">|</span>
-              <button type="button" onClick={logout} className="hover:text-gray-500 transition-colors cursor-pointer">로그아웃</button>
+              <button
+                type="button"
+                onClick={logout}
+                className="hover:text-gray-500 transition-colors cursor-pointer"
+              >
+                로그아웃
+              </button>
             </>
           )}
         </div>

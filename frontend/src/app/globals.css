@@ -5,14 +5,14 @@
 body {
   background: #ffffff; /* ✅ 기본 배경을 흰색으로 변경 */
   color: #4a3b31;
-  font-family: 'Noto Sans KR', sans-serif;
+  font-family: "Noto Sans KR", sans-serif;
 }
 
 /* 흐릿한 배경 스타일 (변경 없음) */
 .background-blur {
   position: fixed;
   inset: 0;
-  background-image: url('https://i.postimg.cc/PJDhy8d9/nbe6-8-team12-caffe-logo.png');
+  background-image: url("https://i.postimg.cc/PJDhy8d9/nbe6-8-team12-caffe-logo.png");
   background-size: 50%;
   background-repeat: no-repeat;
   background-position: center;

@@ -3,7 +3,7 @@ package com.caffe.domain.payment.service;
 import com.caffe.domain.payment.dto.PaymentOptionDto;
 import com.caffe.domain.payment.entity.Payment;
 import com.caffe.domain.payment.entity.PaymentOption;
-import com.caffe.global.constant.PaymentOptionType;
+import com.caffe.domain.payment.constant.PaymentOptionType;
 import com.caffe.domain.payment.repository.PaymentOptionRepository;
 import com.caffe.domain.payment.repository.PaymentRepository;
 import com.caffe.domain.purchase.entity.Purchase;
@@ -17,9 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,8 +68,6 @@ public class PaymentService {
 
     public Payment save(Purchase purchase, PaymentOption paymentOption, int amount) {
         Payment payment = new Payment(amount, purchase, paymentOption);
-        boolean isSuccess = paymentGatewayClient.charge(paymentOption.getParent().getName(), paymentOption.getName(), payment.getPaymentInfo(), payment.getAmount());
-        payment.isSuccess(isSuccess);
         return paymentRepository.save(payment);
     }
 
@@ -93,8 +89,6 @@ public class PaymentService {
 
     public Payment changePayment(Payment payment, PaymentOption paymentOption, String paymentInfo, int amount) {
         payment.updatePayment(paymentOption, paymentInfo, amount==0? payment.getAmount(): amount);
-        boolean isSuccess = paymentGatewayClient.charge(paymentOption.getParent().getName(), paymentOption.getName(), payment.getPaymentInfo(), payment.getAmount());
-        payment.isSuccess(isSuccess);
         return paymentRepository.save(payment);
     }
 

@@ -12,6 +12,7 @@ import org.hamcrest.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -144,8 +145,8 @@ public class ApiV1PaymentControllerTest {
         resultActions
                 .andExpect(handler().handlerType(ApiV1PaymentController.class))
                 .andExpect(handler().methodName("delete"))
-                .andExpect(status().isNoContent())
-                .andExpect(jsonPath("$.resultCode").value("204-1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("결제번호 %d 가 삭제되었습니다.".formatted(id)));
     }
 
@@ -162,8 +163,8 @@ public class ApiV1PaymentControllerTest {
         resultActions
                 .andExpect(handler().handlerType(ApiV1PaymentController.class))
                 .andExpect(handler().methodName("cancel"))
-                .andExpect(status().isNoContent())
-                .andExpect(jsonPath("$.resultCode").value("204-1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("결제번호 %d 가 취소되었습니다.".formatted(id)));
     }
 
@@ -295,5 +296,43 @@ public class ApiV1PaymentControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.resultCode").value("409-1"))
                 .andExpect(jsonPath("$.msg").value("결제번호 %d 는 이미 결제되었습니다.".formatted(payment.getId())));
+    }
+
+    @Test
+    @DisplayName("결제 다건 조회 - Page")
+    void t11() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/payments")
+                                .param("page", "0")
+                                .param("size", "10")
+                )
+                .andDo(print());
+
+        Page<Payment> payments = paymentService.getAllPage(0,10,"","");
+
+        resultActions
+                .andExpect(handler().handlerType(ApiV1PaymentController.class))
+                .andExpect(handler().methodName("getAllPayments"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(payments.getContent().size()))
+                .andExpect(jsonPath("$.pageNumber").value(payments.getPageable().getPageNumber()))
+                .andExpect(jsonPath("$.pageSize").value(payments.getPageable().getPageSize()))
+                .andExpect(jsonPath("$.totalPages").value(payments.getTotalPages()))
+                .andExpect(jsonPath("$.totalElements").value(payments.getTotalElements()));
+
+        for(int i=0;i<payments.getContent().size();i++) {
+            Payment payment = payments.getContent().get(i);
+            resultActions
+                    .andExpect(jsonPath("$.content[%d].id".formatted(i)).value(payment.getId()))
+                    .andExpect(jsonPath("$.content[%d].paymentOptionType".formatted(i)).value(payment.getPaymentOption().getParent().getName()))
+                    .andExpect(jsonPath("$.content[%d].paymentOptionName".formatted(i)).value(payment.getPaymentOption().getName()))
+                    .andExpect(jsonPath("$.content[%d].paymentInfo".formatted(i)).value(payment.getPaymentInfo()))
+                    .andExpect(jsonPath("$.content[%d].amount".formatted(i)).value(payment.getAmount()))
+                    .andExpect(jsonPath("$.content[%d].paymentStatus".formatted(i)).value(String.valueOf(payment.getStatus())))
+                    .andExpect(jsonPath("$.content[%d].date".formatted(i)).value(Matchers.startsWith(payment.getModifyDate().toString().substring(0,18))))
+                    .andExpect(jsonPath("$.content[%d].purchaseId".formatted(i)).value(payment.getPurchase().getId()));
+        }
     }
 }

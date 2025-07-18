@@ -1,46 +1,77 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ProductAddPage() {
-    const router = useRouter();
+  const router = useRouter();
 
-    const [form, setForm] = useState({
-        productName: '',
-        description: '',
-        price: '',
-        totalQuantity: '',
-        imageUrl: ''
-    });
+  const [form, setForm] = useState({
+    productName: "",
+    description: "",
+    price: "",
+    totalQuantity: "",
+    imageUrl: "",
+  });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setForm(prev => ({ ...prev, [name]: value }));
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const productData = {
+      productName: form.productName.trim(),
+      description: form.description.trim(),
+      price: parseInt(form.price),
+      totalQuantity: parseInt(form.totalQuantity),
+      imageUrl: form.imageUrl.trim(),
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    try {
+      const response = await fetch("/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(productData),
+      });
 
-        const productData = {
-            productName: form.productName.trim(),
-            description: form.description.trim(),
-            price: parseInt(form.price),
-            totalQuantity: parseInt(form.totalQuantity),
-            imageUrl: form.imageUrl.trim()
-        };
-
-
-
+      if (response.ok) {
+        alert("상품이 성공적으로 추가되었습니다.");
+        router.push("/products/list");
+      } else {
+        const errorData = await response.json();
+        setErrorMsg(errorData.msg || "상품 등록에 실패했습니다.");
+      }
+    } catch (error: any) {
+      setErrorMsg("네트워크 오류가 발생했습니다: " + error.message);
     }
+  };
 
   return (
     <div className="bg-gray-200 pt-20 min-h-screen w-full flex items-center justify-center px-4">
       <div className="bg-white p-10 rounded-xl shadow-lg w-full max-w-lg">
         <h1 className="text-3xl font-bold text-center mb-8">상품 등록</h1>
+
+        {errorMsg && (
+          <div className="bg-red-200 text-red-800 text-xs text-center px-3 py-1 mb-4 rounded-sm">
+            {errorMsg}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit}>
           <div className="mb-6">
-            <label htmlFor="productName" className="block mb-2 font-semibold text-gray-700">상품명</label>
+            <label
+              htmlFor="productName"
+              className="block mb-2 font-semibold text-gray-700"
+            >
+              상품명
+            </label>
             <input
               type="text"
               id="productName"
@@ -54,7 +85,12 @@ export default function ProductAddPage() {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="description" className="block mb-2 font-semibold text-gray-700">설명</label>
+            <label
+              htmlFor="description"
+              className="block mb-2 font-semibold text-gray-700"
+            >
+              설명
+            </label>
             <input
               type="text"
               id="description"
@@ -68,7 +104,12 @@ export default function ProductAddPage() {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="price" className="block mb-2 font-semibold text-gray-700">가격 (원)</label>
+            <label
+              htmlFor="price"
+              className="block mb-2 font-semibold text-gray-700"
+            >
+              가격 (원)
+            </label>
             <input
               type="number"
               id="price"
@@ -82,7 +123,12 @@ export default function ProductAddPage() {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="totalQuantity" className="block mb-2 font-semibold text-gray-700">재고 수량</label>
+            <label
+              htmlFor="totalQuantity"
+              className="block mb-2 font-semibold text-gray-700"
+            >
+              재고 수량
+            </label>
             <input
               type="number"
               id="totalQuantity"
@@ -96,7 +142,12 @@ export default function ProductAddPage() {
           </div>
 
           <div className="mb-8">
-            <label htmlFor="imageUrl" className="block mb-2 font-semibold text-gray-700">이미지 URL</label>
+            <label
+              htmlFor="imageUrl"
+              className="block mb-2 font-semibold text-gray-700"
+            >
+              이미지 URL
+            </label>
             <input
               type="url"
               id="imageUrl"
@@ -111,7 +162,7 @@ export default function ProductAddPage() {
 
           <button
             type="submit"
-            className="w-full bg-gray-800 text-white py-3 rounded-md hover:bg-gray-700 transition-colors font-semibold"
+            className="w-full bg-gray-800 text-white py-3 rounded-md hover:bg-gray-700 transition-colors cursor-pointer font-semibold"
           >
             상품 추가
           </button>

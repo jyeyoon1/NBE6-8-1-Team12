@@ -3,10 +3,10 @@ package com.caffe.domain.product.controller;
 import com.caffe.domain.product.dto.request.ProductCreateRequest;
 import com.caffe.domain.product.dto.request.ProductUpdateRequest;
 import com.caffe.domain.product.dto.response.ProductDetailResponse;
-import com.caffe.domain.product.dto.response.ProductListResponse;
 import com.caffe.domain.product.dto.response.ProductSummaryResponse;
 import com.caffe.domain.product.entity.Product;
 import com.caffe.domain.product.service.ProductService;
+import com.caffe.global.dto.PageResponseDto;
 import com.caffe.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 //상품 관리 REST API 컨트롤러
 
@@ -30,21 +29,14 @@ public class ProductApiController {
     private final ProductService productService;
 
     //상품 다건 조회 API
-    @GetMapping("/list")
+    @GetMapping
     @Operation(summary = "상품 목록 조회")
-    public ResponseEntity<RsData<ProductListResponse>> getAllProducts(Pageable pageable) {
+    public ResponseEntity<RsData<PageResponseDto<ProductSummaryResponse>>> getAllProducts(Pageable pageable) {
         Page<Product> products = productService.getAllProducts(pageable);
-        List<ProductSummaryResponse> productSummaries = products.stream()
-                .map(ProductSummaryResponse::new)
-                .toList();
 
-        ProductListResponse response = ProductListResponse.of(
-                productSummaries,
-                (int) products.getTotalElements(),
-                products.getNumber() + 1,
-                products.getSize()
-        );
+        Page<ProductSummaryResponse> productSummaryPage = products.map(ProductSummaryResponse::new);
 
+        PageResponseDto<ProductSummaryResponse> response = new PageResponseDto<>(productSummaryPage);
 
         return ResponseEntity.ok(new RsData<>("200-0", "상품 목록 조회 성공", response));
     }
