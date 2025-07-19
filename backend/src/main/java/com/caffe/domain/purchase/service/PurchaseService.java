@@ -57,25 +57,6 @@ public class PurchaseService {
         Purchase purchase = getPurchaseByIdAndUserEmail(reqBody.purchaseId(), reqBody.userEmail());
         PurchaseDto purchaseDto = new PurchaseDto(purchase);
 
-        // 임시 조치 -> 현재 상세페이지에서 구매하는 1:1 관계임. 추후 변경 예정 (아직 개발전)
-        // 구매 제품 정보
-        PurchaseItem purchaseItem = purchase.getPurchaseItems().get(0);
-        PurchaseItemDetailDto purchaseItemDetailDto = new PurchaseItemDetailDto(purchaseItem, purchaseItem.getProduct());
-
-        // 배송 정보
-        Shipping shipping = shippingService.getShippingByPurchaseId(reqBody.purchaseId())
-                .orElseThrow(() -> new IllegalArgumentException("배송을 찾을 수 없습니다."));
-        ReceiverResDto receiverResDto = new ReceiverResDto(shipping);
-
-        return new PurchaseDetailDto(purchaseDto, purchaseItemDetailDto, receiverResDto);
-    }
-
-    @Transactional(readOnly = true)
-    public PurchaseDetailDto2 getPurchaseDetail2(PurchaserReqBody reqBody) {
-        // 주문 정보
-        Purchase purchase = getPurchaseByIdAndUserEmail(reqBody.purchaseId(), reqBody.userEmail());
-        PurchaseDto purchaseDto = new PurchaseDto(purchase);
-
         // 구매 제품 목록
         List<PurchaseItemDetailDto> purchaseItems = purchase.getPurchaseItems()
                 .stream()
@@ -86,17 +67,9 @@ public class PurchaseService {
         Shipping shipping = shippingService.getShippingByPurchaseId(reqBody.purchaseId())
                 .orElseThrow(() -> new IllegalArgumentException("배송을 찾을 수 없습니다."));
         ReceiverResDto receiverResDto = new ReceiverResDto(shipping);
-        
-        return new PurchaseDetailDto2(purchaseDto, purchaseItems, receiverResDto);
+
+        return new PurchaseDetailDto(purchaseDto, purchaseItems, receiverResDto);
     }
-
-
-
-
-
-
-
-
 
     public PurchaseInfoDto getOrderPageInfo(int productId, int quantity) {
         Product product = productService.getProductById(productId);

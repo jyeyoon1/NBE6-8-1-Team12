@@ -70,15 +70,6 @@ export type ShippingStatus = "TEMPORARY" | "BEFORE_DELIVERY" | "DELIVERING" | "D
 
 export interface PurchaseDetailDto {
     purchase: PurchaseDto;
-    purchaseItem: PurchaseItemDetailDto;
-    receiver: ReceiverResDto;
-}
-
-
-
-// 주문 상세 페이지2 연관
-export interface PurchaseDetailDto2 {
-    purchase: PurchaseDto;
     purchaseItems: Array<PurchaseItemDetailDto>;
     receiver: ReceiverResDto;
 }
