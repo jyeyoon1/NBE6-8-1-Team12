@@ -47,7 +47,7 @@ export interface PurchaseDto {
     purchaseDate: string;
 }
 
-export type PurchaseStatus = "TEMPORARY" | "ORDERED" | "CANCELED" | "FAILED";
+export type PurchaseStatus = "TEMPORARY" | "PURCHASED" | "CANCELED" | "FAILED";
 
 export interface PurchaseItemDetailDto {
     purchaseItemId: number;

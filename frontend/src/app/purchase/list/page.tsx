@@ -188,7 +188,7 @@ export default function PurchaseListPage() {
                                             <td className="px-2 py-4 text-sm text-left">
                                                 <span
                                                     className={`px-2 py-1 font-semibold rounded-full leading-tight ${
-                                                        purchase.purchaseStatus === 'ORDERED'
+                                                        purchase.purchaseStatus === 'PURCHASED'
                                                             ? 'bg-green-100 text-green-600'
                                                             : purchase.purchaseStatus === 'CANCELED'
                                                             ? 'bg-red-100 text-red-600'
