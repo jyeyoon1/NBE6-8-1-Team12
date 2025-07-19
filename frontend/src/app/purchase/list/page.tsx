@@ -1,6 +1,6 @@
 'use client';
 
-import { } from '@/purchase/types/purchase-response'
+//import { } from '@/purchase/types/purchase-response'
 
 export default function PurchaseListPage() {
     return (
