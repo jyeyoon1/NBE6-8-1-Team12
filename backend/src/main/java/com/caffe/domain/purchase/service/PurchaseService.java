@@ -100,6 +100,14 @@ public class PurchaseService {
         // 배송정보
         ReceiverReqDto receiver = reqBody.receiver();
 
+        // 구매 제품 재고 확인
+        for (PurchaseItemReqDto itemReqDto : purchaseItems) {
+            Product product = productService.getProductById(itemReqDto.productId());
+            if(!product.hasStock(itemReqDto.quantity())) {
+                throw new IllegalArgumentException("%s의 재고가 부족합니다.".formatted(product.getProductName()));
+            }
+        }
+
         // Purchase 저장
         Purchase purchase = new Purchase(userEmail);
         // PurchaseItem 저장

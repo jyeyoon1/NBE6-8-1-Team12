@@ -40,4 +40,8 @@ public class Product extends BaseEntity {
         this.imageUrl = imageUrl;
         this.status = status != null ? status : ProductStatus.ON_SALE; // 상태가 null인 경우 기본값 설정
     }
+
+    public boolean hasStock(int quantity) {
+        return this.totalQuantity >= quantity;
+    }
 }
