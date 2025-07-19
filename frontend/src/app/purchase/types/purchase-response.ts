@@ -1,4 +1,4 @@
-
+// 주문 페이지 연관
 export interface PurchaseInfo {
     productId: number;
     productName: string;
@@ -31,13 +31,14 @@ export interface PurchaseCheckoutResBody {
 }
 
 
-
+// 주문 조회 Form 연관
 export interface PurchaseLookupResBody {
     userEmail: string;
     purchaseId: number;
 }
 
 
+// 주문 상세 페이지 연관
 export interface PurchaseDto {
     purchaseId: number;
     userEmail: string;
@@ -70,5 +71,14 @@ export type ShippingStatus = "TEMPORARY" | "BEFORE_DELIVERY" | "DELIVERING" | "D
 export interface PurchaseDetailDto {
     purchase: PurchaseDto;
     purchaseItem: PurchaseItemDetailDto;
+    receiver: ReceiverResDto;
+}
+
+
+
+// 주문 상세 페이지2 연관
+export interface PurchaseDetailDto2 {
+    purchase: PurchaseDto;
+    purchaseItems: Array<PurchaseItemDetailDto>;
     receiver: ReceiverResDto;
 }
