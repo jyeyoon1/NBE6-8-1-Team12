@@ -1,15 +1,14 @@
 "use client";
 import React, { useState, Suspense, useEffect } from "react";
-import { useSearchParams, useRouter, useParams } from "next/navigation";
-import BankForm from "../../components/bankForm/bankForm";
-import CardForm from "../../components/cardForm/cardForm";
-import PgForm from "../../components/pgForm/pgForm";
-import { PaymentData } from "../../types/paymentData";
+import { useSearchParams, useRouter } from "next/navigation";
+import BankForm from "../components/bankForm/bankForm";
+import CardForm from "../components/cardForm/cardForm";
+import PgForm from "../components/pgForm/pgForm";
+import { PaymentData } from "../types/paymentData";
 
 function PaymentGateway({ } ) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const params = useParams();
 
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
   const [paymentInfo, setPaymentInfo] = useState({});
@@ -20,11 +19,9 @@ function PaymentGateway({ } ) {
 
   useEffect(() => {
     try {
-      const paymentId = params.id;
-
       const paymentDataString = searchParams.get('paymentData');
       
-      if(!paymentDataString || !paymentId) {
+      if(!paymentDataString) {
         throw new Error("결제 정보가 올바르지 않습니다.");
       }
       const parsedData = JSON.parse(paymentDataString ?? `{
@@ -45,7 +42,7 @@ function PaymentGateway({ } ) {
     }finally {
       setIsLoading(false);
     }
-  }, [params, searchParams]);
+  }, [searchParams]);
 
   if(!paymentData) {
     return <div>결제 정보를 불러오는 중입니다...</div>;
