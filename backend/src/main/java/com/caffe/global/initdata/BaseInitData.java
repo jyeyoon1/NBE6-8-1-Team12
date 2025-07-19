@@ -142,19 +142,19 @@ public class BaseInitData {
         Product product2 = productRepository.findById(2).get();
 
         Purchase purchase1 = new Purchase("test1@email.com");
-        purchase1.setStatus(PurchaseStatus.ORDERED);
+        purchase1.setStatus(PurchaseStatus.PURCHASED);
         PurchaseItem purchaseItem1 = new PurchaseItem(2, product);
         purchase1.addPurchaseItem(purchaseItem1);
         purchaseRepository.save(purchase1);
 
         Purchase purchase2 = new Purchase("test2@email.com");
-        purchase2.setStatus(PurchaseStatus.ORDERED);
+        purchase2.setStatus(PurchaseStatus.PURCHASED);
         PurchaseItem purchaseItem2 = new PurchaseItem(5, product);
         purchase2.addPurchaseItem(purchaseItem2);
         purchaseRepository.save(purchase2);
 
         Purchase purchase3 = new Purchase("test3@email.com");
-        purchase3.setStatus(PurchaseStatus.ORDERED);
+        purchase3.setStatus(PurchaseStatus.PURCHASED);
         PurchaseItem purchaseItem3 = new PurchaseItem(12, product2);
         purchase3.addPurchaseItem(purchaseItem3);
         purchaseRepository.save(purchase3);
