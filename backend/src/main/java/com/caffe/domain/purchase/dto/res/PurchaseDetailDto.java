@@ -1,8 +1,10 @@
 package com.caffe.domain.purchase.dto.res;
 
+import java.util.List;
+
 public record PurchaseDetailDto(
         PurchaseDto purchase,
-        PurchaseItemDetailDto purchaseItem, // 목록으로 전환 예정
+        List<PurchaseItemDetailDto> purchaseItems,
         ReceiverResDto receiver
 ) {
 }

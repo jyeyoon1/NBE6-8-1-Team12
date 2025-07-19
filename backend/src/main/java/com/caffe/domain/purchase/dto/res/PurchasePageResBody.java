@@ -5,7 +5,7 @@ import com.caffe.domain.payment.dto.PaymentOptionDto;
 import java.util.List;
 
 public record PurchasePageResBody(
-        PurchaseInfoDto purchaseInfo,
+        List<PurchaseItemInfoDto> purchaseItems,
         List<PaymentOptionDto> paymentOptions
 ) {
 }

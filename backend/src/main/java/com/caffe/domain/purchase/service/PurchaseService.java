@@ -57,25 +57,6 @@ public class PurchaseService {
         Purchase purchase = getPurchaseByIdAndUserEmail(reqBody.purchaseId(), reqBody.userEmail());
         PurchaseDto purchaseDto = new PurchaseDto(purchase);
 
-        // 임시 조치 -> 현재 상세페이지에서 구매하는 1:1 관계임. 추후 변경 예정 (아직 개발전)
-        // 구매 제품 정보
-        PurchaseItem purchaseItem = purchase.getPurchaseItems().get(0);
-        PurchaseItemDetailDto purchaseItemDetailDto = new PurchaseItemDetailDto(purchaseItem, purchaseItem.getProduct());
-
-        // 배송 정보
-        Shipping shipping = shippingService.getShippingByPurchaseId(reqBody.purchaseId())
-                .orElseThrow(() -> new IllegalArgumentException("배송을 찾을 수 없습니다."));
-        ReceiverResDto receiverResDto = new ReceiverResDto(shipping);
-
-        return new PurchaseDetailDto(purchaseDto, purchaseItemDetailDto, receiverResDto);
-    }
-
-    @Transactional(readOnly = true)
-    public PurchaseDetailDto2 getPurchaseDetail2(PurchaserReqBody reqBody) {
-        // 주문 정보
-        Purchase purchase = getPurchaseByIdAndUserEmail(reqBody.purchaseId(), reqBody.userEmail());
-        PurchaseDto purchaseDto = new PurchaseDto(purchase);
-
         // 구매 제품 목록
         List<PurchaseItemDetailDto> purchaseItems = purchase.getPurchaseItems()
                 .stream()
@@ -86,47 +67,47 @@ public class PurchaseService {
         Shipping shipping = shippingService.getShippingByPurchaseId(reqBody.purchaseId())
                 .orElseThrow(() -> new IllegalArgumentException("배송을 찾을 수 없습니다."));
         ReceiverResDto receiverResDto = new ReceiverResDto(shipping);
-        
-        return new PurchaseDetailDto2(purchaseDto, purchaseItems, receiverResDto);
+
+        return new PurchaseDetailDto(purchaseDto, purchaseItems, receiverResDto);
     }
 
+    public List<PurchaseItemInfoDto> getPurchaseItemsInfo(List<CartItemReqBody> reqBodyList) {
+        return reqBodyList
+                .stream()
+                .map(item -> getPurchaseItemInfo(item.productId(), item.quantity()))
+                .collect(Collectors.toList());
+    }
 
-
-
-
-
-
-
-
-    public PurchaseInfoDto getOrderPageInfo(int productId, int quantity) {
+    public PurchaseItemInfoDto getPurchaseItemInfo(int productId, int quantity) {
         Product product = productService.getProductById(productId);
         int totalPrice = calculateTotalPrice(product.getPrice(), quantity);
 
-        return new PurchaseInfoDto(product, quantity, totalPrice);
+        return new PurchaseItemInfoDto(product, quantity, totalPrice);
     }
 
     public int calculateTotalPrice(int price, int quantity) {
         return price * quantity;
     }
 
-    // 결제 전 임시 저장 - 결제 취소 버튼 클릭 시 롤백 필요
+    // 결제 전 임시 저장 기능 - 결제 취소 버튼 클릭 시 롤백 또는 상태 변경 필요
     @Transactional
     public PurchaseCheckoutResBody createPurchase(PurchasePageReqBody reqBody) {
         // 구매자
         PurchaserReqDto purchaser = reqBody.purchaser();
         String userEmail = purchaser.email();
         // 구매 제품
-        PurchaseReqDto purchaseInfo = reqBody.purchase();
-        // 제품
-        Product product = productService.getProductById(purchaseInfo.productId());
+        List<PurchaseItemReqDto> purchaseItems = reqBody.purchaseItems();
         // 배송정보
         ReceiverReqDto receiver = reqBody.receiver();
 
         // Purchase 저장
         Purchase purchase = new Purchase(userEmail);
         // PurchaseItem 저장
-        PurchaseItem purchaseItem = new PurchaseItem(purchaseInfo, product);
-        purchase.addPurchaseItem(purchaseItem);
+        for (PurchaseItemReqDto itemReqDto : purchaseItems) {
+            Product product = productService.getProductById(itemReqDto.productId());
+            PurchaseItem purchaseItem = new PurchaseItem(itemReqDto, product);
+            purchase.addPurchaseItem(purchaseItem);
+        }
         purchaseRepository.save(purchase);
 
         // Shipping 저장

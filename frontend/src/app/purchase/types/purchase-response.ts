@@ -1,5 +1,5 @@
 // 주문 페이지 연관
-export interface PurchaseInfo {
+export interface PurchaseItemInfo {
     productId: number;
     productName: string;
     price: number;
@@ -20,7 +20,7 @@ export interface PaymentOption {
 }
 
 export interface PurchasePageResBody {
-    purchaseInfo: PurchaseInfo;
+    purchaseItems: PurchaseItemInfo[];
     paymentOptions: PaymentOption[];
 }
 
@@ -69,15 +69,6 @@ export interface ReceiverResDto {
 export type ShippingStatus = "TEMPORARY" | "BEFORE_DELIVERY" | "DELIVERING" | "DELIVERED";
 
 export interface PurchaseDetailDto {
-    purchase: PurchaseDto;
-    purchaseItem: PurchaseItemDetailDto;
-    receiver: ReceiverResDto;
-}
-
-
-
-// 주문 상세 페이지2 연관
-export interface PurchaseDetailDto2 {
     purchase: PurchaseDto;
     purchaseItems: Array<PurchaseItemDetailDto>;
     receiver: ReceiverResDto;

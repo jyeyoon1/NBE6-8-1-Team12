@@ -4,7 +4,7 @@ import { cache, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { PurchaserReqBody } from '@/purchase/types/purchase-request';
-import { PurchaseDetailDto2, PurchaseDto, PurchaseItemDetailDto, ReceiverResDto } from '@/purchase/types/purchase-response'; 
+import { PurchaseDetailDto, PurchaseDto, PurchaseItemDetailDto, ReceiverResDto } from '@/purchase/types/purchase-response'; 
 
 
 export default function PurchaseLookUpResultPage() {
@@ -34,7 +34,7 @@ export default function PurchaseLookUpResultPage() {
                     purchaseId: paramPurchaseIdNumber
                 };
                 
-                const res = await fetch(`http://localhost:8080/api/purchases/lookup/detail2`, {
+                const res = await fetch(`http://localhost:8080/api/purchases/lookup/detail`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json; charset=utf-8',
@@ -48,11 +48,11 @@ export default function PurchaseLookUpResultPage() {
                     resultCode: string;
                     statusCode: number;
                     msg: string;
-                    data: PurchaseDetailDto2;
+                    data: PurchaseDetailDto;
                 }
     
                 const fullResponse: ServerResponse = await res.json();
-                const data: PurchaseDetailDto2 = fullResponse.data;
+                const data: PurchaseDetailDto = fullResponse.data;
                 console.log("주문 상세 조회 서버 응답 데이터:", data);
 
 

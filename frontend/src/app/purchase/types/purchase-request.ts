@@ -1,10 +1,10 @@
 export type PurchasePageReqBody = {
-  purchase: {
+  purchaseItems: {
     productId: number;
     price: number;
     quantity: number;
     totalPrice: number;
-  };
+  }[];
   purchaser: {
     name: string;
     email: string;

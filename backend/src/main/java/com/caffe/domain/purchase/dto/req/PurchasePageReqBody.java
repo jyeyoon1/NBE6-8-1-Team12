@@ -3,9 +3,11 @@ package com.caffe.domain.purchase.dto.req;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 public record PurchasePageReqBody(
         @Valid
-        PurchaseReqDto purchase,
+        List<PurchaseItemReqDto> purchaseItems,
 
         @Valid
         PurchaserReqDto purchaser,
