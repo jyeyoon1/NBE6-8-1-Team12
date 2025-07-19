@@ -46,7 +46,7 @@ export default function PurchasePage() {
                 console.error('cartItems 파싱 실패:', e);
             }
         }
-        
+
         // 로컬스토리지의의 cartItems 세팅 (브라우저에 저장된 장바구니 목록이 있는 상태에서 구매 버튼 클릭 시)
         const localCart = localStorage.getItem('cart');
         if (localCart) {
@@ -71,7 +71,7 @@ export default function PurchasePage() {
 
     // 구매할 제품 상세 조회
     useEffect(() => {
-        if(cartItemReqBody.length === 0) return;
+        if (cartItemReqBody.length === 0) return;
 
         fetch(`http://localhost:8080/api/purchases/purchaseInfo`, {
             method: 'POST',
@@ -80,12 +80,12 @@ export default function PurchasePage() {
             },
             body: JSON.stringify(cartItemReqBody),
         })
-        .then(res => res.json())
-        .then((data: PurchasePageResBody) => {
-            setPurchaseItems(data.purchaseItems);
-            setTopOpts(data.paymentOptions);
-        })
-        .catch(err => console.error('구매 제품 정보 불러오기 실패:', err));
+            .then(res => res.json())
+            .then((data: PurchasePageResBody) => {
+                setPurchaseItems(data.purchaseItems);
+                setTopOpts(data.paymentOptions);
+            })
+            .catch(err => console.error('구매 제품 정보 불러오기 실패:', err));
     }, [cartItemReqBody]);
 
     useEffect(() => {
@@ -95,14 +95,14 @@ export default function PurchasePage() {
     }, [topOpts, selectedTopOptId]);
 
     useEffect(() => {
-        if(selectedTopOptId == null) return;
+        if (selectedTopOptId == null) return;
 
         fetch(`http://localhost:8080/api/v1/payments/options/${selectedTopOptId}`)
             .then(res => res.json())
             .then(data => {
                 setDetailOpts(data);
 
-                if(data.length > 0) {
+                if (data.length > 0) {
                     setSelectedDetailOptId(data[0].id);
                 } else {
                     setSelectedDetailOptId(null);
@@ -111,7 +111,7 @@ export default function PurchasePage() {
             .catch(err => console.error('상세 결제수단 불러오기 실패:', err));
     }, [selectedTopOptId]);
 
-    if(!purchaseItems || purchaseItems.length === 0) return <div>Loading...</div>;
+    if (!purchaseItems || purchaseItems.length === 0) return <div>Loading...</div>;
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -122,7 +122,7 @@ export default function PurchasePage() {
             form: HTMLFormElement,
             name: string,
             label: string
-          ): boolean => {
+        ): boolean => {
             const input = form.elements.namedItem(name) as HTMLInputElement;
 
             input.value = input.value.trim();
@@ -134,19 +134,19 @@ export default function PurchasePage() {
             return true;
         }
 
-        if(!validateInput(form, "purchaser.name", "구매자 이름")) return;
-        if(!validateInput(form, "purchaser.email", "구매자 이메일")) return;
-        if(!validateInput(form, "receiver.name", "배송지 이름")) return;
-        if(!validateInput(form, "receiver.phoneNumber", "배송지 연락처")) return;
-        if(!validateInput(form, "receiver.postcode", "배송지 우편번호")) return;
+        if (!validateInput(form, "purchaser.name", "구매자 이름")) return;
+        if (!validateInput(form, "purchaser.email", "구매자 이메일")) return;
+        if (!validateInput(form, "receiver.name", "배송지 이름")) return;
+        if (!validateInput(form, "receiver.phoneNumber", "배송지 연락처")) return;
+        if (!validateInput(form, "receiver.postcode", "배송지 우편번호")) return;
         const postcodeStr = (form.elements.namedItem("receiver.postcode") as HTMLInputElement).value.trim();
         if (!/^\d{5}$/.test(postcodeStr)) {
             alert("우편번호는 숫자 5자리여야 합니다.");
             return;
         }
-        if(!validateInput(form, "receiver.address", "배송지 주소")) return;
-        if(!validateInput(form, "paymentOptionId", "상세 결제 수단")) return;
-        if(selectedDetailOptId === null) {
+        if (!validateInput(form, "receiver.address", "배송지 주소")) return;
+        if (!validateInput(form, "paymentOptionId", "상세 결제 수단")) return;
+        if (selectedDetailOptId === null) {
             alert("상세 결제 수단을 선택해주세요.");
             return;
         }
@@ -162,15 +162,15 @@ export default function PurchasePage() {
                     totalPrice: item!.totalPrice,
                 })),
                 purchaser: {
-                  name: (form.elements.namedItem("purchaser.name") as HTMLInputElement).value.trim(),
-                  email: userEmail,
+                    name: (form.elements.namedItem("purchaser.name") as HTMLInputElement).value.trim(),
+                    email: userEmail,
                 },
                 receiver: {
-                  name: (form.elements.namedItem("receiver.name") as HTMLInputElement).value.trim(),
-                  phoneNumber: (form.elements.namedItem("receiver.phoneNumber") as HTMLInputElement).value.trim(),
-                  address: (form.elements.namedItem("receiver.address") as HTMLInputElement).value.trim(),
-                  postcode: parseInt((form.elements.namedItem("receiver.postcode") as HTMLInputElement).value.trim(), 10),
-                  email: userEmail
+                    name: (form.elements.namedItem("receiver.name") as HTMLInputElement).value.trim(),
+                    phoneNumber: (form.elements.namedItem("receiver.phoneNumber") as HTMLInputElement).value.trim(),
+                    address: (form.elements.namedItem("receiver.address") as HTMLInputElement).value.trim(),
+                    postcode: parseInt((form.elements.namedItem("receiver.postcode") as HTMLInputElement).value.trim(), 10),
+                    email: userEmail
                 },
                 paymentOptionId: parseInt((form.elements.namedItem("paymentOptionId") as HTMLInputElement).value, 10)
             };
@@ -183,18 +183,18 @@ export default function PurchasePage() {
                 body: JSON.stringify(purchasePageReqBody),
             });
             if (!purchaseRes.ok) throw new Error("주문 실패");
-            
+
             interface ServerResponse {
                 resultCode: string;
                 statusCode: number;
                 msg: string;
                 data: PurchaseCheckoutResBody;
             }
-            
+
             const fullResponse: ServerResponse = await purchaseRes.json();
             const paymentRequestBody: PurchaseCheckoutResBody = fullResponse.data;
             console.log('주문 생성 성공:', fullResponse);
-            
+
             const paymentRes = await fetch(`http://localhost:8080/api/v1/payments`, {
                 method: 'POST',
                 headers: {
@@ -210,7 +210,7 @@ export default function PurchasePage() {
             console.log('stringify:', JSON.stringify(paymentData.data));
 
             router.push(`/payment?paymentData=${encodeURIComponent(JSON.stringify(paymentData.data))}`);
-        } catch(err) {
+        } catch (err) {
             console.error('주문 실패:', err);
         }
     };
@@ -237,9 +237,9 @@ export default function PurchasePage() {
                             <tr className="text-center text-black" key={item.productId}>
                                 <td className="py-2 px-3">{item.productName}</td>
                                 <td className="py-2 px-3">
-                                    <img 
-                                        src={item.imageUrl} 
-                                        alt={item.productName} 
+                                    <img
+                                        src={item.imageUrl}
+                                        alt={item.productName}
                                         className="w-32 h-32 object-cover mx-auto rounded-md border"
                                     />
                                 </td>
@@ -332,7 +332,7 @@ export default function PurchasePage() {
                             key={opt.id}
                             className="flex items-center space-x-2 cursor-pointer px-3 py-2 border rounded-md hover:bg-gray-50 font-medium text-gray-900"
                         >
-                            <input 
+                            <input
                                 type="radio"
                                 name="selectedTopOptId"
                                 value={opt.id}
