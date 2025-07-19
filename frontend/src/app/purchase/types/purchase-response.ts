@@ -1,5 +1,5 @@
 // 주문 페이지 연관
-export interface PurchaseInfo {
+export interface PurchaseItemInfo {
     productId: number;
     productName: string;
     price: number;
@@ -20,7 +20,7 @@ export interface PaymentOption {
 }
 
 export interface PurchasePageResBody {
-    purchaseInfo: PurchaseInfo;
+    purchaseItems: PurchaseItemInfo[];
     paymentOptions: PaymentOption[];
 }
 

@@ -1,7 +1,7 @@
 package com.caffe.domain.purchase.entity;
 
 import com.caffe.domain.product.entity.Product;
-import com.caffe.domain.purchase.dto.req.PurchaseReqDto;
+import com.caffe.domain.purchase.dto.req.PurchaseItemReqDto;
 import com.caffe.global.jpa.entity.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
@@ -34,7 +34,7 @@ public class PurchaseItem extends BaseEntity {
         this.product = product;
     }
 
-    public PurchaseItem(PurchaseReqDto dto, Product product) {
+    public PurchaseItem(PurchaseItemReqDto dto, Product product) {
         this.quantity = dto.quantity();
         this.price = product.getPrice();
         this.product = product;

@@ -2,6 +2,7 @@ package com.caffe.domain.purchase.controller;
 
 import com.caffe.domain.payment.dto.PaymentOptionDto;
 import com.caffe.domain.payment.service.PaymentService;
+import com.caffe.domain.purchase.dto.req.CartItemReqBody;
 import com.caffe.domain.purchase.dto.req.PurchasePageReqBody;
 import com.caffe.domain.purchase.dto.req.PurchaserReqBody;
 import com.caffe.domain.purchase.dto.res.*;
@@ -70,16 +71,15 @@ public class PurchaseController {
         );
     }
 
-    @GetMapping("/purchaseInfo")
+    @PostMapping("/purchaseInfo")
     @Operation(summary = "주문 화면 주문 정보 조회")
     public PurchasePageResBody showPurchasePage(
-            @RequestParam int productId,
-            @RequestParam int quantity
+            @Valid @RequestBody List<CartItemReqBody> reqBodyList
     ) {
-        PurchaseInfoDto purchasePageInfo = purchaseService.getOrderPageInfo(productId, quantity);
+        List<PurchaseItemInfoDto> purchaseItems = purchaseService.getPurchaseItemsInfo(reqBodyList);
         List<PaymentOptionDto> topLevelPaymentOptions = paymentService.getTopLevelPaymentOptions();
 
-        return new PurchasePageResBody(purchasePageInfo, topLevelPaymentOptions);
+        return new PurchasePageResBody(purchaseItems, topLevelPaymentOptions);
     }
 
     @PostMapping("/checkout")

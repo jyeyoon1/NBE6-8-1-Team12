@@ -3,33 +3,90 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { PurchaseInfo, PaymentOption, PurchasePageResBody, PurchaseCheckoutResBody } from '@/purchase/types/purchase-response'
+import { PurchaseItemInfo, PaymentOption, PurchasePageResBody, PurchaseCheckoutResBody } from '@/purchase/types/purchase-response'
 import { PurchasePageReqBody } from '@/purchase/types/purchase-request'
+
+interface CartItem {
+    productId: number;
+    quantity: number;
+}
 
 export default function PurchasePage() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const paramProducteId = searchParams.get('id');
-    const paramQuantity = searchParams.get('quantity');
 
-    const [purchaseInfo, setPurchaseInfo] = useState<PurchaseInfo | null>(null);
+    // 단일 상품 파라미터 (상세 페이지에서 바로 구매 버튼 클릭 시)
+    const paramProductId = searchParams.get('id');
+    const paramQuantity = searchParams.get('quantity');
+    // 여러 상품 파라미터 (장바구니 목록)
+    const paramCartItems = searchParams.get('cartItems');
+
+    // 구매 제품 목록 요청 정보
+    const [cartItemReqBody, setCartItemReqBody] = useState<CartItem[]>([]);
+    // 구매 제품 상세 목록 응답 정보
+    const [purchaseItems, setPurchaseItems] = useState<PurchaseItemInfo[]>([]);
+
+    // 결제 수단
     const [topOpts, setTopOpts] = useState<PaymentOption[]>([]);
     const [selectedTopOptId, setSelectedTopOptId] = useState<number | null>(null);
     const [detailOpts, setDetailOpts] = useState<PaymentOption[]>([]);
-    const [selectedDetailOptId, setSelectedDetailOptId] = useState<number | ''>('');
+    const [selectedDetailOptId, setSelectedDetailOptId] = useState<number | null>(null);
 
+    // 구매할 제품 목록 세팅
     useEffect(() => {
-        if (!paramProducteId) return;
-        const quantity = paramQuantity ? parseInt(paramQuantity, 10) : 1;
+        // url로 넘어온 cartItems 우선 세팅 (장바구니 페이지에서 구매 버튼 클릭 시시)
+        if (paramCartItems) {
+            try {
+                const parsed = JSON.parse(paramCartItems);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    setCartItemReqBody(parsed);
+                    return;
+                }
+            } catch (e) {
+                console.error('cartItems 파싱 실패:', e);
+            }
+        }
         
-        fetch(`http://localhost:8080/api/purchases/purchaseInfo?productId=${paramProducteId}&quantity=${quantity}`)
-            .then(res => res.json())
-            .then((data: PurchasePageResBody) => {
-                setPurchaseInfo(data.purchaseInfo);
-                setTopOpts(data.paymentOptions);
-            })
-            .catch(err => console.error('구매 제품 정보 불러오기 실패:', err));
-    }, [paramProducteId, paramQuantity]);
+        // 로컬스토리지의의 cartItems 세팅 (브라우저에 저장된 장바구니 목록이 있는 상태에서 구매 버튼 클릭 시)
+        const localCart = localStorage.getItem('cart');
+        if (localCart) {
+            try {
+                const parsedLocal = JSON.parse(localCart);
+                if (Array.isArray(parsedLocal) && parsedLocal.length > 0) {
+                    setCartItemReqBody(parsedLocal);
+                    return;
+                }
+            } catch (err) {
+                console.error('localStorage cart 파싱 실패:', err);
+            }
+        }
+
+        // 단일 상품 목록에 세팅 (장바구니 목록이 없을 경우에만 단일 제품 세팅)
+        if (paramProductId) {
+            const qty = paramQuantity ? parseInt(paramQuantity, 10) : 1;
+            setCartItemReqBody([{ productId: parseInt(paramProductId, 10), quantity: qty }]);
+            return;
+        }
+    }, [paramCartItems, paramProductId, paramQuantity]);
+
+    // 구매할 제품 상세 조회
+    useEffect(() => {
+        if(cartItemReqBody.length === 0) return;
+
+        fetch(`http://localhost:8080/api/purchases/purchaseInfo`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: JSON.stringify(cartItemReqBody),
+        })
+        .then(res => res.json())
+        .then((data: PurchasePageResBody) => {
+            setPurchaseItems(data.purchaseItems);
+            setTopOpts(data.paymentOptions);
+        })
+        .catch(err => console.error('구매 제품 정보 불러오기 실패:', err));
+    }, [cartItemReqBody]);
 
     useEffect(() => {
         if (Array.isArray(topOpts) && topOpts.length > 0 && selectedTopOptId === null) {
@@ -48,13 +105,13 @@ export default function PurchasePage() {
                 if(data.length > 0) {
                     setSelectedDetailOptId(data[0].id);
                 } else {
-                    setSelectedDetailOptId('');
+                    setSelectedDetailOptId(null);
                 }
             })
             .catch(err => console.error('상세 결제수단 불러오기 실패:', err));
     }, [selectedTopOptId]);
 
-    if(!purchaseInfo) return <div>Loading...</div>;
+    if(!purchaseItems || purchaseItems.length === 0) return <div>Loading...</div>;
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -89,7 +146,7 @@ export default function PurchasePage() {
         }
         if(!validateInput(form, "receiver.address", "배송지 주소")) return;
         if(!validateInput(form, "paymentOptionId", "상세 결제 수단")) return;
-        if(selectedDetailOptId === '') {
+        if(selectedDetailOptId === null) {
             alert("상세 결제 수단을 선택해주세요.");
             return;
         }
@@ -98,12 +155,12 @@ export default function PurchasePage() {
             const userEmail = (form.elements.namedItem("purchaser.email") as HTMLInputElement).value.trim();
 
             const purchasePageReqBody: PurchasePageReqBody = {
-                purchase: {
-                  productId: purchaseInfo!.productId,
-                  price: purchaseInfo!.price,
-                  quantity: purchaseInfo!.quantity,
-                  totalPrice: purchaseInfo!.totalPrice,
-                },
+                purchaseItems: purchaseItems.map(item => ({
+                    productId: item!.productId,
+                    price: item!.price,
+                    quantity: item!.quantity,
+                    totalPrice: item!.totalPrice,
+                })),
                 purchaser: {
                   name: (form.elements.namedItem("purchaser.name") as HTMLInputElement).value.trim(),
                   email: userEmail,
@@ -176,22 +233,24 @@ export default function PurchasePage() {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr className="text-center text-black">
-                            <td className="py-2 px-3">{purchaseInfo.productName}</td>
-                            <td className="py-2 px-3">
-                                <img 
-                                    src={purchaseInfo.imageUrl} 
-                                    alt={purchaseInfo.productName} 
-                                    className="w-32 h-32 object-cover mx-auto rounded-md border"
-                                />
-                            </td>
-                            <td className="py-2 px-3">{purchaseInfo.price.toLocaleString()}원</td>
-                            <td className="py-2 px-3">{purchaseInfo.quantity}</td>
-                        </tr>
+                        {purchaseItems.map((item, idx) => (
+                            <tr className="text-center text-black" key={item.productId}>
+                                <td className="py-2 px-3">{item.productName}</td>
+                                <td className="py-2 px-3">
+                                    <img 
+                                        src={item.imageUrl} 
+                                        alt={item.productName} 
+                                        className="w-32 h-32 object-cover mx-auto rounded-md border"
+                                    />
+                                </td>
+                                <td className="py-2 px-3">{item.price.toLocaleString()}원</td>
+                                <td className="py-2 px-3">{item.quantity}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
                 <h5 className="text-right text-lg font-semibold text-blue-700">
-                    총 가격: {purchaseInfo.totalPrice.toLocaleString()}원
+                    총 가격: {purchaseItems.reduce((sum, item) => sum + item.totalPrice, 0).toLocaleString()}원
                 </h5>
             </div>
 
@@ -289,7 +348,7 @@ export default function PurchasePage() {
                     <select
                         name="paymentOptionId"
                         value={selectedDetailOptId ?? ''}
-                        onChange={(e) => setSelectedDetailOptId(parseInt(e.target.value, 10))}
+                        onChange={(e) => setSelectedDetailOptId(e.target.value ? parseInt(e.target.value, 10) : null)}
                         required
                         className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900"
                     >
