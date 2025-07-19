@@ -216,163 +216,184 @@ export default function PurchasePage() {
     };
 
     return (
-        <form
-            onSubmit={handleSubmit}
-            className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8 mt-10 space-y-8"
-        >
-            {/* 구매 제품 정보 */}
-            <div>
-                <h2 className="text-xl font-bold mb-4 text-black">구매 제품 정보</h2>
-                <table className="w-full border rounded-lg overflow-hidden mb-3">
-                    <thead>
-                        <tr className="bg-gray-100 text-black">
-                            <th className="py-2 px-3">제품명</th>
-                            <th className="py-2 px-3">이미지</th>
-                            <th className="py-2 px-3">제품 가격</th>
-                            <th className="py-2 px-3">제품 수량</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {purchaseItems.map((item, idx) => (
-                            <tr className="text-center text-black" key={item.productId}>
-                                <td className="py-2 px-3">{item.productName}</td>
-                                <td className="py-2 px-3">
-                                    <img
-                                        src={item.imageUrl}
-                                        alt={item.productName}
-                                        className="w-32 h-32 object-cover mx-auto rounded-md border"
-                                    />
-                                </td>
-                                <td className="py-2 px-3">{item.price.toLocaleString()}원</td>
-                                <td className="py-2 px-3">{item.quantity}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                <h5 className="text-right text-lg font-semibold text-blue-700">
-                    총 가격: {purchaseItems.reduce((sum, item) => sum + item.totalPrice, 0).toLocaleString()}원
-                </h5>
-            </div>
-
-            {/* 구매자 정보 */}
-            <div>
-                <h2 className="text-xl font-bold mb-4 text-gray-900">구매자 정보</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <label className="flex flex-col font-medium text-gray-900">
-                        <span className="mb-1">이름</span>
-                        <input
-                            type="text"
-                            name="purchaser.name"
-                            className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900"
-                        />
-                    </label>
-                    <label className="flex flex-col font-medium text-gray-900">
-                        <span className="mb-1">이메일</span>
-                        <input
-                            type="email"
-                            name="purchaser.email"
-                            className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900"
-                        />
-                    </label>
+        <div className="flex justify-center w-full mt-12">
+            <form
+                onSubmit={handleSubmit}
+                className="w-full max-w-3xl bg-white rounded-xl shadow-lg p-8 mt-8 space-y-8"
+            >
+                {/* 구매 제품 정보 */}
+                <div>
+                    <h2 className="text-xl font-bold mb-4 text-black">구매 제품 정보</h2>
+                    <div className="border border-gray-200 rounded-lg overflow-hidden mb-3 shadow-md shadow-gray-100">
+                        <table className="w-full">
+                            <thead>
+                                <tr className="bg-gray-50 text-black">
+                                    <th className="py-2 px-3">제품명</th>
+                                    <th className="py-2 px-3">이미지</th>
+                                    <th className="py-2 px-3">제품 가격</th>
+                                    <th className="py-2 px-3">제품 수량</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {purchaseItems.map((item, idx) => (
+                                    <tr
+                                        className="text-center text-black border-t border-gray-200 last:border-b last:border-gray-200"
+                                        style={{ borderTopWidth: idx === 0 ? 0.5 : 0.5, borderBottomWidth: idx === purchaseItems.length - 1 ? 0.5 : 0 }}
+                                        key={item.productId}
+                                    >
+                                        <td className="py-2 px-3">{item.productName}</td>
+                                        <td className="py-2 px-3">
+                                            <img 
+                                                src={item.imageUrl} 
+                                                alt={item.productName} 
+                                                className="w-32 h-32 object-cover mx-auto rounded-md border"
+                                            />
+                                        </td>
+                                        <td className="py-2 px-3">{item.price.toLocaleString()}원</td>
+                                        <td className="py-2 px-3">{item.quantity}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <h5 className="text-right text-lg font-semibold text-blue-700">
+                        총 가격: {purchaseItems.reduce((sum, item) => sum + item.totalPrice, 0).toLocaleString()}원
+                    </h5>
                 </div>
-            </div>
 
-            {/* 배송지 정보 */}
-            <div>
-                <h2 className="text-xl font-bold mb-4 text-gray-900">배송지 정보</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <label className="flex flex-col font-medium text-gray-900">
-                        <span className="mb-1">이름</span>
-                        <input
-                            type="text"
-                            name="receiver.name"
-                            className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900"
-                        />
-                    </label>
-                    <label className="flex flex-col font-medium text-gray-900">
-                        <span className="mb-1">전화번호</span>
-                        <input
-                            type="tel"
-                            name="receiver.phoneNumber"
-                            className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900"
-                        />
-                    </label>
-                </div>
-                <div className="mt-4">
-                    <div className="flex gap-2">
-                        <label className="flex flex-col font-medium text-gray-900 w-32">
-                            <span className="mb-1">우편번호</span>
-                            <input
-                                type="text"
-                                name="receiver.postcode"
-                                placeholder="우편번호"
-                                inputMode="numeric"
-                                pattern="[0-9]*"
-                                className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900"
-                            />
-                        </label>
-                        <label className="flex flex-col font-medium text-gray-900 flex-1">
-                            <span className="mb-1">주소</span>
-                            <input
-                                type="text"
-                                name="receiver.address"
-                                className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900"
-                            />
-                        </label>
+                {/* 구매자 정보 */}
+                <div>
+                    <h2 className="text-xl font-bold mb-4 text-gray-900">구매자 정보</h2>
+                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                        <div className="flex flex-col md:flex-row gap-2">
+                            <label className="flex-1 flex flex-col font-medium text-gray-900">
+                                <span className="mb-1">이름</span>
+                                <input
+                                    type="text"
+                                    name="purchaser.name"
+                                    className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900 bg-white w-full"
+                                />
+                            </label>
+                            <label className="flex-1 flex flex-col font-medium text-gray-900">
+                                <span className="mb-1">이메일</span>
+                                <input
+                                    type="email"
+                                    name="purchaser.email"
+                                    className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900 bg-white w-full"
+                                />
+                            </label>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* 결제 정보 */}
-            <div>
-                <h2 className="text-xl font-bold mb-4 text-gray-900">결제 정보</h2>
-                <div className="flex flex-wrap gap-4 mb-4">
-                    {topOpts.map((opt) => (
-                        <label
-                            key={opt.id}
-                            className="flex items-center space-x-2 cursor-pointer px-3 py-2 border rounded-md hover:bg-gray-50 font-medium text-gray-900"
-                        >
-                            <input
-                                type="radio"
-                                name="selectedTopOptId"
-                                value={opt.id}
-                                checked={selectedTopOptId === opt.id}
-                                onChange={() => setSelectedTopOptId(opt.id)}
-                                className="accent-blue-600"
-                            />
-                            <span>{opt.name}</span>
-                        </label>
-                    ))}
+                {/* 배송지 정보 */}
+                <div>
+                    <h2 className="text-xl font-bold mb-4 text-gray-900">배송지 정보</h2>
+                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                        <div className="flex flex-col md:flex-row gap-2">
+                            <label className="flex-1 flex flex-col font-medium text-gray-900">
+                                <span className="mb-1">이름</span>
+                                <input
+                                    type="text"
+                                    name="receiver.name"
+                                    className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900 bg-white w-full"
+                                />
+                            </label>
+                            <label className="flex-1 flex flex-col font-medium text-gray-900">
+                                <span className="mb-1">전화번호</span>
+                                <input
+                                    type="tel"
+                                    name="receiver.phoneNumber"
+                                    className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900 bg-white w-full"
+                                />
+                            </label>
+                        </div>
+                        <div className="mt-4">
+                            <div className="flex gap-2">
+                                <label className="flex flex-col font-medium text-gray-900 w-32">
+                                    <span className="mb-1">우편번호</span>
+                                    <input
+                                        type="text"
+                                        name="receiver.postcode"
+                                        placeholder="우편번호"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
+                                        className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900 bg-white"
+                                    />
+                                </label>
+                                <label className="flex flex-col font-medium text-gray-900 flex-1">
+                                    <span className="mb-1">주소</span>
+                                    <input
+                                        type="text"
+                                        name="receiver.address"
+                                        className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900 bg-white"
+                                    />
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                {detailOpts.length > 0 && (
-                    <select
-                        name="paymentOptionId"
-                        value={selectedDetailOptId ?? ''}
-                        onChange={(e) => setSelectedDetailOptId(e.target.value ? parseInt(e.target.value, 10) : null)}
-                        required
-                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900"
-                    >
-                        <option value="" disabled>
-                            상세 수단 선택
-                        </option>
-                        {detailOpts.map((opt) => (
-                            <option key={opt.id} value={opt.id}>
-                                {opt.name}
-                            </option>
-                        ))}
-                    </select>
-                )}
-            </div>
 
-            {/* 구매 버튼 */}
-            <div className="flex justify-end">
-                <button
-                    type="submit"
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow transition-colors"
-                >
-                    구매
-                </button>
-            </div>
-        </form>
+                {/* 결제 정보 */}
+                <div>
+                    <h2 className="text-xl font-bold mb-4 text-gray-900">결제 정보</h2>
+                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                        <div className="flex flex-col md:flex-row gap-2">
+                            {/* 라디오 버튼 3개가 이름 입력칸과 동일한 너비로 각각 분할 */}
+                            <div className="flex flex-row flex-1 gap-2 min-w-0">
+                                {topOpts.map((opt, idx) => (
+                                    <label
+                                        key={opt.id}
+                                        className="flex items-center space-x-2 cursor-pointer px-3 py-2 border rounded-md hover:bg-gray-50 font-medium text-gray-900 w-full"
+                                        style={{ minWidth: 0, flex: 1 }}
+                                    >
+                                        <input 
+                                            type="radio"
+                                            name="selectedTopOptId"
+                                            value={opt.id}
+                                            checked={selectedTopOptId === opt.id}
+                                            onChange={() => setSelectedTopOptId(opt.id)}
+                                            className="accent-blue-600"
+                                        />
+                                        <span className="truncate">{opt.name}</span>
+                                    </label>
+                                ))}
+                            </div>
+                            {/* 상세 셀렉트는 전화번호 입력칸과 동일한 크기 (w-full, max-w-[320px]) */}
+                            {detailOpts.length > 0 && (
+                                <div className="flex-1 md:ml-2 max-w-[320px] min-w-0">
+                                    <select
+                                        name="paymentOptionId"
+                                        value={selectedDetailOptId ?? ''}
+                                        onChange={(e) => setSelectedDetailOptId(e.target.value ? parseInt(e.target.value, 10) : null)}
+                                        required
+                                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900 bg-white"
+                                    >
+                                        <option value="" disabled>
+                                            상세 수단 선택
+                                        </option>
+                                        {detailOpts.map((opt) => (
+                                            <option key={opt.id} value={opt.id}>
+                                                {opt.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* 구매 버튼 */}
+                <div className="flex justify-end">
+                    <button
+                        type="submit"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow transition-colors"
+                    >
+                        구매
+                    </button>
+                </div>
+            </form>
+        </div>
     );
 }
