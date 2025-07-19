@@ -16,6 +16,7 @@ export default function ProductDetailPage() {
   const { id } = useParams();
   const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     if (!id) return;
@@ -37,8 +38,15 @@ export default function ProductDetailPage() {
 
   if (!product) return <div className="text-center mt-20">상품 정보를 불러오는 중...</div>;
 
+  const handleQuantityChange = (val: number) => {
+    if (!product) return;
+    if (val < 1) setQuantity(1);
+    else if (val > product.totalQuantity) setQuantity(product.totalQuantity);
+    else setQuantity(val);
+  };
+
   const handlePurchase = () => {
-    router.push(`/purchase?id=${product?.id}&quantity=1`);
+    router.push(`/purchase?id=${product?.id}&quantity=${quantity}`);
   };
 
   const handleAddToCart = () => {
@@ -52,7 +60,7 @@ export default function ProductDetailPage() {
     }
     cart.push({
       productId: product.id,
-      quantity: 1
+      quantity: quantity
     });
     localStorage.setItem('cart', JSON.stringify(cart));
     alert('장바구니에 추가되었습니다.');
@@ -72,6 +80,34 @@ export default function ProductDetailPage() {
         </div>
         <div className="text-lg text-gray-600 mt-4">{product.description}</div>
         <div className="text-sm text-gray-500 mt-1">재고: {product.totalQuantity}개</div>
+        {/* 수량 선택 UI */}
+        <div className="flex items-center mt-4 space-x-2">
+          <span className="text-gray-700">수량:</span>
+          <button
+            type="button"
+            className="px-2 py-1 bg-gray-300 rounded"
+            onClick={() => handleQuantityChange(quantity - 1)}
+            disabled={quantity <= 1}
+          >
+            -
+          </button>
+          <input
+            type="number"
+            min={1}
+            max={product.totalQuantity}
+            value={quantity}
+            onChange={e => handleQuantityChange(Number(e.target.value))}
+            className="w-16 text-center border rounded"
+          />
+          <button
+            type="button"
+            className="px-2 py-1 bg-gray-300 rounded"
+            onClick={() => handleQuantityChange(quantity + 1)}
+            disabled={quantity >= product.totalQuantity}
+          >
+            +
+          </button>
+        </div>
         <div className="flex justify-between mt-10 space-x-4">
           <button
             onClick={() => router.push('/products/list')}
