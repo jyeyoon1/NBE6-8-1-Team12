@@ -4,6 +4,8 @@ import com.caffe.domain.shipping.constant.ShippingStatus;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class ShippingDto {
@@ -14,4 +16,6 @@ public class ShippingDto {
     private String contactName;   // 수령인 이름
     private String contactNumber; // 연락처
     private ShippingStatus status;  // 배송 상태 (BEFORE_DELIVERY, DELIVERING, DELIVERED)
+    private LocalDateTime createDate; // 주문일자
+
 }

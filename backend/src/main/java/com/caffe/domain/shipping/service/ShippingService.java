@@ -3,18 +3,24 @@ package com.caffe.domain.shipping.service;
 import com.caffe.domain.purchase.dto.req.ReceiverReqDto;
 import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.repository.PurchaseRepository;
+import com.caffe.domain.shipping.dto.ShippingResDto;
 import com.caffe.domain.shipping.entity.Shipping;
 import com.caffe.domain.shipping.constant.ShippingStatus;
 import com.caffe.domain.shipping.repository.ShippingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional
 public class ShippingService {
 
@@ -29,9 +35,12 @@ public class ShippingService {
                 .contactNumber(receiver.phoneNumber())
                 .contactName(receiver.name())
                 .carrier("CJ대한통운")
-                .status(ShippingStatus.TEMPORARY)
                 .purchase(purchase)
+                .email(receiver.email())
+                .createDate(LocalDateTime.now())
                 .build();
+
+        shipping.assignInitialStatus();
 
         return shippingRepository.save(shipping);
     }
@@ -62,4 +71,45 @@ public class ShippingService {
     public List<Purchase> getPurchasesByUserEmail(String userEmail) {
         return purchaseRepository.findAllByUserEmail(userEmail);
     }
+
+    public List<ShippingResDto> getAllShippings() {
+        return shippingRepository.findAll()
+                .stream()
+                .map(ShippingResDto::new)
+                .toList();
+    }
+
+    @Scheduled(fixedDelay = 60000)
+    @Transactional
+    public void updateShippingStatusBasedOnOrderTime() {
+        List<Shipping> shippings = shippingRepository.findAll();
+        LocalDateTime now = LocalDateTime.now();
+
+        for (Shipping shipping : shippings) {
+            LocalTime orderTime = shipping.getCreateDate().toLocalTime();
+            ShippingStatus currentStatus = shipping.getStatus();
+
+            if (currentStatus == ShippingStatus.BEFORE_DELIVERY) {
+                if (orderTime.isBefore(LocalTime.of(9, 0)) || orderTime.isAfter(LocalTime.of(13, 59))) {
+                    shipping.updateStatus(ShippingStatus.DELIVERING, now);
+                    log.info("주문 ID {} 상태를 DELIVERING으로 업데이트", shipping.getId());
+                }
+            }
+        }
+    }
+
+    public static ShippingStatus determineInitialStatus(LocalDateTime createDate) {
+        LocalTime time = createDate.toLocalTime();
+
+        if (time.isBefore(LocalTime.of(9, 0))) {
+            return ShippingStatus.BEFORE_DELIVERY;
+        } else if (time.isBefore(LocalTime.of(14, 0))) {
+            return ShippingStatus.DELIVERING;
+        } else {
+            return ShippingStatus.BEFORE_DELIVERY;
+        }
+    }
+
+
+
 }
