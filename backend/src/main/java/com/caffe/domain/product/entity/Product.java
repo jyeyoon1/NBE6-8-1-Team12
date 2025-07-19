@@ -44,4 +44,16 @@ public class Product extends BaseEntity {
     public boolean hasStock(int quantity) {
         return this.totalQuantity >= quantity;
     }
+
+    public void decreaseStock(int quantity) {
+        if (!hasStock(quantity)) {
+            throw new IllegalArgumentException("재고가 부족합니다.");
+        }
+        this.totalQuantity -= quantity;
+    }
+
+    public void restoreStock(int quantity) {
+        this.totalQuantity += quantity;
+    }
+
 }
