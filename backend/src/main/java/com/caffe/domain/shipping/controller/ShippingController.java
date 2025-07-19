@@ -19,37 +19,36 @@ public class ShippingController {
     private final ShippingService shippingService;
     private final PurchaseService purchaseService;
 
-    // 이메일로 해당 유저의 구매 목록 조회
     @GetMapping("/purchases/{email}")
     public List<Purchase> getPurchasesByEmail(@PathVariable("email") String userEmail) {
         return shippingService.getPurchasesByUserEmail(userEmail);
     }
 
-    // 배송 생성 (ShippingDto -> Shipping)
     @PostMapping
     public List<ShippingResDto> createShippingsForAllPurchases(@RequestBody ShippingDto dto) {
         List<Purchase> purchases = shippingService.getPurchasesByUserEmail(dto.getEmail());
 
-        List<Shipping> shippings = purchases.stream().map(purchase ->
-                Shipping.builder()
-                        .email(dto.getEmail())
-                        .address(dto.getAddress())
-                        .postcode(dto.getPostcode())
-                        .contactName(dto.getContactName())
-                        .contactNumber(dto.getContactNumber())
-                        .carrier("CJ대한통운")
-                        .status(dto.getStatus())
-                        .purchase(purchase)
-                        .build()
-        ).toList();
+        List<Shipping> shippings = purchases.stream().map(purchase -> {
+            Shipping shipping = Shipping.builder()
+                    .email(dto.getEmail())
+                    .address(dto.getAddress())
+                    .postcode(dto.getPostcode())
+                    .contactName(dto.getContactName())
+                    .contactNumber(dto.getContactNumber())
+                    .carrier("CJ대한통운")
+                    .purchase(purchase)
+                    .build();
 
-        shippings.forEach(shippingService::saveShipping);
+            // 상태 자동 설정
+            shipping.assignInitialStatus();
+
+            return shippingService.saveShipping(shipping);
+        }).toList();
 
         return shippings.stream()
                 .map(ShippingResDto::new)
                 .toList();
     }
-
 
     @GetMapping("/{email}")
     public List<ShippingResDto> getShippingByEmail(@PathVariable String email) {
@@ -58,5 +57,8 @@ public class ShippingController {
                 .toList();
     }
 
+    @GetMapping
+    public List<ShippingResDto> getAllShippings() {
+        return shippingService.getAllShippings();
+    }
 }
-

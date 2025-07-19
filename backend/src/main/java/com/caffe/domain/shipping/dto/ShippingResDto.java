@@ -1,7 +1,10 @@
 package com.caffe.domain.shipping.dto;
 
 import com.caffe.domain.shipping.entity.Shipping;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 @Getter
 public class ShippingResDto {
@@ -13,6 +16,10 @@ public class ShippingResDto {
     private String contactNumber;
     private String carrier;
     private String status;
+    private String email;
+
+    @JsonFormat(pattern = "yyyy.MM.dd HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime createDate;
 
     public ShippingResDto(Shipping shipping) {
         this.id = shipping.getId();
@@ -22,5 +29,7 @@ public class ShippingResDto {
         this.contactNumber = shipping.getContactNumber();
         this.carrier = shipping.getCarrier();
         this.status = shipping.getStatus().name();
+        this.email = shipping.getEmail();
+        this.createDate = shipping.getCreateDate();
     }
 }

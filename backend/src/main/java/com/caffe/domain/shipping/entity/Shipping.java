@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDateTime;
 
@@ -13,8 +14,10 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
 @Entity
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@EnableJpaAuditing
 @Builder
 public class Shipping {
 
@@ -42,4 +45,27 @@ public class Shipping {
     @ManyToOne
     @JoinColumn(name = "purchase_id")
     private Purchase purchase;
+
+    public void assignInitialStatus() {
+        LocalDateTime now = LocalDateTime.now();
+        int hour = now.getHour();
+
+        if (hour < 9) {
+            this.status = ShippingStatus.BEFORE_DELIVERY;
+        } else if (hour < 14) {
+            this.status = ShippingStatus.DELIVERING;
+        } else {
+            this.status = ShippingStatus.BEFORE_DELIVERY;
+        }
+    }
+
+    public void updateStatus(ShippingStatus newStatus, LocalDateTime modifyDate) {
+        this.status = newStatus;
+        this.modifyDate = modifyDate;
+    }
+
+
+
+
+
 }
