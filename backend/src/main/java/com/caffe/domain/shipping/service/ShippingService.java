@@ -87,7 +87,20 @@ public class ShippingService {
                 .toList();
     }
 
-    @Scheduled(fixedDelay = 300000)
+    // 주문일자에 따라 초기 배송 상태 결정
+    public static ShippingStatus determineInitialStatus(LocalDateTime createDate) {
+        LocalTime time = createDate.toLocalTime();
+
+        if (time.isBefore(LocalTime.of(9, 0))) {
+            return ShippingStatus.BEFORE_DELIVERY; // 배송전
+        } else if (time.isBefore(LocalTime.of(14, 0))) {
+            return ShippingStatus.DELIVERING; // 배송
+        } else {
+            return ShippingStatus.BEFORE_DELIVERY; // 배송전
+        }
+    }
+
+    @Scheduled(fixedDelay = 10000)
     @Transactional
     public void updateShippingStatusBasedOnOrderTime() {
         List<Shipping> shippings = shippingRepository.findAll();
@@ -106,18 +119,26 @@ public class ShippingService {
         }
     }
 
+    @Scheduled(fixedDelay = 10000) // 10초마다
+    @Transactional
+    public void completeDeliveriesAfterTenSeconds() {
+        List<Shipping> shippings = shippingRepository.findAll();
+        LocalDateTime now = LocalDateTime.now();
 
-    // 주문일자에 따라 초기 배송 상태 결정
-    public static ShippingStatus determineInitialStatus(LocalDateTime createDate) {
-        LocalTime time = createDate.toLocalTime();
+        for (Shipping shipping : shippings) {
+            if (shipping.getStatus() == ShippingStatus.DELIVERING) {
+                LocalDateTime baseTime = shipping.getModifyDate() != null ? shipping.getModifyDate() : shipping.getCreateDate();
 
-        if (time.isBefore(LocalTime.of(9, 0))) {
-            return ShippingStatus.BEFORE_DELIVERY; // 배송전
-        } else if (time.isBefore(LocalTime.of(14, 0))) {
-            return ShippingStatus.DELIVERING; // 배송
-        } else {
-            return ShippingStatus.BEFORE_DELIVERY; // 배송전
+                if (baseTime.plusSeconds(10).isBefore(now)) {
+                    shipping.updateStatus(ShippingStatus.DELIVERED, now);
+                    shippingRepository.save(shipping);
+                    log.info("배송완료 처리: 배송 ID {}, 완료 시각: {}", shipping.getId(), now);
+                } else {
+                    log.debug("아직 10초 안지남: 배송 ID {}, baseTime={}, now={}", shipping.getId(), baseTime, now);
+                }
+            }
         }
     }
+
 
 }

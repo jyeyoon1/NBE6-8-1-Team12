@@ -20,8 +20,11 @@ export default function ShippingListPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [currentLatePage, setCurrentLatePage] = useState(1);
   const [searchEmail, setSearchEmail] = useState('');
-  const lateItemsPerPage = 2;  // 페이지 목록 원하는 수
-  const itemsPerPage = 2;
+  const [currentCompletedPage, setCurrentCompletedPage] = useState(1);
+  const lateItemsPerPage = 3;  // 페이지 목록 원하는 수
+  const itemsPerPage = 3; // 페이지 목록 원하는 수
+  const completedItemsPerPage = 3;  // 배송 완료 목록 페이지당 수
+
 
   useEffect(() => {
     const fetchShippings = () => {
@@ -50,7 +53,7 @@ export default function ShippingListPage() {
     };
 
     fetchShippings();
-    const intervalId = setInterval(fetchShippings, 30000);
+    const intervalId = setInterval(fetchShippings, 10000);
     return () => clearInterval(intervalId);
   }, [searchEmail]);
 
@@ -90,8 +93,12 @@ export default function ShippingListPage() {
   // 오전 14시 이전 주문
   const morningAll = filteredShippings.filter(item => {
     const orderTime = new Date(item.orderDate);
-    return (orderTime <= today14) || (item.status === 'DELIVERING');
+    const hour = orderTime.getHours();
+
+     return (hour >= 9 && hour < 14) || item.status === 'DELIVERING';
   });
+
+
 
   const totalPages = Math.ceil(morningAll.length / itemsPerPage);
 
@@ -103,8 +110,11 @@ export default function ShippingListPage() {
   // 오후 14시 이후 주문
   const lateOrders = filteredShippings.filter(item => {
     const orderTime = new Date(item.orderDate);
-    return (orderTime > today14) && (item.status === 'BEFORE_DELIVERY');
+    const hour = orderTime.getHours();
+
+    return (hour < 9 || hour >= 14) && item.status === 'BEFORE_DELIVERY';
   });
+
 
 
   const totalLatePages = Math.ceil(lateOrders.length / lateItemsPerPage);
@@ -112,6 +122,16 @@ export default function ShippingListPage() {
   const currentLateItems = lateOrders.slice(
     (currentLatePage - 1) * lateItemsPerPage,
     currentLatePage * lateItemsPerPage
+  );
+
+  // 배송 완료 데이터 필터링
+  const completedOrders = filteredShippings.filter(item => item.status === 'DELIVERED');
+
+  const totalCompletedPages = Math.ceil(completedOrders.length / completedItemsPerPage);
+
+  const currentCompletedItems = completedOrders.slice(
+    (currentCompletedPage - 1) * completedItemsPerPage,
+    currentCompletedPage * completedItemsPerPage
   );
 
 
@@ -133,65 +153,71 @@ export default function ShippingListPage() {
       <div className="flex justify-center items-start space-x-8">
         <div className="overflow-x-auto bg-white shadow rounded-lg w-[800px] p-4">
 
-        <h2 className="text-xl font-bold mb-4 text-left">📦 배송중</h2>
-          <table className="min-w-full border border-gray-300 text-center text-sm">
-            <thead className="bg-gray-200">
-              <tr>
-
-                <th className="border p-2">주소</th>
-                <th className="border p-2">우편번호</th>
-                <th className="border p-2">전화번호</th>
-                <th className="border p-2">이메일</th>
-                <th className="border p-2">배송업체</th>
-                <th className="border p-2">상태</th>
-                <th className="border p-2">주문일자</th>
-                <th className="border p-2">Id</th>
-              </tr>
-
-            </thead>
-            <tbody>
-              {currentMorningItems.map((item, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="border p-2">{item.address}</td>
-                  <td className="border p-2">{item.postcode}</td>
-                  <td className="border p-2">{item.phoneNumber}</td>
-                  <td className="border p-2">{item.recipient}</td>
-                  <td className="border p-2">{item.carrier}</td>
-                  <td className="border p-2">{item.status}</td>
-                  <td className="border p-2">
-                    {new Date(item.orderDate).toLocaleString('ko-KR', {
-                      year: '2-digit',
-                      month: '2-digit',
-                      day: '2-digit',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      second: '2-digit',
-                      hour12: false,
-                    })}
-                  </td>
-                  <td className="border p-2">{item.orderNo}</td>
+        {/* 배송중 */}
+        {morningAll.length > 0 ? (
+          <div className="mt-8">
+            <h2 className="text-xl font-bold mb-4 text-left">📦 배송중</h2>
+            <table className="min-w-full border border-gray-300 text-center text-sm">
+              <thead className="bg-gray-200">
+                <tr>
+                  <th className="border p-2">주소</th>
+                  <th className="border p-2">우편번호</th>
+                  <th className="border p-2">전화번호</th>
+                  <th className="border p-2">이메일</th>
+                  <th className="border p-2">배송업체</th>
+                  <th className="border p-2">상태</th>
+                  <th className="border p-2">주문일자</th>
+                  <th className="border p-2">Id</th>
                 </tr>
-              ))}
-            </tbody>
+              </thead>
+              <tbody>
+                {currentMorningItems.map((item, index) => (
+                  <tr key={index} className="hover:bg-gray-50">
+                    <td className="border p-2">{item.address}</td>
+                    <td className="border p-2">{item.postcode}</td>
+                    <td className="border p-2">{item.phoneNumber}</td>
+                    <td className="border p-2">{item.recipient}</td>
+                    <td className="border p-2">{item.carrier}</td>
+                    <td className="border p-2">{item.status}</td>
+                    <td className="border p-2">
+                      {new Date(item.orderDate).toLocaleString('ko-KR', {
+                        year: '2-digit',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false,
+                      })}
+                    </td>
+                    <td className="border p-2">{item.orderNo}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-          </table>
-
-          <div className="flex justify-center items-center mt-4 space-x-2">
-            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50">◀ 이전
-            </button>
-            <span>{currentPage} / {totalPages}</span>
-            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50">다음 ▶
-            </button>
+            <div className="flex justify-center items-center mt-4 space-x-2">
+              <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50">◀ 이전
+              </button>
+              <span>{currentPage} / {totalPages}</span>
+              <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50">다음 ▶
+              </button>
+            </div>
           </div>
+        ) : (
+          <div className="mt-8 text-center text-gray-500">
+            📦 배송중인 주문이 없습니다.
+          </div>
+        )}
 
           {/* 오늘 14시 이후 주문 목록 */}
-          {lateOrders.length > 0 && (
+          {lateOrders.length > 0 ? (
             <div className="mt-8">
-              <h2 className="text-xl font-bold mb-4 text-left">📦 배송 대기</h2>
+              <h2 className="text-xl font-bold mb-4 text-left">📭 배송 대기</h2>
               <table className="min-w-full border border-gray-300 text-center text-sm">
                 <thead className="bg-gray-200">
                   <tr>
@@ -230,30 +256,105 @@ export default function ShippingListPage() {
                   ))}
                 </tbody>
               </table>
+              <div className="flex justify-center items-center mt-4 space-x-2">
+                    <button
+                      onClick={() => setCurrentLatePage((prev) => Math.max(prev - 1, 1))}
+                      disabled={currentLatePage === 1}
+                      className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
+                    >
+                      ◀ 이전
+                    </button>
+                    <span>{currentLatePage} / {totalLatePages}</span>
+                    <button
+                      onClick={() => setCurrentLatePage((prev) => Math.min(prev + 1, totalLatePages))}
+                      disabled={currentLatePage === totalLatePages}
+                      className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
+                    >
+                      다음 ▶
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-8 text-center text-gray-500">
+                  📭 배송 대기 중인 주문이 없습니다.
+                </div>
+              )}
+
+        {/* 배송 완료 */}
+        {completedOrders.length > 0 ? (
+          <div className="mt-8">
+            <h2 className="text-xl font-bold mb-4 text-left">✅ 배송 완료</h2>
+            <table className="min-w-full border border-gray-300 text-center text-sm">
+              <thead className="bg-gray-200">
+                <tr>
+                  <th className="border p-2">주소</th>
+                  <th className="border p-2">우편번호</th>
+                  <th className="border p-2">전화번호</th>
+                  <th className="border p-2">이메일</th>
+                  <th className="border p-2">배송업체</th>
+                  <th className="border p-2">상태</th>
+                  <th className="border p-2">주문일자</th>
+                  <th className="border p-2">Id</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentCompletedItems.map((item, index) => (
+                  <tr key={index} className="hover:bg-gray-50">
+                    <td className="border p-2">{item.address}</td>
+                    <td className="border p-2">{item.postcode}</td>
+                    <td className="border p-2">{item.phoneNumber}</td>
+                    <td className="border p-2">{item.recipient}</td>
+                    <td className="border p-2">{item.carrier}</td>
+                    <td className="border p-2">{item.status}</td>
+                    <td className="border p-2">
+                      {new Date(item.orderDate).toLocaleString('ko-KR', {
+                        year: '2-digit',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                      })}
+                    </td>
+                    <td className="border p-2">{item.orderNo}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* ✅ 페이지네이션 버튼 */}
+            <div className="flex justify-center items-center mt-4 space-x-2">
+              <button
+                onClick={() => setCurrentCompletedPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentCompletedPage === 1}
+                className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
+              >
+                ◀ 이전
+              </button>
+              <span>{currentCompletedPage} / {totalCompletedPages}</span>
+              <button
+                onClick={() => setCurrentCompletedPage((prev) => Math.min(prev + 1, totalCompletedPages))}
+                disabled={currentCompletedPage === totalCompletedPages}
+                className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
+              >
+                다음 ▶
+              </button>
             </div>
-          )}
-        <div className="flex justify-center items-center mt-4 space-x-2">
-          <button
-            onClick={() => setCurrentLatePage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentLatePage === 1}
-            className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
-          >
-            ◀ 이전
-          </button>
-          <span>{currentLatePage} / {totalLatePages}</span>
-          <button
-            onClick={() => setCurrentLatePage((prev) => Math.min(prev + 1, totalLatePages))}
-            disabled={currentLatePage === totalLatePages}
-            className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
-          >
-            다음 ▶
-          </button>
-        </div>
+
+          </div>
+        ) : (
+          <div className="mt-8 text-center text-gray-500">
+            ✅ 배송 완료된 주문이 없습니다.
+          </div>
+        )}
+
         </div>
 
         <div className="p-4 bg-white rounded shadow text-center w-80">
             <p className="font-semibold mb-2">
-                📢 당일 오후 2시 이후의 주문은 다음날 배송을 시작합니다!
+                📢 당일 오후 2시 이후의 주문은 <br />
+                다음날(오전 9시) 배송을 시작합니다!
             </p>
 
             <p className="text-sm mb-5">
@@ -269,21 +370,27 @@ export default function ShippingListPage() {
             </p>
 
             <p className="text-sm mb-5">
-                📌 주문일자 → <strong>14:00 ~ 23:59</strong> <br />
+                📌 주문일자 → <strong>14:00 ~ 다음날 08:59</strong> <br />
                 초기 Status = <strong>BEFORE_DELIVERY</strong> <br />
                 오전 9시 스케줄러 → <strong>DELIVERING</strong> 으로 변경
             </p>
 
             <p className="text-sm mb-5">
-                🔄 Status가 <strong>DELIVERING</strong>으로 변경되면 <br />
-                실시간으로 <strong>'배송중'</strong> 목록으로 이동합니다! <br />
+                📌
+                modifyDate가 있으면 modifyDate 기준 <strong>10초 후</strong>에 <strong>DELIVERED</strong> 변경 <br />
+                없으면 createDate 기준 <strong>10초 후</strong>에 <strong>DELIVERED</strong> 변경 <br />
+                (실제 운영에서는 2시간 후 변경 예정)
+            </p>
+
+            <p className="text-sm mb-5">
+                🔄 Status가 변경되면 <br />
+                해당 주문은 변경된 Status에 맞는 목록으로 자동 이동합니다!<br />
                 (자동 새로고침: 10초마다)
             </p>
 
             <p className="text-sm mb-5">
-                ⚡ 현재는 테스트를 위해 스케줄러가 <br />
-                <strong>현재 시간 기준 1분 뒤</strong>에 실행됩니다! <br />
-                (원래는 오전 9시)
+                ⚡ 현재는 테스트를 위해 스케줄러가 <br /> <strong>10초</strong>마다 실행됩니다. <br />
+                (실제는 오전 9시에 실행)
             </p>
 
             <p>⏰ 현재 시간: <span className="font-mono">{currentTime}</span></p>
