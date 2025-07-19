@@ -179,7 +179,6 @@ export default function PurchasePage() {
 
             const fullResponse: ServerResponse = await purchaseRes.json();
             const paymentRequestBody: PurchaseCheckoutResBody = fullResponse.data;
-            console.log('주문 생성 성공:', fullResponse);
 
             const paymentRes = await fetch(`http://localhost:8080/api/v1/payments`, {
                 method: 'POST',
@@ -191,9 +190,6 @@ export default function PurchasePage() {
             if (!paymentRes.ok) throw new Error("결제 실패");
 
             const paymentData = await paymentRes.json();
-            console.log('결제 정보 생성 성공:', paymentData);
-            console.log('paymentData.data :', paymentData.data);
-            console.log('stringify:', JSON.stringify(paymentData.data));
 
             router.push(`/payment/execute?paymentData=${encodeURIComponent(JSON.stringify(paymentData.data))}`);
         } catch (err) {
