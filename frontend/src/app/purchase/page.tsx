@@ -47,20 +47,6 @@ export default function PurchasePage() {
             }
         }
 
-        // 로컬스토리지의의 cartItems 세팅 (브라우저에 저장된 장바구니 목록이 있는 상태에서 구매 버튼 클릭 시)
-        const localCart = localStorage.getItem('cart');
-        if (localCart) {
-            try {
-                const parsedLocal = JSON.parse(localCart);
-                if (Array.isArray(parsedLocal) && parsedLocal.length > 0) {
-                    setCartItemReqBody(parsedLocal);
-                    return;
-                }
-            } catch (err) {
-                console.error('localStorage cart 파싱 실패:', err);
-            }
-        }
-
         // 단일 상품 목록에 세팅 (장바구니 목록이 없을 경우에만 단일 제품 세팅)
         if (paramProductId) {
             const qty = paramQuantity ? parseInt(paramQuantity, 10) : 1;
@@ -209,7 +195,7 @@ export default function PurchasePage() {
             console.log('paymentData.data :', paymentData.data);
             console.log('stringify:', JSON.stringify(paymentData.data));
 
-            router.push(`/payment?paymentData=${encodeURIComponent(JSON.stringify(paymentData.data))}`);
+            router.push(`/payment/${paymentData.id}/execute?paymentData=${encodeURIComponent(JSON.stringify(paymentData.data))}`);
         } catch (err) {
             console.error('주문 실패:', err);
         }
