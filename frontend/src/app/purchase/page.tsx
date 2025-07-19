@@ -97,6 +97,21 @@ export default function PurchasePage() {
             .catch(err => console.error('상세 결제수단 불러오기 실패:', err));
     }, [selectedTopOptId]);
 
+    // 구매 시 로컬스토리지에서 구매한 제품 제거
+    const updateCart = (purchaseItems: PurchaseItemInfo[]) => {
+        const cartStr = localStorage.getItem("cart");
+        if (!cartStr) return;
+      
+        const cart: { productId: number; quantity: number }[] = JSON.parse(cartStr);
+      
+        // 구매한 제품 제외 필터
+        const updatedCart = cart.filter(item => 
+            !purchaseItems.some(p => p.productId === item.productId)
+        );
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
+    };
+      
+
     if (!purchaseItems || purchaseItems.length === 0) return <div>Loading...</div>;
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -189,8 +204,9 @@ export default function PurchasePage() {
             });
             if (!paymentRes.ok) throw new Error("결제 실패");
 
-            const paymentData = await paymentRes.json();
+            updateCart(purchaseItems);  
 
+            const paymentData = await paymentRes.json();
             router.push(`/payment/${paymentData.data.id}/execute?paymentData=${encodeURIComponent(JSON.stringify(paymentData.data))}`);
         } catch (err) {
             console.error('주문 실패:', err);
