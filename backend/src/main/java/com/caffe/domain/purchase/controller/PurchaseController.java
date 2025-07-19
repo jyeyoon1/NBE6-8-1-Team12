@@ -27,13 +27,13 @@ public class PurchaseController {
     private final PurchaseService purchaseService;
     private final PaymentService paymentService;
 
-    @GetMapping
+    @GetMapping("/list")
     @Operation(summary = "주문 목록")
     public List<PurchaseAdmDto> getPurchases() {
         return purchaseService.getPurchases();
     }
 
-    @GetMapping("/page")
+    @GetMapping
     @Operation(summary = "주문 목록")
     public PageResponseDto<PurchaseAdmDto> getPurchases(
             @RequestParam(value = "page", defaultValue = "0") int page,

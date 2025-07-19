@@ -47,7 +47,7 @@ export interface PurchaseDto {
     purchaseDate: string;
 }
 
-export type PurchaseStatus = "TEMPORARY" | "ORDERED" | "CANCELED" | "FAILED";
+export type PurchaseStatus = "TEMPORARY" | "PURCHASED" | "CANCELED" | "FAILED";
 
 export interface PurchaseItemDetailDto {
     purchaseItemId: number;
@@ -72,4 +72,25 @@ export interface PurchaseDetailDto {
     purchase: PurchaseDto;
     purchaseItems: Array<PurchaseItemDetailDto>;
     receiver: ReceiverResDto;
+}
+
+
+// 관리자 주문 목록 페이지 연관
+export interface PurchaseAdmDto {
+    purchaseId: number;
+    userEmail: string;
+    totalPrice: number;
+    totalQuantity: number;
+    purchaseStatus: PurchaseStatus;
+    purchaseDate: string;
+    summaryName: string;
+}
+
+export interface PageResponseDto<T> {
+    content: T[];
+    pageNumber: number;
+    pageSize: number;
+    totalPages: number;
+    totalElements: number;
+    isLast: boolean;
 }

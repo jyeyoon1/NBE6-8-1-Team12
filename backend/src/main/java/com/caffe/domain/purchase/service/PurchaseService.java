@@ -123,4 +123,31 @@ public class PurchaseService {
 
         return new PurchaseCheckoutResBody(purchase, reqBody.paymentOptionId());
     }
+
+    public void completePurchase(Purchase purchase) {
+        purchase.completePurchase();
+
+        for (PurchaseItem purchaseItem : purchase.getPurchaseItems()) {
+            Product product = purchaseItem.getProduct();
+            product.decreaseStock(purchaseItem.getQuantity());
+        }
+    }
+
+    public void cancelPurchase(Purchase purchase) {
+        purchase.cancelPurchase();
+
+        for (PurchaseItem purchaseItem : purchase.getPurchaseItems()) {
+            Product product = purchaseItem.getProduct();
+            product.restoreStock(purchaseItem.getQuantity());
+        }
+    }
+
+    public void failPurchase(Purchase purchase) {
+        purchase.failPurchase();
+
+        for (PurchaseItem purchaseItem : purchase.getPurchaseItems()) {
+            Product product = purchaseItem.getProduct();
+            product.restoreStock(purchaseItem.getQuantity());
+        }
+    }
 }
