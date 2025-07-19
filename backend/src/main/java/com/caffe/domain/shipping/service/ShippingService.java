@@ -66,6 +66,14 @@ public class ShippingService {
        return shippingRepository.findByEmail(email);
    }
 
+    // 이메일로 배송 목록 조회 (DTO)
+    public List<ShippingResDto> getShippingListByUserEmailDto(String email) {
+        return shippingRepository.findByEmail(email).stream()
+                .map(ShippingResDto::new)
+                .toList();
+    }
+
+
 
     // 유저 이메일로 구매 내역 조회
     public List<Purchase> getPurchasesByUserEmail(String userEmail) {
@@ -79,7 +87,7 @@ public class ShippingService {
                 .toList();
     }
 
-    @Scheduled(fixedDelay = 60000)
+    @Scheduled(fixedDelay = 300000)
     @Transactional
     public void updateShippingStatusBasedOnOrderTime() {
         List<Shipping> shippings = shippingRepository.findAll();
@@ -98,18 +106,18 @@ public class ShippingService {
         }
     }
 
+
+    // 주문일자에 따라 초기 배송 상태 결정
     public static ShippingStatus determineInitialStatus(LocalDateTime createDate) {
         LocalTime time = createDate.toLocalTime();
 
         if (time.isBefore(LocalTime.of(9, 0))) {
-            return ShippingStatus.BEFORE_DELIVERY;
+            return ShippingStatus.BEFORE_DELIVERY; // 배송전
         } else if (time.isBefore(LocalTime.of(14, 0))) {
-            return ShippingStatus.DELIVERING;
+            return ShippingStatus.DELIVERING; // 배송
         } else {
-            return ShippingStatus.BEFORE_DELIVERY;
+            return ShippingStatus.BEFORE_DELIVERY; // 배송전
         }
     }
-
-
 
 }

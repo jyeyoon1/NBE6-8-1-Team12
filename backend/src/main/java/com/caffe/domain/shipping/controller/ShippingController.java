@@ -50,15 +50,12 @@ public class ShippingController {
                 .toList();
     }
 
-    @GetMapping("/{email}")
-    public List<ShippingResDto> getShippingByEmail(@PathVariable String email) {
-        return shippingService.getShippingListByUserEmail(email).stream()
-                .map(ShippingResDto::new)
-                .toList();
-    }
-
+    // 📦 이메일 검색 시 QueryParam으로 받음
     @GetMapping
-    public List<ShippingResDto> getAllShippings() {
+    public List<ShippingResDto> getShippings(@RequestParam(required = false) String email) {
+        if (email != null && !email.isBlank()) {
+            return shippingService.getShippingListByUserEmailDto(email);
+        }
         return shippingService.getAllShippings();
     }
 }

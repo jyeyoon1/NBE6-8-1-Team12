@@ -19,13 +19,17 @@ export default function ShippingListPage() {
   const [currentTime, setCurrentTime] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
   const [currentLatePage, setCurrentLatePage] = useState(1);
-  const lateItemsPerPage = 2;  // 원하는 수
-
+  const [searchEmail, setSearchEmail] = useState('');
+  const lateItemsPerPage = 2;  // 페이지 목록 원하는 수
   const itemsPerPage = 2;
 
   useEffect(() => {
     const fetchShippings = () => {
-      fetch("http://localhost:8080/api/shippings")
+      const url = searchEmail
+        ? `http://localhost:8080/api/shippings?email=${searchEmail}`
+        : "http://localhost:8080/api/shippings";
+
+      fetch(url)
         .then((res) => res.json())
         .then((data) => {
           const mappedData: ShippingItem[] = data.map((item: any) => ({
@@ -45,12 +49,10 @@ export default function ShippingListPage() {
         .catch((err) => console.error("배송 데이터 로딩 실패", err));
     };
 
-    fetchShippings(); // mount될 때 1번 호출
-
-    const intervalId = setInterval(fetchShippings, 30000); // 30초마다 갱신
-
+    fetchShippings();
+    const intervalId = setInterval(fetchShippings, 30000);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [searchEmail]);
 
 
   useEffect(() => {
@@ -81,8 +83,12 @@ export default function ShippingListPage() {
       14, 0, 0
     );
 
+  const filteredShippings = allShippings.filter(item =>
+    searchEmail === '' || item.recipient.toLowerCase().includes(searchEmail.toLowerCase())
+  );
+
   // 오전 14시 이전 주문
-  const morningAll = allShippings.filter(item => {
+  const morningAll = filteredShippings.filter(item => {
     const orderTime = new Date(item.orderDate);
     return (orderTime <= today14) || (item.status === 'DELIVERING');
   });
@@ -95,10 +101,11 @@ export default function ShippingListPage() {
   );
 
   // 오후 14시 이후 주문
-  const lateOrders = allShippings.filter(item => {
-      const orderTime = new Date(item.orderDate);
-      return (orderTime > today14) && (item.status === 'BEFORE_DELIVERY');
-    });
+  const lateOrders = filteredShippings.filter(item => {
+    const orderTime = new Date(item.orderDate);
+    return (orderTime > today14) && (item.status === 'BEFORE_DELIVERY');
+  });
+
 
   const totalLatePages = Math.ceil(lateOrders.length / lateItemsPerPage);
 
@@ -110,14 +117,27 @@ export default function ShippingListPage() {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen mt-20 flex flex-col items-center">
-      <h1 className="text-2xl font-bold mb-4 mr-85">🚚 배송 목록</h1>
+       <div className="flex justify-between items-center w-full max-w-5xl mb-4">
+          <h1 className="text-2xl font-bold ml-64">🚚 배송 목록</h1>
+
+          <input
+            type="text"
+            placeholder="이메일로 검색"
+            value={searchEmail}
+            onChange={(e) => setSearchEmail(e.target.value)}
+            className="border px-3 py-2 rounded w-64 shadow mr-72"
+          />
+        </div>
+
 
       <div className="flex justify-center items-start space-x-8">
         <div className="overflow-x-auto bg-white shadow rounded-lg w-[800px] p-4">
+
         <h2 className="text-xl font-bold mb-4 text-left">📦 배송중</h2>
           <table className="min-w-full border border-gray-300 text-center text-sm">
             <thead className="bg-gray-200">
               <tr>
+
                 <th className="border p-2">주소</th>
                 <th className="border p-2">우편번호</th>
                 <th className="border p-2">전화번호</th>
@@ -127,6 +147,7 @@ export default function ShippingListPage() {
                 <th className="border p-2">주문일자</th>
                 <th className="border p-2">Id</th>
               </tr>
+
             </thead>
             <tbody>
               {currentMorningItems.map((item, index) => (

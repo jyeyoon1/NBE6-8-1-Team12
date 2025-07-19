@@ -23,7 +23,7 @@ public class ShippingScheduler {
     private final ShippingRepository shippingRepository;
 
     // 매일 오전 9시에 실행
-    @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 9 * * MON-FRI", zone = "Asia/Seoul")
     @Transactional
     public void updateShippingStatusForMorning() {
         log.info("🔔 오전 9시: 배송 상태 업데이트 시작");
