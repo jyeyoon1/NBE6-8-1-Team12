@@ -1,14 +1,16 @@
 "use client";
 import React, { useState, Suspense, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import BankForm from "../components/bankForm/bankForm";
-import CardForm from "../components/cardForm/cardForm";
-import PgForm from "../components/pgForm/pgForm";
-import { PaymentData } from "../types/paymentData";
+import { useSearchParams, useRouter, useParams } from "next/navigation";
+import BankForm from "../../components/bankForm/bankForm";
+import CardForm from "../../components/cardForm/cardForm";
+import PgForm from "../../components/pgForm/pgForm";
+import { PaymentData } from "../../types/paymentData";
 
 function PaymentGateway({ } ) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const params = useParams();
+  const paymentId = parseInt(params.id as string);
 
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
   const [paymentInfo, setPaymentInfo] = useState({});
@@ -30,12 +32,20 @@ function PaymentGateway({ } ) {
         "paymentOptionType": "PG",
         "paymentOptionName": "Toss"
       }`);
+      console.log('parsedData :', parsedData);
+
       setPaymentData({
         id: parseInt(parsedData.id),
         amount: parsedData.amount,
         optionType: parsedData.paymentOptionType,
         optionName: parsedData.paymentOptionName
       });
+
+      if(paymentId !== parsedData.id) {
+        console.log('paymentId :', paymentId);
+        console.log('parsedData.id :', parsedData.id);
+        throw new Error("결제 정보가 올바르지 않습니다.");
+      }
     } catch (err) {
       console.error("paymentData 오류", err);
       setError("결제 정보를 불러오는 중 오류가 발생했습니다.");
@@ -84,6 +94,7 @@ function PaymentGateway({ } ) {
         paymentInfo: formattedPaymentInfo,
       };
 
+      console.log('payload :', payload);
       const response = await fetch(`${apiUrl}/api/v1/payments/${paymentData.id}/execute`, {
         method: "POST",
         headers: {

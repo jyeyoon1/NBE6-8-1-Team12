@@ -191,7 +191,7 @@ export default function PurchasePage() {
 
             const paymentData = await paymentRes.json();
 
-            router.push(`/payment/execute?paymentData=${encodeURIComponent(JSON.stringify(paymentData.data))}`);
+            router.push(`/payment/${paymentData.data.id}/execute?paymentData=${encodeURIComponent(JSON.stringify(paymentData.data))}`);
         } catch (err) {
             console.error('주문 실패:', err);
         }
