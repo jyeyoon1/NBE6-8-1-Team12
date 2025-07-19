@@ -1,12 +1,18 @@
 package com.caffe.domain.purchase.repository;
 
 import com.caffe.domain.purchase.entity.Purchase;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface PurchaseRepository extends JpaRepository<Purchase, Integer> {
+
+    //
+    List<Purchase> findAllByOrderByCreateDateDesc();
+    Page<Purchase> findAllByOrderByCreateDateDesc(Pageable pageable);
 
     /*
      -특정 유저의 가장 최근 구매 내역 1건 조회
