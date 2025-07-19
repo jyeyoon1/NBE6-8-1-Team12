@@ -51,8 +51,8 @@ public class Purchase extends BaseEntity {
     }
 
     public void cancelPurchase() {
-        if (!(this.status == PurchaseStatus.TEMPORARY || this.status == PurchaseStatus.PURCHASED)) {
-            throw new IllegalStateException("임시 상태 또는 완료된 주문만 취소할 수 있습니다.");
+        if (this.status != PurchaseStatus.PURCHASED) {
+            throw new IllegalStateException("완료된 주문만 취소할 수 있습니다.");
         }
         this.status = PurchaseStatus.CANCELED;
     }
