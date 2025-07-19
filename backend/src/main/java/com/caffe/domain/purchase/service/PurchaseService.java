@@ -11,6 +11,9 @@ import com.caffe.domain.purchase.repository.PurchaseRepository;
 import com.caffe.domain.shipping.entity.Shipping;
 import com.caffe.domain.shipping.service.ShippingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +29,17 @@ public class PurchaseService {
     private final ShippingService shippingService;
 
     public List<PurchaseAdmDto> getPurchases() {
-        return purchaseRepository.findAllByOrderByCreateDateDesc().stream().map(PurchaseAdmDto::new).collect(Collectors.toList());
+        return purchaseRepository.findAllByOrderByCreateDateDesc()
+                .stream()
+                .map(PurchaseAdmDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public Page<PurchaseAdmDto> getPurchasesByPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return purchaseRepository.findAllByOrderByCreateDateDesc(pageable)
+                .map(PurchaseAdmDto::new);
     }
 
     public Purchase getPurchaseById(int purchaseId) {

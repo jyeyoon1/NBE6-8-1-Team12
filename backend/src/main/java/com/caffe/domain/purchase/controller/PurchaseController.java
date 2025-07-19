@@ -7,11 +7,13 @@ import com.caffe.domain.purchase.dto.req.PurchaserReqBody;
 import com.caffe.domain.purchase.dto.res.*;
 import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.service.PurchaseService;
+import com.caffe.global.dto.PageResponseDto;
 import com.caffe.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,10 +26,20 @@ public class PurchaseController {
     private final PurchaseService purchaseService;
     private final PaymentService paymentService;
 
-    @GetMapping("/adm")
+    @GetMapping
     @Operation(summary = "주문 목록")
     public List<PurchaseAdmDto> getPurchases() {
         return purchaseService.getPurchases();
+    }
+
+    @GetMapping("/page")
+    @Operation(summary = "주문 목록")
+    public PageResponseDto<PurchaseAdmDto> getPurchases(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        Page<PurchaseAdmDto> paging = purchaseService.getPurchasesByPage(page, size);
+        return new PageResponseDto<>(paging);
     }
 
     @PostMapping("/lookup")
