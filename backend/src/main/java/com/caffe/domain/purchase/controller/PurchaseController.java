@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -70,8 +71,23 @@ public class PurchaseController {
         );
     }
 
+    @PostMapping("/lookup/detail2")
+    @Operation(summary = "주문 조회")
+    @Transactional(readOnly = true)
+    public RsData<PurchaseDetailDto2> getPurchase2(
+            @Valid @RequestBody PurchaserReqBody reqBody
+    ) {
+        PurchaseDetailDto2 purchaseDetail = purchaseService.getPurchaseDetail2(reqBody);
+
+        return new RsData<>(
+                "200",
+                "주문 조회 성공",
+                purchaseDetail
+        );
+    }
+
     @GetMapping("/purchaseInfo")
-    @Operation(summary = "주문 페이지 조회")
+    @Operation(summary = "주문 화면 주문 정보 조회")
     public PurchasePageResBody showPurchasePage(
             @RequestParam int productId,
             @RequestParam int quantity

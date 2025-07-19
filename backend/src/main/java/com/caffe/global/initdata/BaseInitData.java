@@ -15,7 +15,6 @@ import com.caffe.domain.purchase.constant.PurchaseStatus;
 import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.entity.PurchaseItem;
 import com.caffe.domain.purchase.repository.PurchaseRepository;
-import com.caffe.domain.shipping.constant.ShippingStatus;
 import com.caffe.domain.shipping.entity.Shipping;
 import com.caffe.domain.shipping.repository.ShippingRepository;
 import com.caffe.domain.shipping.service.ShippingService;
@@ -135,7 +134,6 @@ public class BaseInitData {
 
     }
 
-    // 상세페이지에서 주문 (주문:구매제품 1:1)
     @Transactional
     public void initPurchase() {
         if (purchaseRepository.count() > 0) return;
@@ -165,12 +163,16 @@ public class BaseInitData {
         purchase4.setStatus(PurchaseStatus.TEMPORARY);
         PurchaseItem purchaseItem4 = new PurchaseItem(33, product);
         purchase4.addPurchaseItem(purchaseItem4);
+        PurchaseItem purchaseItem6 = new PurchaseItem(20, product2);
+        purchase4.addPurchaseItem(purchaseItem6);
         purchaseRepository.save(purchase4);
 
         Purchase purchase5 = new Purchase("test5@email.com");
         purchase5.setStatus(PurchaseStatus.TEMPORARY);
         PurchaseItem purchaseItem5 = new PurchaseItem(1, product2);
         purchase5.addPurchaseItem(purchaseItem5);
+        PurchaseItem purchaseItem7 = new PurchaseItem(6, product);
+        purchase5.addPurchaseItem(purchaseItem7);
         purchaseRepository.save(purchase5);
 
         // 배송 정보
