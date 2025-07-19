@@ -195,7 +195,7 @@ export default function PurchasePage() {
             console.log('paymentData.data :', paymentData.data);
             console.log('stringify:', JSON.stringify(paymentData.data));
 
-            router.push(`/payment/${paymentData.id}/execute?paymentData=${encodeURIComponent(JSON.stringify(paymentData.data))}`);
+            router.push(`/payment/${paymentData.data.id}/execute?paymentData=${encodeURIComponent(JSON.stringify(paymentData.data))}`);
         } catch (err) {
             console.error('주문 실패:', err);
         }
