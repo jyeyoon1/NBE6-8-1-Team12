@@ -24,6 +24,12 @@ public class PurchaseController {
     private final PurchaseService purchaseService;
     private final PaymentService paymentService;
 
+    @GetMapping("/adm")
+    @Operation(summary = "주문 목록")
+    public List<PurchaseAdmDto> getPurchases() {
+        return purchaseService.getPurchases();
+    }
+
     @PostMapping("/lookup")
     @Operation(summary = "주문번호, 이메일로 주문 존재 확인")
     public RsData<PurchaseLookupResBody> checkPurchaseExists(

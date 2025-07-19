@@ -14,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class PurchaseService {
@@ -21,6 +24,10 @@ public class PurchaseService {
     private final PurchaseItemRepository purchaseItemRepository;
     private final ProductService productService;
     private final ShippingService shippingService;
+
+    public List<PurchaseAdmDto> getPurchases() {
+        return purchaseRepository.findAllByOrderByCreateDateDesc().stream().map(PurchaseAdmDto::new).collect(Collectors.toList());
+    }
 
     public Purchase getPurchaseById(int purchaseId) {
         return purchaseRepository.findById(purchaseId)

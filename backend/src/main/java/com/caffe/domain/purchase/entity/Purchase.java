@@ -49,4 +49,18 @@ public class Purchase extends BaseEntity {
                 .mapToInt(PurchaseItem::getItemTotalPrice)
                 .sum();
     }
+
+    public int getTotalQuantity() {
+        return purchaseItems
+                .stream()
+                .mapToInt(PurchaseItem::getQuantity)
+                .sum();
+    }
+
+    public String representativeProductName() {
+        return purchaseItems
+                .getFirst()
+                .getProduct()
+                .getProductName();
+    }
 }
