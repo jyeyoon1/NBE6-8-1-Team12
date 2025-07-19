@@ -38,6 +38,13 @@ export default function Header() {
               </Link>
               <span className="text-gray-400">|</span>
               <Link
+                href="/cart"
+                className="hover:text-gray-500 transition-colors"
+              >
+                장바구니
+              </Link>
+              <span className="text-gray-400">|</span>
+              <Link
                 href="/purchase/lookup"
                 className="hover:text-gray-500 transition-colors"
               >
@@ -73,7 +80,7 @@ export default function Header() {
               >
                 주문 목록
               </Link>
-               <span className="text-gray-400">|</span>
+              <span className="text-gray-400">|</span>
               <Link
                 href="/shipping/list"
                 className="hover:text-gray-500 transition-colors"

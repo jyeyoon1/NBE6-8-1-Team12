@@ -135,12 +135,7 @@ export default function ProductListPage() {
               상품 추가
             </a>
           )}
-          <a
-            href="/purchase"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 transition-colors"
-          >
-            구매 페이지
-          </a>
+
         </div>
 
         {/* 상품 목록 */}
@@ -153,7 +148,7 @@ export default function ProductListPage() {
               let statusClass = "";
               let statusText = "";
 
-              switch(product.status) {
+              switch (product.status) {
                 case "NOT_FOR_SALE":
                   statusClass = "opacity-50 cursor-not-allowed";
                   statusText = "판매불가";
