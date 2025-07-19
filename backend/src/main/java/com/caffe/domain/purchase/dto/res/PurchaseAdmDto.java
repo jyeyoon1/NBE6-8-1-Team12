@@ -12,7 +12,7 @@ public record PurchaseAdmDto(
         int totalQuantity,
         PurchaseStatus purchaseStatus,
         LocalDateTime purchaseDate,
-        String representativeProductName
+        String summaryName
 ) {
     public PurchaseAdmDto(Purchase purchase) {
         this(
@@ -22,7 +22,7 @@ public record PurchaseAdmDto(
                 purchase.getTotalQuantity(),
                 purchase.getStatus(),
                 purchase.getCreateDate(),
-                purchase.representativeProductName()
+                purchase.summaryName()
         );
     }
 }

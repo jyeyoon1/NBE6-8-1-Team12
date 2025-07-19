@@ -75,7 +75,7 @@ export default function Header() {
               </Link>
               <span className="text-gray-400">|</span>
               <Link
-                href="/orders"
+                href="/purchase/list"
                 className="hover:text-gray-500 transition-colors"
               >
                 주문 목록

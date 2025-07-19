@@ -63,4 +63,12 @@ public class Purchase extends BaseEntity {
                 .getProduct()
                 .getProductName();
     }
+
+    public String summaryName() {
+        int size = purchaseItems.size();
+        if (size <= 1) {
+            return representativeProductName();
+        }
+        return "%s 외 %s건".formatted(representativeProductName(), purchaseItems.size());
+    }
 }

@@ -73,3 +73,24 @@ export interface PurchaseDetailDto {
     purchaseItems: Array<PurchaseItemDetailDto>;
     receiver: ReceiverResDto;
 }
+
+
+// 관리자 주문 목록 페이지 연관
+export interface PurchaseAdmDto {
+    purchaseId: number;
+    userEmail: string;
+    totalPrice: number;
+    totalQuantity: number;
+    purchaseStatus: PurchaseStatus;
+    purchaseDate: string;
+    summaryName: string;
+}
+
+export interface PageResponseDto<T> {
+    content: T[];
+    pageNumber: number;
+    pageSize: number;
+    totalPages: number;
+    totalElements: number;
+    isLast: boolean;
+}
