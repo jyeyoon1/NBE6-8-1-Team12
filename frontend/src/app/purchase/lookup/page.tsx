@@ -23,6 +23,14 @@ export default function PurchaseLookUpPage() {
             return;
         }
 
+        // 이메일 형식 유효성 검증
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(userEmailInput.value)) {
+            alert("올바른 이메일 형식을 입력해주세요.");
+            userEmailInput.focus();
+            return;
+        }
+
         purchaseIdInput.value = purchaseIdInput.value.trim();
         if(purchaseIdInput.value.length === 0) {
             alert("주문번호를 입력해주세요.");
@@ -71,51 +79,39 @@ export default function PurchaseLookUpPage() {
     }
 
     return (
-        <form
-            onSubmit={handleSubmit}
-            className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8 mt-16 space-y-8 border border-gray-200"
-        >
-            <div>
-                <h2 className="text-xl font-bold mb-6 text-gray-900 border-b border-gray-200 pb-4">
-                    주문 조회
-                </h2>
-                <div className="flex flex-col gap-4 mt-2">
-                    <div className="flex items-center gap-4">
-                        <label htmlFor="userEmail" className="font-medium text-gray-900 w-20">
-                            이메일
-                        </label>
-                        <input
-                            id="userEmail"
-                            type="email"
-                            name="userEmail"
-                            required
-                            className="flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900"
-                        />
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <label htmlFor="purchaseId" className="font-medium text-gray-900 w-20">
-                            주문번호
-                        </label>
-                        <input
-                            id="purchaseId"
-                            type="text"
-                            name="purchaseId"
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            required
-                            className="flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900"
-                        />
-                    </div>
+        <div className="bg-gray-200 pt-20 min-h-screen w-full flex items-center justify-center px-4">
+            <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-10">
+                <div className="mb-5 text-center">
+                    <h5 className="font-bold text-xl">주문 조회</h5>
+                    <hr className="mt-3 border-gray-300" />
                 </div>
+                <form onSubmit={handleSubmit}>
+                    <input
+                        id="userEmail"
+                        type="email"
+                        name="userEmail"
+                        placeholder="이메일을 입력하세요"
+                        required
+                        className="w-full mb-4 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <input
+                        id="purchaseId"
+                        type="text"
+                        name="purchaseId"
+                        placeholder="주문번호를 입력하세요"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        required
+                        className="w-full mb-6 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <button
+                        type="submit"
+                        className="w-full bg-gray-800 hover:bg-gray-900 text-white py-3 rounded-lg text-lg cursor-pointer font-semibold transition-colors"
+                    >
+                        조회
+                    </button>
+                </form>
             </div>
-            <div className="flex justify-end">
-                <button
-                    type="submit"
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow transition-colors"
-                >
-                    조회
-                </button>
-            </div>
-        </form>
+        </div>
     );
 }

@@ -8,7 +8,7 @@ import { PageResponseDto, PurchaseAdmDto } from '@/purchase/types/purchase-respo
 
 export default function PurchaseListPage() {
     const router = useRouter();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, isLoading } = useAuth();
 
     const searchParams = useSearchParams();
     const currentPage = parseInt(searchParams.get("page") || "0");
@@ -23,10 +23,10 @@ export default function PurchaseListPage() {
 
     // 관리자 로그인
     useEffect(() => {
-        if (!isAuthenticated) {
+        if (!isLoading && !isAuthenticated) {
           router.push('/login');
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, isLoading ]);
 
     useEffect(() => {
         const fetchPurchases = async () => {
@@ -185,20 +185,41 @@ export default function PurchaseListPage() {
                                                 {purchase.totalPrice?.toLocaleString() ?? '-'}원
                                             </td>
                                             {/* 상태 */}
-                                            <td className="px-2 py-4 text-sm text-left">
-                                                <span
-                                                    className={`px-2 py-1 font-semibold rounded-full leading-tight ${
+                                            <td className="px-2 py-4 text-sm text-center">
+                                                {(() => {
+                                                    let statusLabel = '';
+                                                    switch (purchase.purchaseStatus) {
+                                                        case 'TEMPORARY':
+                                                            statusLabel = '임시 저장';
+                                                            break;
+                                                        case 'PURCHASED':
+                                                            statusLabel = '주문 완료';
+                                                            break;
+                                                        case 'CANCELED':
+                                                            statusLabel = '주문 취소';
+                                                            break;
+                                                        case 'FAILED':
+                                                            statusLabel = '주문 오류';
+                                                            break;
+                                                        default:
+                                                            statusLabel = purchase.purchaseStatus;
+                                                    }
+                                                    const statusClass =
                                                         purchase.purchaseStatus === 'PURCHASED'
                                                             ? 'bg-green-100 text-green-600'
                                                             : purchase.purchaseStatus === 'CANCELED'
                                                             ? 'bg-red-100 text-red-600'
                                                             : purchase.purchaseStatus === 'FAILED'
                                                             ? 'bg-yellow-100 text-yellow-600'
-                                                            : 'bg-gray-100 text-gray-600'
-                                                    }`}
-                                                >
-                                                    {purchase.purchaseStatus}
-                                                </span>
+                                                            : 'bg-gray-100 text-gray-600';
+                                                    return (
+                                                        <span
+                                                            className={`px-2 py-1 font-semibold rounded-full leading-tight ${statusClass}`}
+                                                        >
+                                                            {statusLabel}
+                                                        </span>
+                                                    );
+                                                })()}
                                             </td>
                                         </tr>
                                     );

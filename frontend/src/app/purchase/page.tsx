@@ -151,6 +151,19 @@ export default function PurchasePage() {
 
         const form = e.target as HTMLFormElement;
 
+        // 이메일 형식 체크 함수
+        const isValidEmail = (email: string): boolean => {
+            // 간단한 이메일 정규식
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        };
+
+        // 전화번호 형식 체크 함수 (010-xxxx-xxxx 또는 010xxxxxxxx)
+        const isValidPhoneNumber = (phone: string): boolean => {
+            // 허용: 010-1234-5678, 01012345678, 011-123-4567 등
+            // 01x-xxx(x)-xxxx 또는 01xxxxxxxxx
+            return /^01[016789]-?\d{3,4}-?\d{4}$/.test(phone.replace(/\s+/g, ''));
+        };
+
         const validateInput = (
             form: HTMLFormElement,
             name: string,
@@ -169,12 +182,29 @@ export default function PurchasePage() {
 
         if (!validateInput(form, "purchaser.name", "구매자 이름")) return;
         if (!validateInput(form, "purchaser.email", "구매자 이메일")) return;
+        // 이메일 형식 체크
+        const purchaserEmail = (form.elements.namedItem("purchaser.email") as HTMLInputElement).value.trim();
+        if (!isValidEmail(purchaserEmail)) {
+            alert("올바른 이메일 형식을 입력해주세요.");
+            (form.elements.namedItem("purchaser.email") as HTMLInputElement).focus();
+            return;
+        }
+
         if (!validateInput(form, "receiver.name", "배송지 이름")) return;
         if (!validateInput(form, "receiver.phoneNumber", "배송지 연락처")) return;
+        // 전화번호 형식 체크
+        const receiverPhone = (form.elements.namedItem("receiver.phoneNumber") as HTMLInputElement).value.trim();
+        if (!isValidPhoneNumber(receiverPhone)) {
+            alert("올바른 휴대폰 번호 형식을 입력해주세요. (예: 010-1234-5678)");
+            (form.elements.namedItem("receiver.phoneNumber") as HTMLInputElement).focus();
+            return;
+        }
+
         if (!validateInput(form, "receiver.postcode", "배송지 우편번호")) return;
         const postcodeStr = (form.elements.namedItem("receiver.postcode") as HTMLInputElement).value.trim();
         if (!/^\d{5}$/.test(postcodeStr)) {
             alert("우편번호는 숫자 5자리여야 합니다.");
+            (form.elements.namedItem("receiver.postcode") as HTMLInputElement).focus();
             return;
         }
         if (!validateInput(form, "receiver.address", "배송지 주소")) return;
@@ -185,7 +215,7 @@ export default function PurchasePage() {
         }
 
         try {
-            const userEmail = (form.elements.namedItem("purchaser.email") as HTMLInputElement).value.trim();
+            const userEmail = purchaserEmail;
 
             const purchasePageReqBody: PurchasePageReqBody = {
                 purchaseItems: purchaseItems.map(item => ({
@@ -200,7 +230,7 @@ export default function PurchasePage() {
                 },
                 receiver: {
                     name: (form.elements.namedItem("receiver.name") as HTMLInputElement).value.trim(),
-                    phoneNumber: (form.elements.namedItem("receiver.phoneNumber") as HTMLInputElement).value.trim(),
+                    phoneNumber: receiverPhone,
                     address: (form.elements.namedItem("receiver.address") as HTMLInputElement).value.trim(),
                     postcode: parseInt((form.elements.namedItem("receiver.postcode") as HTMLInputElement).value.trim(), 10),
                     email: userEmail
@@ -246,11 +276,12 @@ export default function PurchasePage() {
     };
 
     return (
-        <div className="flex justify-center w-full mt-12">
-            <form
-                onSubmit={handleSubmit}
-                className="w-full max-w-3xl bg-white rounded-xl shadow-lg p-8 mt-8 space-y-8"
-            >
+        <div className="bg-gray-200 pt-20 min-h-screen w-full flex items-center justify-center px-4">
+            <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-10">
+                <form
+                    onSubmit={handleSubmit}
+                    className="space-y-8"
+                >
                 {/* 구매 제품 정보 */}
                 <div>
                     <h2 className="text-xl font-bold mb-4 text-black">구매 제품 정보</h2>
@@ -310,6 +341,8 @@ export default function PurchasePage() {
                                     type="email"
                                     name="purchaser.email"
                                     className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900 bg-white w-full"
+                                    autoComplete="email"
+                                    inputMode="email"
                                 />
                             </label>
                         </div>
@@ -335,6 +368,9 @@ export default function PurchasePage() {
                                     type="tel"
                                     name="receiver.phoneNumber"
                                     className="mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900 bg-white w-full"
+                                    autoComplete="tel"
+                                    inputMode="tel"
+                                    placeholder="010-0000-0000"
                                 />
                             </label>
                         </div>
@@ -424,6 +460,7 @@ export default function PurchasePage() {
                     </button>
                 </div>
             </form>
+            </div>
         </div>
     );
 }
