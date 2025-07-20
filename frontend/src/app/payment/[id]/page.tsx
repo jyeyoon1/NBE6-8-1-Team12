@@ -48,7 +48,7 @@ export default function Page() {
     }
 
     return (
-        <div className="p-8 max-w-2xl mx-auto">
+        <div className="p-8 max-w-2xl mx-auto bg-gray-50 rounded-xl shadow-lg">
             <h1 className="text-3xl font-bold text-center mb-6">결제 상세 정보</h1>
             {paymentItem ? (
                 <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
@@ -62,7 +62,7 @@ export default function Page() {
                     </div>
                     <div className="flex justify-between">
                         <span className="font-semibold text-gray-600">결제수단</span>
-                        <span className="text-gray-600">{paymentItem.paymentOptionType}</span>
+                        <span className="text-gray-600">{   paymentItem.paymentOptionType} : {paymentItem.paymentOptionName}</span>
                     </div>
                     <div className="flex justify-between">
                         <span className="font-semibold text-gray-600">결제정보</span>

@@ -1,25 +1,15 @@
 package com.caffe.domain.payment.dto;
 
-
 import com.caffe.domain.payment.entity.PaymentOption;
-import com.caffe.domain.payment.constant.PaymentOptionType;
+import jakarta.validation.constraints.NotNull;
 
 public record PaymentOptionDto(
+        @NotNull
         int id,
-        Integer parentId,
-        String name,
-        PaymentOptionType type,
-        String code,
-        int sortSeq
+        @NotNull
+        String name
 ) {
     public PaymentOptionDto(PaymentOption paymentOption) {
-        this(
-                paymentOption.getId(),
-                (paymentOption.getParent() != null) ? paymentOption.getParent().getId() : null,
-                paymentOption.getName(),
-                paymentOption.getType(),
-                paymentOption.getCode(),
-                paymentOption.getSortSeq()
-        );
+        this(paymentOption.getId(), paymentOption.getName());
     }
 }

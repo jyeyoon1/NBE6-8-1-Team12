@@ -1,6 +1,6 @@
 package com.caffe.domain.purchase.controller;
 
-import com.caffe.domain.payment.dto.PaymentOptionDto;
+import com.caffe.domain.payment.dto.PaymentDetailOptionDto;
 import com.caffe.domain.payment.service.PaymentService;
 import com.caffe.domain.purchase.dto.req.CartItemReqBody;
 import com.caffe.domain.purchase.dto.req.PurchasePageReqBody;
@@ -86,7 +86,7 @@ public class PurchaseController {
             @Valid @RequestBody List<CartItemReqBody> reqBodyList
     ) {
         List<PurchaseItemInfoDto> purchaseItems = purchaseService.getPurchaseItemsInfo(reqBodyList);
-        List<PaymentOptionDto> topLevelPaymentOptions = paymentService.getTopLevelPaymentOptions();
+        List<PaymentDetailOptionDto> topLevelPaymentOptions = paymentService.getTopLevelPaymentOptions();
 
         return new PurchasePageResBody(purchaseItems, topLevelPaymentOptions);
     }

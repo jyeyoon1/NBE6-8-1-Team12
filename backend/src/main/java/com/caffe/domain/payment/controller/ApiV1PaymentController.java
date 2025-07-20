@@ -9,7 +9,6 @@ import com.caffe.domain.purchase.entity.Purchase;
 import com.caffe.domain.purchase.service.PurchaseService;
 import com.caffe.global.dto.PageResponseDto;
 import com.caffe.global.rsData.RsData;
-import com.caffe.standard.util.Util;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
@@ -120,10 +119,18 @@ public class ApiV1PaymentController {
         return new RsData<>("200-1", "결제번호 %d 가 수정되었습니다.".formatted(updatedPayment.getId()), new PaymentUpdateResponseDto(updatedPayment));
     }
 
+    @GetMapping("/options")
+    @Transactional(readOnly = true)
+    @Operation(summary = "결제 방법 조회")
+    public List<PaymentOptionsDto> getAllPaymentOptions() {
+        return paymentService.getAllPaymentOptions();
+    }
+
     @GetMapping("/options/{id}")
     @Transactional(readOnly = true)
     @Operation(summary = "결제 방법 조회")
-    public List<PaymentOptionDto> getDetailPaymentOptions(@PathVariable int id) {
+    public List<PaymentDetailOptionDto> getDetailPaymentOptions(@PathVariable int id) {
         return paymentService.getDetailPaymentOptions(id);
     }
+
 }

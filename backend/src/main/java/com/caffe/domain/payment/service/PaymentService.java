@@ -1,6 +1,8 @@
 package com.caffe.domain.payment.service;
 
+import com.caffe.domain.payment.dto.PaymentDetailOptionDto;
 import com.caffe.domain.payment.dto.PaymentOptionDto;
+import com.caffe.domain.payment.dto.PaymentOptionsDto;
 import com.caffe.domain.payment.entity.Payment;
 import com.caffe.domain.payment.entity.PaymentOption;
 import com.caffe.domain.payment.constant.PaymentOptionType;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,17 +30,32 @@ public class PaymentService {
     private final PaymentOptionRepository paymentOptionRepository;
     private final MockPaymentGatewayClient paymentGatewayClient;
 
-    public List<PaymentOptionDto> getTopLevelPaymentOptions() {
+    public List<PaymentDetailOptionDto> getTopLevelPaymentOptions() {
         return paymentOptionRepository.findByTypeOrderBySortSeq(PaymentOptionType.TOP_LEVEL)
                 .stream()
-                .map(PaymentOptionDto::new)
+                .map(PaymentDetailOptionDto::new)
                 .collect(Collectors.toList());
     }
 
-    public List<PaymentOptionDto> getDetailPaymentOptions(int parentId) {
+    public List<PaymentDetailOptionDto> getDetailPaymentOptions(int parentId) {
         return paymentOptionRepository.findByParentIdOrderBySortSeq(parentId)
                 .stream()
-                .map(PaymentOptionDto::new)
+                .map(PaymentDetailOptionDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<PaymentOptionsDto> getAllPaymentOptions() {
+        List<PaymentOption> paymentOptions = paymentOptionRepository.findAllChildrenWithOptions();
+        Map<PaymentOption, List<PaymentOption>> groupByType = paymentOptions.stream()
+                .collect(Collectors.groupingBy(PaymentOption::getParent));
+        return groupByType.entrySet().stream()
+                .map(entry -> {
+                    String parentName = entry.getKey().getName();
+                    List<PaymentOptionDto> children = entry.getValue().stream()
+                            .map(PaymentOptionDto::new)
+                            .collect(Collectors.toList());
+                    return new PaymentOptionsDto(parentName, children);
+                })
                 .collect(Collectors.toList());
     }
 
