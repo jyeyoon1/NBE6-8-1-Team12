@@ -132,16 +132,17 @@ export default function CartPage() {
             alert("상품을 선택해주세요.");
             return;
         }
-        if (selected.length > 1) {
-            alert("한 번에 하나의 상품만 구매할 수 있습니다.");
-            return;
-        }
-        const selectedItem = cartItems.find((item) => item.productId === selected[0]);
-        if (!selectedItem) {
+        const purchaseCartItems = cartItems
+        .filter((item) => selected.includes(item.productId))
+        .map(({ productId, quantity }) => ({ productId, quantity }));
+
+        if (!purchaseCartItems || purchaseCartItems.length === 0) {
             alert("선택한 상품을 찾을 수 없습니다.");
             return;
         }
-        router.push(`/purchase?id=${selectedItem.productId}&quantity=${selectedItem.quantity}`);
+        const purchaseData = JSON.stringify(purchaseCartItems);
+
+        router.push(`/purchase?cartItems=${encodeURIComponent(purchaseData)}`);
     };
 
     // 선택된 상품만 합산
