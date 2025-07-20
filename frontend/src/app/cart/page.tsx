@@ -23,32 +23,61 @@ export default function CartPage() {
 
     // localStorage에서 cart 불러오기 + 상품 정보 fetch
     useEffect(() => {
-        try {
-            const cartStr = localStorage.getItem("cart");
-            const localCart: LocalCartItem[] = cartStr ? JSON.parse(cartStr) : [];
-            if (localCart.length === 0) {
+        const fetchCartItems = async () => {
+            try {
+                const cartStr = localStorage.getItem("cart");
+                const localCart: LocalCartItem[] = cartStr ? JSON.parse(cartStr) : [];
+
+                if (localCart.length === 0) {
+                    setCartItems([]);
+                    return;
+                }
+
+                // 각 상품 최신 정보 fetch
+                // Promise.all과 flatMap을 조합하여 유효한 아이템만 가져오기
+                const fetchedItems = await Promise.all(
+                    localCart.map(async (item) => {
+                        try {
+                            const res = await fetch(`/api/products/${item.productId}`);
+                            if (!res.ok) {
+                                console.warn(`제품 ID ${item.productId}의 정보를 가져오지 못했습니다. (상태: ${res.status})`);
+                                return []; // 유효하지 않은 아이템은 빈 배열 반환
+                            }
+                            const data = await res.json();
+                            // data.data에 상품 정보가 있다고 가정
+                            if (data && data.data) {
+                                return [{
+                                    productId: item.productId,
+                                    quantity: item.quantity,
+                                    productName: data.data.productName,
+                                    price: data.data.price,
+                                    imageUrl: data.data.imageUrl,
+                                }];
+                            } else {
+                                console.warn(`제품 ID ${item.productId}의 유효한 데이터가 없습니다.`);
+                                return []; // 유효하지 않은 데이터는 빈 배열 반환
+                            }
+                        } catch (fetchError) {
+                            console.error(`제품 ID ${item.productId}의 정보를 가져오는 중 오류 발생:`, fetchError);
+                            return []; // 오류 발생 시 빈 배열 반환
+                        }
+                    })
+                )
+                // flatMap으로 배열 평탄화 및 빈 배열 제거
+                .then(results => results.flatMap(result => result)); 
+
+                setCartItems(fetchedItems);
+
+                // 유효한 아이템만 남기고 localStorage를 업데이트
+                const updatedLocalCart = fetchedItems.map(({ productId, quantity }) => ({ productId, quantity }));
+                localStorage.setItem("cart", JSON.stringify(updatedLocalCart));
+            } catch (error) {
+                console.error("장바구니 데이터를 불러오는데 실패했습니다:", error);
                 setCartItems([]);
-                return;
+                localStorage.removeItem("cart");
             }
-            // 각 상품 최신 정보 fetch
-            Promise.all(
-                localCart.map(async (item) => {
-                    const res = await fetch(`/api/products/${item.productId}`);
-                    const data = await res.json();
-                    // data.data에 상품 정보가 있다고 가정
-                    return {
-                        productId: item.productId,
-                        quantity: item.quantity,
-                        productName: data.data.productName,
-                        price: data.data.price,
-                        imageUrl: data.data.imageUrl,
-                    };
-                })
-            ).then(setCartItems);
-        } catch (error) {
-            console.error("장바구니 데이터를 불러오는데 실패했습니다:", error);
-            setCartItems([]);
-        }
+        };
+        fetchCartItems();
     }, []);
 
     // 수량 변경
