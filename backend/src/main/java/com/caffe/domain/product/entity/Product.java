@@ -1,5 +1,6 @@
 package com.caffe.domain.product.entity;
 
+import com.caffe.global.exception.BusinessLogicException;
 import com.caffe.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -47,9 +48,14 @@ public class Product extends BaseEntity {
 
     public void decreaseStock(int quantity) {
         if (!hasStock(quantity)) {
-            throw new IllegalArgumentException("재고가 부족합니다.");
+            throw new BusinessLogicException("409-1", "%s의 재고가 부족합니다.".formatted(this.productName));
         }
         this.totalQuantity -= quantity;
+
+        // 재고 0일 시 재고소진 상태로 변경
+        if (this.totalQuantity == 0) {
+            this.status = ProductStatus.OUT_OF_STOCK;
+        }
     }
 
     public void restoreStock(int quantity) {
