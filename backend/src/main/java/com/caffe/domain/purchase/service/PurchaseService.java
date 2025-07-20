@@ -2,6 +2,7 @@ package com.caffe.domain.purchase.service;
 
 import com.caffe.domain.product.entity.Product;
 import com.caffe.domain.product.service.ProductService;
+import com.caffe.domain.purchase.constant.PurchaseStatus;
 import com.caffe.domain.purchase.dto.req.*;
 import com.caffe.domain.purchase.dto.res.*;
 import com.caffe.domain.purchase.entity.Purchase;
@@ -10,6 +11,8 @@ import com.caffe.domain.purchase.repository.PurchaseItemRepository;
 import com.caffe.domain.purchase.repository.PurchaseRepository;
 import com.caffe.domain.shipping.entity.Shipping;
 import com.caffe.domain.shipping.service.ShippingService;
+import com.caffe.global.exception.BusinessLogicException;
+import com.caffe.global.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,7 +32,8 @@ public class PurchaseService {
     private final ShippingService shippingService;
 
     public List<PurchaseAdmDto> getPurchases() {
-        return purchaseRepository.findAllByOrderByCreateDateDesc()
+        return purchaseRepository
+                .findAllByOrderByCreateDateDesc()
                 .stream()
                 .map(PurchaseAdmDto::new)
                 .collect(Collectors.toList());
@@ -38,18 +42,25 @@ public class PurchaseService {
     public Page<PurchaseAdmDto> getPurchasesByPage(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        return purchaseRepository.findAllByOrderByCreateDateDesc(pageable)
+        return purchaseRepository
+                .findAllByOrderByCreateDateDesc(pageable)
                 .map(PurchaseAdmDto::new);
     }
 
     public Purchase getPurchaseById(int purchaseId) {
-        return purchaseRepository.findById(purchaseId)
-                .orElseThrow(() -> new IllegalArgumentException(purchaseId + "번 주문을 찾을 수 없습니다."));
+        return purchaseRepository
+                .findById(purchaseId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("404-1", "%s번 주문을 찾을 수 없습니다.".formatted(purchaseId))
+                );
     }
 
     public Purchase getPurchaseByIdAndUserEmail(int id, String userEmail) {
-        return purchaseRepository.findByIdAndUserEmail(id, userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("이메일과 주문 번호를 확인해주십시오."));
+        return purchaseRepository
+                .findByIdAndUserEmail(id, userEmail)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("404-2", "이메일과 주문 번호를 확인해주십시오.")
+                );
     }
 
     public PurchaseDetailDto getPurchaseDetail(PurchaserReqBody reqBody) {
@@ -58,14 +69,18 @@ public class PurchaseService {
         PurchaseDto purchaseDto = new PurchaseDto(purchase);
 
         // 구매 제품 목록
-        List<PurchaseItemDetailDto> purchaseItems = purchase.getPurchaseItems()
+        List<PurchaseItemDetailDto> purchaseItems = purchase
+                .getPurchaseItems()
                 .stream()
                 .map(item -> new PurchaseItemDetailDto(item, item.getProduct()))
                 .toList();
 
         // 배송 정보
-        Shipping shipping = shippingService.getShippingByPurchaseId(reqBody.purchaseId())
-                .orElseThrow(() -> new IllegalArgumentException("배송을 찾을 수 없습니다."));
+        Shipping shipping = shippingService
+                .getShippingByPurchaseId(reqBody.purchaseId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("404-3", "%s번 배송을 찾을 수 없습니다.".formatted(purchase.getId()))
+                );
         ReceiverResDto receiverResDto = new ReceiverResDto(shipping);
 
         return new PurchaseDetailDto(purchaseDto, purchaseItems, receiverResDto);
@@ -89,7 +104,7 @@ public class PurchaseService {
         return price * quantity;
     }
 
-    // 결제 전 임시 저장 기능 - 결제 취소 버튼 클릭 시 롤백 또는 상태 변경 필요
+    // 결제 전 임시 저장 기능 - 결제 완료 시 주문 완료 상태로 변경
     @Transactional
     public PurchaseCheckoutResBody createPurchase(PurchasePageReqBody reqBody) {
         // 구매자
@@ -104,7 +119,7 @@ public class PurchaseService {
         for (PurchaseItemReqDto itemReqDto : purchaseItems) {
             Product product = productService.getProductById(itemReqDto.productId());
             if(!product.hasStock(itemReqDto.quantity())) {
-                throw new IllegalArgumentException("%s의 재고가 부족합니다.".formatted(product.getProductName()));
+                throw new BusinessLogicException("409-1", "%s의 재고가 부족합니다.".formatted(product.getProductName()));
             }
         }
 
@@ -124,30 +139,44 @@ public class PurchaseService {
         return new PurchaseCheckoutResBody(purchase, reqBody.paymentOptionId());
     }
 
+    @Transactional
     public void completePurchase(Purchase purchase) {
-        purchase.completePurchase();
+        try {
+            purchase.completePurchase();
 
-        for (PurchaseItem purchaseItem : purchase.getPurchaseItems()) {
-            Product product = purchaseItem.getProduct();
-            product.decreaseStock(purchaseItem.getQuantity());
+            for (PurchaseItem purchaseItem : purchase.getPurchaseItems()) {
+                Product product = purchaseItem.getProduct();
+                product.decreaseStock(purchaseItem.getQuantity());
+            }
+        } catch (IllegalArgumentException e) {
+            failPurchase(purchase);
+            throw new BusinessLogicException("400-1", "주문 완료가 불가합니다.");
         }
     }
 
+    @Transactional
     public void cancelPurchase(Purchase purchase) {
-        purchase.cancelPurchase();
+        try {
+            purchase.cancelPurchase();
 
-        for (PurchaseItem purchaseItem : purchase.getPurchaseItems()) {
-            Product product = purchaseItem.getProduct();
-            product.restoreStock(purchaseItem.getQuantity());
+            for (PurchaseItem purchaseItem : purchase.getPurchaseItems()) {
+                Product product = purchaseItem.getProduct();
+                product.restoreStock(purchaseItem.getQuantity());
+            }
+        } catch (IllegalArgumentException e) {
+            failPurchase(purchase);
+            throw new BusinessLogicException("400-2", "주문 취소가 불가합니다.");
         }
     }
 
+    @Transactional
     public void failPurchase(Purchase purchase) {
-        purchase.failPurchase();
-
-        for (PurchaseItem purchaseItem : purchase.getPurchaseItems()) {
-            Product product = purchaseItem.getProduct();
-            product.restoreStock(purchaseItem.getQuantity());
+        if(purchase.getStatus().equals(PurchaseStatus.PURCHASED)) {
+            for (PurchaseItem purchaseItem : purchase.getPurchaseItems()) {
+                Product product = purchaseItem.getProduct();
+                product.restoreStock(purchaseItem.getQuantity());
+            }
         }
+        purchase.failPurchase();
     }
 }
