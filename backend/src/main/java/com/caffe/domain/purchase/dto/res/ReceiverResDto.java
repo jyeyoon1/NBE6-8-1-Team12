@@ -20,7 +20,7 @@ public record ReceiverResDto(
                 shipping.getPostcode(),
                 shipping.getAddress(),
                 shipping.getStatus(),
-                shipping.getModifyDate()
+                shipping.getModifyDate() == null ? shipping.getCreateDate() : shipping.getModifyDate()
         );
     }
 }
