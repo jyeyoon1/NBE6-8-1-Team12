@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { PurchaseItemInfo, PaymentOption, PurchasePageResBody, PurchaseCheckoutResBody } from '@/purchase/types/purchase-response'
+import { PurchaseItemInfo, PaymentOption, PurchasePageResBody, PurchaseCheckoutResBody, ServerResponse } from '@/purchase/types/purchase-response'
 import { PurchasePageReqBody } from '@/purchase/types/purchase-request'
 
 interface CartItem {
@@ -111,9 +111,9 @@ export default function PurchasePage() {
 		localStorage.setItem("cart", JSON.stringify(updatedCart));
 	};
 
-
 	if (!purchaseItems || purchaseItems.length === 0) return <div>Loading...</div>;
 
+	// 주문 요청
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
@@ -151,16 +151,11 @@ export default function PurchasePage() {
 
 		const form = e.target as HTMLFormElement;
 
-		// 이메일 형식 체크 함수
 		const isValidEmail = (email: string): boolean => {
-			// 간단한 이메일 정규식
 			return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 		};
 
-		// 전화번호 형식 체크 함수 (010-xxxx-xxxx 또는 010xxxxxxxx)
 		const isValidPhoneNumber = (phone: string): boolean => {
-			// 허용: 010-1234-5678, 01012345678, 011-123-4567 등
-			// 01x-xxx(x)-xxxx 또는 01xxxxxxxxx
 			return /^01[016789]-?\d{3,4}-?\d{4}$/.test(phone.replace(/\s+/g, ''));
 		};
 
@@ -195,7 +190,7 @@ export default function PurchasePage() {
 		// 전화번호 형식 체크
 		const receiverPhone = (form.elements.namedItem("receiver.phoneNumber") as HTMLInputElement).value.trim();
 		if (!isValidPhoneNumber(receiverPhone)) {
-			alert("올바른 휴대폰 번호 형식을 입력해주세요. (예: 010-1234-5678)");
+			alert("올바른 휴대폰 번호 형식을 입력해주세요. (예: 010-0000-0000)");
 			(form.elements.namedItem("receiver.phoneNumber") as HTMLInputElement).focus();
 			return;
 		}
@@ -247,14 +242,11 @@ export default function PurchasePage() {
 			});
 			if (!purchaseRes.ok) throw new Error("주문 실패");
 
-			interface ServerResponse {
-				resultCode: string;
-				statusCode: number;
-				msg: string;
-				data: PurchaseCheckoutResBody;
+			const fullResponse: ServerResponse<PurchaseCheckoutResBody> = await purchaseRes.json();
+			if (!fullResponse.data) {
+				alert(fullResponse.msg || "주문 실패");
+				return;
 			}
-
-			const fullResponse: ServerResponse = await purchaseRes.json();
 			const paymentRequestBody: PurchaseCheckoutResBody = fullResponse.data;
 
 			const paymentRes = await fetch(`http://localhost:8080/api/v1/payments`, {
@@ -266,9 +258,14 @@ export default function PurchasePage() {
 			});
 			if (!paymentRes.ok) throw new Error("결제 실패");
 
+			const paymentData: ServerResponse<any> = await paymentRes.json();
+			if (!paymentData.data) {
+				alert(paymentData.msg || "결제 실패");
+				return;
+			}
+
 			updateCart(purchaseItems);
 
-			const paymentData = await paymentRes.json();
 			router.push(`/payment/${paymentData.data.id}/execute`);
 		} catch (err) {
 			console.error('주문 실패:', err);

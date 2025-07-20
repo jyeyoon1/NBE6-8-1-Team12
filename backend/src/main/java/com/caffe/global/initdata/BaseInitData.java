@@ -161,6 +161,7 @@ public class BaseInitData {
 
         Product product = productRepository.findById(1).get();
         Product product2 = productRepository.findById(2).get();
+        Product product3 = productRepository.findById(3).get();
 
         Purchase purchase1 = new Purchase("test1@email.com");
         purchase1.setStatus(PurchaseStatus.PURCHASED);
@@ -181,19 +182,21 @@ public class BaseInitData {
         purchaseRepository.save(purchase3);
 
         Purchase purchase4 = new Purchase("test4@email.com");
-        purchase4.setStatus(PurchaseStatus.TEMPORARY);
+        purchase4.setStatus(PurchaseStatus.PURCHASED);
         PurchaseItem purchaseItem4 = new PurchaseItem(33, product);
         purchase4.addPurchaseItem(purchaseItem4);
         PurchaseItem purchaseItem6 = new PurchaseItem(20, product2);
         purchase4.addPurchaseItem(purchaseItem6);
+        PurchaseItem purchaseItem7 = new PurchaseItem(4, product3);
+        purchase4.addPurchaseItem(purchaseItem7);
         purchaseRepository.save(purchase4);
 
         Purchase purchase5 = new Purchase("test5@email.com");
-        purchase5.setStatus(PurchaseStatus.TEMPORARY);
+        purchase5.setStatus(PurchaseStatus.PURCHASED);
         PurchaseItem purchaseItem5 = new PurchaseItem(1, product2);
         purchase5.addPurchaseItem(purchaseItem5);
-        PurchaseItem purchaseItem7 = new PurchaseItem(6, product);
-        purchase5.addPurchaseItem(purchaseItem7);
+        PurchaseItem purchaseItem8 = new PurchaseItem(6, product);
+        purchase5.addPurchaseItem(purchaseItem8);
         purchaseRepository.save(purchase5);
 
         // 배송 정보
