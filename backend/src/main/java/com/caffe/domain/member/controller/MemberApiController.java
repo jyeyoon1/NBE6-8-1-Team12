@@ -136,15 +136,24 @@ public class MemberApiController {
     @Operation(summary = "로그인 상태 조회 API")
     public ResponseEntity<?> getStatus(Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {
+            // 사용자의 권한 정보 가져오기
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+
             return ResponseEntity.ok().body(Map.of(
                     "authenticated", true,
-                    "username", authentication.getName()
+                    "username", authentication.getName(),
+                    "isAdmin", isAdmin,
+                    "role", isAdmin ? "ADMIN" : "USER"
             ));
         } else {
             return ResponseEntity.ok().body(Map.of(
-                    "authenticated", false
+                    "authenticated", false,
+                    "isAdmin", false,
+                    "role", "GUEST"
             ));
         }
     }
+
 
 }

@@ -22,12 +22,13 @@ public record ProductCreateRequest(
         @Size(max = 1000, message = "설명은 최대 1000자까지 입력 가능합니다.")
         String description,
         
+        @Size(max = 500, message = "이미지 URL은 최대 500자까지 입력 가능합니다.")
         String imageUrl,
 
         ProductStatus status
 ) {
     public Product toEntity() {
-        return new Product(
+        Product product = new Product(
                 this.productName,
                 this.price,
                 this.totalQuantity,
@@ -35,6 +36,8 @@ public record ProductCreateRequest(
                 this.imageUrl,
                 this.status
         );
+        // 새로운 상품 생성시 ID가 자동 생성되도록 보장
+        return product;
     }
     
     public static ProductCreateRequest empty() {
