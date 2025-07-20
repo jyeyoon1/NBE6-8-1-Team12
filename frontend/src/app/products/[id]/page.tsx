@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Product {
   id: number;
@@ -17,10 +18,11 @@ export default function ProductDetailPage() {
   const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     if (!id) return;
-    fetch(`/api/products/${id}`)
+    fetch(`http://localhost:8080/api/products/${id}`)
       .then(res => res.json())
       .then(data => {
         if (data.resultCode && data.resultCode.startsWith('200')) {
@@ -41,29 +43,95 @@ export default function ProductDetailPage() {
   const handleQuantityChange = (val: number) => {
     if (!product) return;
     if (val < 1) setQuantity(1);
-    else if (val > product.totalQuantity) setQuantity(product.totalQuantity);
+    else if (val > product.totalQuantity) {
+      setQuantity(product.totalQuantity);
+      alert(`재고가 부족합니다. 최대 ${product.totalQuantity}개까지 구매 가능합니다.`);
+    }
     else setQuantity(val);
   };
 
-  const handlePurchase = () => {
-    router.push(`/purchase?id=${product?.id}&quantity=${quantity}`);
+  const handlePurchase = async () => {
+    if (!product) return;
+
+    try {
+      // 실시간 재고 확인
+      const res = await fetch(`http://localhost:8080/api/products/${product.id}`);
+      if (!res.ok) {
+        alert('상품 정보를 가져올 수 없습니다.');
+        return;
+      }
+
+      const data = await res.json();
+      const currentProduct = data.data;
+
+      if (currentProduct.status === 'OUT_OF_STOCK') {
+        alert('재고가 소진된 상품입니다.');
+        return;
+      }
+
+      if (currentProduct.status === 'NOT_FOR_SALE') {
+        alert('판매가 중지된 상품입니다.');
+        return;
+      }
+
+      if (quantity > currentProduct.totalQuantity) {
+        alert(`재고가 부족합니다. 최대 ${currentProduct.totalQuantity}개까지 구매 가능합니다.`);
+        return;
+      }
+
+      router.push(`/purchase?id=${product?.id}&quantity=${quantity}`);
+    } catch (error) {
+      console.error('재고 확인 중 오류:', error);
+      alert('재고를 확인할 수 없습니다. 다시 시도해주세요.');
+    }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!product) return;
-    const cartStr = localStorage.getItem('cart');
-    let cart = cartStr ? JSON.parse(cartStr) : [];
-    const exists = cart.some((item: any) => item.productId === product.id);
-    if (exists) {
-      alert('이미 장바구니에 존재하는 상품입니다.');
-      return;
+
+    try {
+      // 실시간 재고 확인
+      const res = await fetch(`http://localhost:8080/api/products/${product.id}`);
+      if (!res.ok) {
+        alert('상품 정보를 가져올 수 없습니다.');
+        return;
+      }
+
+      const data = await res.json();
+      const currentProduct = data.data;
+
+      if (currentProduct.status === 'OUT_OF_STOCK') {
+        alert('재고가 소진된 상품입니다.');
+        return;
+      }
+
+      if (currentProduct.status === 'NOT_FOR_SALE') {
+        alert('판매가 중지된 상품입니다.');
+        return;
+      }
+
+      if (quantity > currentProduct.totalQuantity) {
+        alert(`재고가 부족합니다. 최대 ${currentProduct.totalQuantity}개까지 구매 가능합니다.`);
+        return;
+      }
+
+      const cartStr = localStorage.getItem('cart');
+      let cart = cartStr ? JSON.parse(cartStr) : [];
+      const exists = cart.some((item: any) => item.productId === product.id);
+      if (exists) {
+        alert('이미 장바구니에 존재하는 상품입니다.');
+        return;
+      }
+      cart.push({
+        productId: product.id,
+        quantity: quantity
+      });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert('장바구니에 추가되었습니다.');
+    } catch (error) {
+      console.error('재고 확인 중 오류:', error);
+      alert('재고를 확인할 수 없습니다. 다시 시도해주세요.');
     }
-    cart.push({
-      productId: product.id,
-      quantity: quantity
-    });
-    localStorage.setItem('cart', JSON.stringify(cart));
-    alert('장바구니에 추가되었습니다.');
   };
 
   return (
@@ -117,17 +185,190 @@ export default function ProductDetailPage() {
           </button>
           <button
             onClick={handlePurchase}
-            className="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white py-3 cursor-pointer rounded-lg transition"
+            className={`flex-1 text-center py-3 rounded-lg transition ${product.status === 'ON_SALE' && quantity <= product.totalQuantity
+              ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+            disabled={product.status !== 'ON_SALE' || quantity > product.totalQuantity}
           >
-            바로 구매
+            {product.status === 'OUT_OF_STOCK' ? '재고소진' :
+              product.status === 'NOT_FOR_SALE' ? '판매중지' :
+                quantity > product.totalQuantity ? '재고부족' : '바로 구매'}
           </button>
           <button
             onClick={handleAddToCart}
-            className="flex-1 text-center bg-green-600 hover:bg-green-700 text-white py-3 cursor-pointer rounded-lg transition"
+            className={`flex-1 text-center py-3 rounded-lg transition ${product.status === 'ON_SALE' && quantity <= product.totalQuantity
+              ? 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+            disabled={product.status !== 'ON_SALE' || quantity > product.totalQuantity}
           >
-            장바구니
+            {product.status === 'OUT_OF_STOCK' ? '재고소진' :
+              product.status === 'NOT_FOR_SALE' ? '판매중지' :
+                quantity > product.totalQuantity ? '재고부족' : '장바구니'}
           </button>
         </div>
+
+        {/* 관리자 기능 */}
+        {isAdmin && (
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <h3 className="text-lg font-semibold mb-4 text-gray-800">관리자 기능</h3>
+            <div className="flex space-x-4">
+              <button
+                onClick={() => router.push(`/products/form?id=${product.id}`)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors"
+              >
+                상품 수정
+              </button>
+
+              <button
+                onClick={async () => {
+                  if (confirm('이 상품을 삭제하시겠습니까?')) {
+                    try {
+                      const res = await fetch(`http://localhost:8080/api/products/${product.id}`, {
+                        method: 'DELETE',
+                        credentials: 'include',
+                      });
+                      if (res.ok) {
+                        alert('상품이 삭제되었습니다.');
+                        router.push('/products/list');
+                      } else {
+                        alert('상품 삭제에 실패했습니다.');
+                      }
+                    } catch (error) {
+                      console.error('상품 삭제 오류:', error);
+                      alert('상품 삭제 중 오류가 발생했습니다.');
+                    }
+                  }
+                }}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition-colors"
+              >
+                상품 삭제
+              </button>
+
+              {product.status === 'OUT_OF_STOCK' && (
+                <button
+                  onClick={async () => {
+                    if (confirm('이 상품을 판매 가능 상태로 변경하시겠습니까?')) {
+                      try {
+                        const res = await fetch(`http://localhost:8080/api/products/${product.id}/status`, {
+                          method: 'PATCH',
+                          headers: { 'Content-Type': 'application/json' },
+                          credentials: 'include',
+                          body: JSON.stringify({ status: 'ON_SALE' })
+                        });
+                        if (res.ok) {
+                          alert('상품 상태가 변경되었습니다.');
+                          window.location.reload();
+                        } else {
+                          alert('상품 상태 변경에 실패했습니다.');
+                        }
+                      } catch (error) {
+                        console.error('상품 상태 변경 오류:', error);
+                        alert('상품 상태 변경 중 오류가 발생했습니다.');
+                      }
+                    }
+                  }}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors"
+                >
+                  판매 재개
+                </button>
+              )}
+
+              {product.status === 'NOT_FOR_SALE' && (
+                <button
+                  onClick={async () => {
+                    if (confirm('이 상품을 판매 가능 상태로 변경하시겠습니까?')) {
+                      try {
+                        const res = await fetch(`http://localhost:8080/api/products/${product.id}/status`, {
+                          method: 'PATCH',
+                          headers: { 'Content-Type': 'application/json' },
+                          credentials: 'include',
+                          body: JSON.stringify({ status: 'ON_SALE' })
+                        });
+                        if (res.ok) {
+                          alert('상품 상태가 변경되었습니다.');
+                          window.location.reload();
+                        } else {
+                          alert('상품 상태 변경에 실패했습니다.');
+                        }
+                      } catch (error) {
+                        console.error('상품 상태 변경 오류:', error);
+                        alert('상품 상태 변경 중 오류가 발생했습니다.');
+                      }
+                    }
+                  }}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors"
+                >
+                  판매 재개
+                </button>
+              )}
+
+              {product.status === 'ON_SALE' && (
+                <button
+                  onClick={async () => {
+                    if (confirm('이 상품을 판매 중지하시겠습니까?')) {
+                      try {
+                        const res = await fetch(`http://localhost:8080/api/products/${product.id}/status`, {
+                          method: 'PATCH',
+                          headers: { 'Content-Type': 'application/json' },
+                          credentials: 'include',
+                          body: JSON.stringify({ status: 'NOT_FOR_SALE' })
+                        });
+                        if (res.ok) {
+                          alert('상품 상태가 변경되었습니다.');
+                          window.location.reload();
+                        } else {
+                          alert('상품 상태 변경에 실패했습니다.');
+                        }
+                      } catch (error) {
+                        console.error('상품 상태 변경 오류:', error);
+                        alert('상품 상태 변경 중 오류가 발생했습니다.');
+                      }
+                    }
+                  }}
+                  className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded transition-colors"
+                >
+                  판매 중지
+                </button>
+              )}
+
+              <button
+                onClick={async () => {
+                  const newQuantity = prompt(`현재 재고: ${product.totalQuantity}개\n새로운 재고 수량을 입력하세요:`, product.totalQuantity.toString());
+                  if (newQuantity !== null) {
+                    const quantity = parseInt(newQuantity);
+                    if (isNaN(quantity) || quantity < 0) {
+                      alert('유효한 수량을 입력해주세요.');
+                      return;
+                    }
+
+                    try {
+                      const res = await fetch(`http://localhost:8080/api/products/${product.id}/stock`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ totalQuantity: quantity })
+                      });
+                      if (res.ok) {
+                        alert('재고가 업데이트되었습니다.');
+                        window.location.reload();
+                      } else {
+                        alert('재고 업데이트에 실패했습니다.');
+                      }
+                    } catch (error) {
+                      console.error('재고 업데이트 오류:', error);
+                      alert('재고 업데이트 중 오류가 발생했습니다.');
+                    }
+                  }
+                }}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition-colors"
+              >
+                재고 수정
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

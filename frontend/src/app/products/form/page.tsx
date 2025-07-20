@@ -1,12 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 
-export default function ProductAddPage() {
+export default function ProductFormPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isAuthenticated, isLoading } = useRequireAuth();
+
+  const productId = searchParams.get('id');
+  const isEditMode = !!productId;
 
   const [form, setForm] = useState({
     productName: "",
@@ -17,9 +21,40 @@ export default function ProductAddPage() {
   });
 
   const [errorMsg, setErrorMsg] = useState("");
+  const [isLoadingProduct, setIsLoadingProduct] = useState(false);
+
+  // 기존 상품 정보 불러오기 (수정 모드일 때)
+  useEffect(() => {
+    if (isEditMode && productId) {
+      const fetchProduct = async () => {
+        setIsLoadingProduct(true);
+        try {
+          const response = await fetch(`http://localhost:8080/api/products/${productId}`);
+          if (response.ok) {
+            const data = await response.json();
+            const product = data.data;
+            setForm({
+              productName: product.productName,
+              description: product.description,
+              price: product.price.toString(),
+              totalQuantity: product.totalQuantity.toString(),
+              imageUrl: product.imageUrl,
+            });
+          } else {
+            setErrorMsg("상품 정보를 불러올 수 없습니다.");
+          }
+        } catch (error) {
+          setErrorMsg("상품 정보를 불러오는 중 오류가 발생했습니다.");
+        } finally {
+          setIsLoadingProduct(false);
+        }
+      };
+      fetchProduct();
+    }
+  }, [isEditMode, productId]);
 
   // 인증 상태 확인 후 로딩 중이면 로딩 메시지 표시
-  if (isLoading) return <div className="bg-gray-200 flex items-center justify-center w-screen h-screen">로딩 중...</div>;
+  if (isLoading || isLoadingProduct) return <div className="bg-gray-200 flex items-center justify-center w-screen h-screen">로딩 중...</div>;
 
   // 인증되지 않은 상태면 아무것도 렌더링하지 않음
   if (!isAuthenticated) return null;
@@ -41,20 +76,27 @@ export default function ProductAddPage() {
     };
 
     try {
-      const response = await fetch("/api/products", {
-        method: "POST",
+      const url = isEditMode
+        ? `http://localhost:8080/api/products/${productId}`
+        : "http://localhost:8080/api/products";
+
+      const method = isEditMode ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method: method,
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(productData),
       });
 
       if (response.ok) {
-        alert("상품이 성공적으로 추가되었습니다.");
+        alert(isEditMode ? "상품이 성공적으로 수정되었습니다." : "상품이 성공적으로 추가되었습니다.");
         router.push("/products/list");
       } else {
         const errorData = await response.json();
-        setErrorMsg(errorData.msg || "상품 등록에 실패했습니다.");
+        setErrorMsg(errorData.msg || (isEditMode ? "상품 수정에 실패했습니다." : "상품 등록에 실패했습니다."));
       }
     } catch (error: any) {
       setErrorMsg("네트워크 오류가 발생했습니다: " + error.message);
@@ -64,7 +106,7 @@ export default function ProductAddPage() {
   return (
     <div className="bg-gray-200 pt-20 min-h-screen w-full flex items-center justify-center px-4">
       <div className="bg-white p-10 rounded-xl shadow-lg w-full max-w-lg">
-        <h1 className="text-3xl font-bold text-center mb-8">상품 등록</h1>
+        <h1 className="text-3xl font-bold text-center mb-8">{isEditMode ? "상품 수정" : "상품 등록"}</h1>
 
         {errorMsg && (
           <div className="bg-red-200 text-red-800 text-xs text-center px-3 py-1 mb-4 rounded-sm">
@@ -172,7 +214,7 @@ export default function ProductAddPage() {
             type="submit"
             className="w-full bg-gray-800 text-white py-3 rounded-md hover:bg-gray-700 transition-colors cursor-pointer font-semibold"
           >
-            상품 추가
+            {isEditMode ? "상품 수정" : "상품 추가"}
           </button>
         </form>
       </div>
