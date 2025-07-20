@@ -166,6 +166,28 @@ export default function CartPage() {
                 ) : (
                     <>
                         <div className="bg-white rounded-xl shadow-lg p-8 mb-6">
+                            {/* 전체 선택/해제 체크박스 */}
+                            <div className="flex items-center mb-4">
+                                <input
+                                    type="checkbox"
+                                    id="selectAll"
+                                    checked={selected.length === cartItems.length && cartItems.length > 0}
+                                    onChange={() => {
+                                        if (selected.length === cartItems.length) {
+                                            setSelected([]);
+                                        } else {
+                                            setSelected(cartItems.map(item => item.productId));
+                                        }
+                                    }}
+                                    className="mr-2 w-5 h-5 accent-blue-600"
+                                />
+                                <label htmlFor="selectAll" className="text-gray-700 font-medium cursor-pointer">
+                                    전체 선택
+                                </label>
+                                <span className="ml-2 text-gray-500 text-sm">
+                                    ({selected.length} / {cartItems.length})
+                                </span>
+                            </div>
                             {cartItems.map((item) => (
                                 <div key={item.productId} className="flex items-center border-b border-gray-200 py-4 last:border-b-0">
                                     <input
