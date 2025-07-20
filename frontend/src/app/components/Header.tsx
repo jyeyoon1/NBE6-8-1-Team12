@@ -7,20 +7,24 @@ import { useAuth } from "@/contexts/AuthContext";
 export default function Header() {
   const { isAuthenticated, isLoading, logout } = useAuth();
 
+  // 로그인 여부에 따라 이동할 링크 설정
+  const homeLink = isAuthenticated ? "/products/list" : "/";
+
   return (
     <header className="w-full fixed top-0 left-0 bg-white/70 text-[#4a3b31] shadow-md z-50 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center gap-4">
-        <div className="flex items-center space-x-3">
-          <Image
-            src="/team12.png"
-            alt="Caffe Logo"
-            width={40}
-            height={40}
-            className="object-contain"
-          />
-          <h5 className="text-base">Caffe 메뉴 서비스 입니다.</h5>
-        </div>
-
+        <Link href={homeLink}>
+          <div className="flex items-center space-x-3 cursor-pointer">
+            <Image
+              src="/team12.png"
+              alt="Caffe Logo"
+              width={40}
+              height={40}
+              className="object-contain"
+            />
+            <h5 className="text-base">Team | 12</h5>
+          </div>
+        </Link>
         <div className="flex items-center text-sm font-medium gap-4">
           {isLoading ? (
             // 로딩 중일 때 스켈레톤 UI
