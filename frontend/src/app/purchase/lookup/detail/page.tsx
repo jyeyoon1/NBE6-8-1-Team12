@@ -4,8 +4,7 @@ import { cache, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { PurchaserReqBody } from '@/purchase/types/purchase-request';
-import { PurchaseDetailDto, PurchaseDto, PurchaseItemDetailDto, ReceiverResDto } from '@/purchase/types/purchase-response';
-
+import { PurchaseDetailDto, PurchaseDto, PurchaseItemDetailDto, ReceiverResDto, ServerResponse } from '@/purchase/types/purchase-response';
 
 export default function PurchaseLookUpResultPage() {
   const searchParams = useSearchParams();
@@ -41,20 +40,16 @@ export default function PurchaseLookUpResultPage() {
           },
           body: JSON.stringify(reqBody)
         });
+        if(!res.ok) throw new Error("주문 정보 조회 실패");
 
-        if (!res.ok) throw new Error("응답 실패");
+        const fullResponse: ServerResponse<PurchaseDetailDto> = await res.json();
 
-        interface ServerResponse {
-          resultCode: string;
-          statusCode: number;
-          msg: string;
-          data: PurchaseDetailDto;
+        if (!fullResponse.resultCode || !fullResponse.resultCode.startsWith("200")) {
+          alert(fullResponse.msg);
+          return;
         }
 
-        const fullResponse: ServerResponse = await res.json();
         const data: PurchaseDetailDto = fullResponse.data;
-        console.log("주문 상세 조회 서버 응답 데이터:", data);
-
 
         setPurchase(data.purchase);
         setPurchaseItems(data.purchaseItems);
