@@ -58,4 +58,12 @@ public class ShippingController {
         }
         return shippingService.getAllShippings();
     }
+
+    // 단건 조회
+    @GetMapping("/{id}")
+    public ShippingResDto getShippingById(@PathVariable int id) {
+        Shipping shipping = shippingService.getShippingById(id);
+        return new ShippingResDto(shipping);
+    }
+
 }

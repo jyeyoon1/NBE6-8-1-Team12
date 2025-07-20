@@ -16,4 +16,7 @@ public interface ShippingRepository extends JpaRepository<Shipping, Integer> {
     List<Shipping> findByPurchaseUserEmail(String userEmail);
 
     List<Shipping> findByEmail(String email);
+
+    Optional<Shipping> findById(Integer id);
+
 }
