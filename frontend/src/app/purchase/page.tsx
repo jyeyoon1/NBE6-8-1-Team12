@@ -239,7 +239,7 @@ export default function PurchasePage() {
             updateCart(purchaseItems);
 
             const paymentData = await paymentRes.json();
-            router.push(`/payment/${paymentData.data.id}/execute?paymentData=${encodeURIComponent(JSON.stringify(paymentData.data))}`);
+            router.push(`/payment/${paymentData.data.id}/execute`);
         } catch (err) {
             console.error('주문 실패:', err);
         }

@@ -4,12 +4,12 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../contexts/AuthContext";
 import { PageResponse } from "../types/pageResponse";
-import { PaymentHistoryItem } from "./types/paymentData";
+import { PaymentItem } from "./types/paymentData";
 
 export default function Page() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
-  const [pageData, setPageData] = useState<PageResponse<PaymentHistoryItem> | null>(null);
+  const [pageData, setPageData] = useState<PageResponse<PaymentItem> | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -31,7 +31,7 @@ export default function Page() {
         if (!response.ok) {
           throw new Error("결제 내역을 불러오는 중 오류가 발생했습니다.");
         }
-        const data: PageResponse<PaymentHistoryItem> = await response.json();
+        const data: PageResponse<PaymentItem> = await response.json();
         setPageData(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "결제 내역을 불러오는 중 오류가 발생했습니다.");
