@@ -197,7 +197,7 @@ export default function ProductListPage() {
                       <div className="flex space-x-2 ml-4">
                         <Link
                           href={`/products/form?id=${product.id}`}
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                          className="bg-gray-200 hover:bg-blue-600 hover:text-white text-gray-700 px-3 py-1 rounded text-sm transition-colors hover:font-bold cursor-pointer"
                         >
                           수정
                         </Link>
@@ -221,9 +221,41 @@ export default function ProductListPage() {
                               }
                             }
                           }}
-                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                          className="bg-gray-200 hover:bg-blue-600 hover:text-white text-gray-700 px-3 py-1 rounded text-sm transition-colors hover:font-bold cursor-pointer"
                         >
                           삭제
+                        </button>
+                        <button
+                          onClick={async () => {
+                            const newQuantity = prompt(`현재 재고: ${product.totalQuantity}개\n새로운 재고 수량을 입력하세요:`, product.totalQuantity.toString());
+                            if (newQuantity !== null) {
+                              const quantity = parseInt(newQuantity);
+                              if (isNaN(quantity) || quantity < 0) {
+                                alert('유효한 수량을 입력해주세요.');
+                                return;
+                              }
+                              try {
+                                const res = await fetch(`http://localhost:8080/api/products/${product.id}/stock`, {
+                                  method: 'PATCH',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  credentials: 'include',
+                                  body: JSON.stringify({ totalQuantity: quantity })
+                                });
+                                if (res.ok) {
+                                  alert('재고가 업데이트되었습니다.');
+                                  window.location.reload();
+                                } else {
+                                  alert('재고 업데이트에 실패했습니다.');
+                                }
+                              } catch (error) {
+                                console.error('재고 업데이트 오류:', error);
+                                alert('재고 업데이트 중 오류가 발생했습니다.');
+                              }
+                            }
+                          }}
+                          className="bg-gray-200 hover:bg-blue-600 hover:text-white text-gray-700 px-3 py-1 rounded text-sm transition-colors hover:font-bold cursor-pointer"
+                        >
+                          재고변경
                         </button>
                         {product.status === 'OUT_OF_STOCK' && (
                           <button
@@ -248,7 +280,7 @@ export default function ProductListPage() {
                                 }
                               }
                             }}
-                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                            className="bg-gray-200 hover:bg-blue-600 hover:text-white text-gray-700 px-3 py-1 rounded text-sm transition-colors hover:font-bold cursor-pointer"
                           >
                             판매재개
                           </button>
@@ -276,7 +308,7 @@ export default function ProductListPage() {
                                 }
                               }
                             }}
-                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                            className="bg-gray-200 hover:bg-blue-600 hover:text-white text-gray-700 px-3 py-1 rounded text-sm transition-colors hover:font-bold cursor-pointer"
                           >
                             판매재개
                           </button>
@@ -304,7 +336,7 @@ export default function ProductListPage() {
                                 }
                               }
                             }}
-                            className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                            className="bg-gray-200 hover:bg-blue-600 hover:text-white text-gray-700 px-3 py-1 rounded text-sm transition-colors hover:font-bold cursor-pointer"
                           >
                             판매중지
                           </button>

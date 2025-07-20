@@ -149,33 +149,35 @@ export default function ProductDetailPage() {
         <div className="text-lg text-gray-600 mt-4">{product.description}</div>
         <div className="text-sm text-gray-500 mt-1">재고: {product.totalQuantity}개</div>
         {/* 수량 선택 UI */}
-        <div className="flex items-center mt-4 space-x-2">
-          <span className="text-gray-700">수량:</span>
-          <button
-            type="button"
-            className="px-2 py-1 bg-gray-300 rounded"
-            onClick={() => handleQuantityChange(quantity - 1)}
-            disabled={quantity <= 1}
-          >
-            -
-          </button>
-          <input
-            type="number"
-            min={1}
-            max={product.totalQuantity}
-            value={quantity}
-            onChange={e => handleQuantityChange(Number(e.target.value))}
-            className="w-16 text-center border rounded"
-          />
-          <button
-            type="button"
-            className="px-2 py-1 bg-gray-300 rounded"
-            onClick={() => handleQuantityChange(quantity + 1)}
-            disabled={quantity >= product.totalQuantity}
-          >
-            +
-          </button>
-        </div>
+        {!isAdmin && (
+          <div className="flex items-center mt-4 space-x-2">
+            <span className="text-gray-700">수량:</span>
+            <button
+              type="button"
+              className="px-2 py-1 bg-gray-300 rounded"
+              onClick={() => handleQuantityChange(quantity - 1)}
+              disabled={quantity <= 1}
+            >
+              -
+            </button>
+            <input
+              type="number"
+              min={1}
+              max={product.totalQuantity}
+              value={quantity}
+              onChange={e => handleQuantityChange(Number(e.target.value))}
+              className="w-16 text-center border rounded"
+            />
+            <button
+              type="button"
+              className="px-2 py-1 bg-gray-300 rounded"
+              onClick={() => handleQuantityChange(quantity + 1)}
+              disabled={quantity >= product.totalQuantity}
+            >
+              +
+            </button>
+          </div>
+        )}
         <div className="flex justify-between mt-10 space-x-4">
           <button
             onClick={() => router.push('/products/list')}
@@ -183,192 +185,7 @@ export default function ProductDetailPage() {
           >
             목록으로
           </button>
-          <button
-            onClick={handlePurchase}
-            className={`flex-1 text-center py-3 rounded-lg transition ${product.status === 'ON_SALE' && quantity <= product.totalQuantity
-              ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-            disabled={product.status !== 'ON_SALE' || quantity > product.totalQuantity}
-          >
-            {product.status === 'OUT_OF_STOCK' ? '재고소진' :
-              product.status === 'NOT_FOR_SALE' ? '판매중지' :
-                quantity > product.totalQuantity ? '재고부족' : '바로 구매'}
-          </button>
-          <button
-            onClick={handleAddToCart}
-            className={`flex-1 text-center py-3 rounded-lg transition ${product.status === 'ON_SALE' && quantity <= product.totalQuantity
-              ? 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-            disabled={product.status !== 'ON_SALE' || quantity > product.totalQuantity}
-          >
-            {product.status === 'OUT_OF_STOCK' ? '재고소진' :
-              product.status === 'NOT_FOR_SALE' ? '판매중지' :
-                quantity > product.totalQuantity ? '재고부족' : '장바구니'}
-          </button>
         </div>
-
-        {/* 관리자 기능 */}
-        {isAdmin && (
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h3 className="text-lg font-semibold mb-4 text-gray-800">관리자 기능</h3>
-            <div className="flex space-x-4">
-              <button
-                onClick={() => router.push(`/products/form?id=${product.id}`)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors"
-              >
-                상품 수정
-              </button>
-
-              <button
-                onClick={async () => {
-                  if (confirm('이 상품을 삭제하시겠습니까?')) {
-                    try {
-                      const res = await fetch(`http://localhost:8080/api/products/${product.id}`, {
-                        method: 'DELETE',
-                        credentials: 'include',
-                      });
-                      if (res.ok) {
-                        alert('상품이 삭제되었습니다.');
-                        router.push('/products/list');
-                      } else {
-                        alert('상품 삭제에 실패했습니다.');
-                      }
-                    } catch (error) {
-                      console.error('상품 삭제 오류:', error);
-                      alert('상품 삭제 중 오류가 발생했습니다.');
-                    }
-                  }
-                }}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition-colors"
-              >
-                상품 삭제
-              </button>
-
-              {product.status === 'OUT_OF_STOCK' && (
-                <button
-                  onClick={async () => {
-                    if (confirm('이 상품을 판매 가능 상태로 변경하시겠습니까?')) {
-                      try {
-                        const res = await fetch(`http://localhost:8080/api/products/${product.id}/status`, {
-                          method: 'PATCH',
-                          headers: { 'Content-Type': 'application/json' },
-                          credentials: 'include',
-                          body: JSON.stringify({ status: 'ON_SALE' })
-                        });
-                        if (res.ok) {
-                          alert('상품 상태가 변경되었습니다.');
-                          window.location.reload();
-                        } else {
-                          alert('상품 상태 변경에 실패했습니다.');
-                        }
-                      } catch (error) {
-                        console.error('상품 상태 변경 오류:', error);
-                        alert('상품 상태 변경 중 오류가 발생했습니다.');
-                      }
-                    }
-                  }}
-                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors"
-                >
-                  판매 재개
-                </button>
-              )}
-
-              {product.status === 'NOT_FOR_SALE' && (
-                <button
-                  onClick={async () => {
-                    if (confirm('이 상품을 판매 가능 상태로 변경하시겠습니까?')) {
-                      try {
-                        const res = await fetch(`http://localhost:8080/api/products/${product.id}/status`, {
-                          method: 'PATCH',
-                          headers: { 'Content-Type': 'application/json' },
-                          credentials: 'include',
-                          body: JSON.stringify({ status: 'ON_SALE' })
-                        });
-                        if (res.ok) {
-                          alert('상품 상태가 변경되었습니다.');
-                          window.location.reload();
-                        } else {
-                          alert('상품 상태 변경에 실패했습니다.');
-                        }
-                      } catch (error) {
-                        console.error('상품 상태 변경 오류:', error);
-                        alert('상품 상태 변경 중 오류가 발생했습니다.');
-                      }
-                    }
-                  }}
-                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors"
-                >
-                  판매 재개
-                </button>
-              )}
-
-              {product.status === 'ON_SALE' && (
-                <button
-                  onClick={async () => {
-                    if (confirm('이 상품을 판매 중지하시겠습니까?')) {
-                      try {
-                        const res = await fetch(`http://localhost:8080/api/products/${product.id}/status`, {
-                          method: 'PATCH',
-                          headers: { 'Content-Type': 'application/json' },
-                          credentials: 'include',
-                          body: JSON.stringify({ status: 'NOT_FOR_SALE' })
-                        });
-                        if (res.ok) {
-                          alert('상품 상태가 변경되었습니다.');
-                          window.location.reload();
-                        } else {
-                          alert('상품 상태 변경에 실패했습니다.');
-                        }
-                      } catch (error) {
-                        console.error('상품 상태 변경 오류:', error);
-                        alert('상품 상태 변경 중 오류가 발생했습니다.');
-                      }
-                    }
-                  }}
-                  className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded transition-colors"
-                >
-                  판매 중지
-                </button>
-              )}
-
-              <button
-                onClick={async () => {
-                  const newQuantity = prompt(`현재 재고: ${product.totalQuantity}개\n새로운 재고 수량을 입력하세요:`, product.totalQuantity.toString());
-                  if (newQuantity !== null) {
-                    const quantity = parseInt(newQuantity);
-                    if (isNaN(quantity) || quantity < 0) {
-                      alert('유효한 수량을 입력해주세요.');
-                      return;
-                    }
-
-                    try {
-                      const res = await fetch(`http://localhost:8080/api/products/${product.id}/stock`, {
-                        method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify({ totalQuantity: quantity })
-                      });
-                      if (res.ok) {
-                        alert('재고가 업데이트되었습니다.');
-                        window.location.reload();
-                      } else {
-                        alert('재고 업데이트에 실패했습니다.');
-                      }
-                    } catch (error) {
-                      console.error('재고 업데이트 오류:', error);
-                      alert('재고 업데이트 중 오류가 발생했습니다.');
-                    }
-                  }
-                }}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition-colors"
-              >
-                재고 수정
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
