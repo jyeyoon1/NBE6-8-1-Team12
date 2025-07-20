@@ -101,21 +101,53 @@ export default function PurchasePage() {
     const updateCart = (purchaseItems: PurchaseItemInfo[]) => {
         const cartStr = localStorage.getItem("cart");
         if (!cartStr) return;
-      
+
         const cart: { productId: number; quantity: number }[] = JSON.parse(cartStr);
-      
+
         // 구매한 제품 제외 필터
-        const updatedCart = cart.filter(item => 
+        const updatedCart = cart.filter(item =>
             !purchaseItems.some(p => p.productId === item.productId)
         );
         localStorage.setItem("cart", JSON.stringify(updatedCart));
     };
-      
+
 
     if (!purchaseItems || purchaseItems.length === 0) return <div>Loading...</div>;
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        // 재고 검증 (백엔드 API 사용)
+        for (const item of purchaseItems) {
+            try {
+                const res = await fetch(`http://localhost:8080/api/products/${item.productId}`);
+                if (!res.ok) {
+                    alert(`${item.productName}의 정보를 가져올 수 없습니다.`);
+                    return;
+                }
+                const data = await res.json();
+                const product = data.data;
+
+                if (product.status === 'OUT_OF_STOCK') {
+                    alert(`${item.productName}은(는) 재고가 소진되었습니다.`);
+                    return;
+                }
+
+                if (product.status === 'NOT_FOR_SALE') {
+                    alert(`${item.productName}은(는) 판매가 중지되었습니다.`);
+                    return;
+                }
+
+                if (item.quantity > product.totalQuantity) {
+                    alert(`${item.productName}의 재고가 부족합니다. (재고: ${product.totalQuantity}개, 요청: ${item.quantity}개)`);
+                    return;
+                }
+            } catch (error) {
+                console.error(`${item.productName} 재고 확인 중 오류:`, error);
+                alert(`${item.productName}의 재고를 확인할 수 없습니다.`);
+                return;
+            }
+        }
 
         const form = e.target as HTMLFormElement;
 
@@ -204,7 +236,7 @@ export default function PurchasePage() {
             });
             if (!paymentRes.ok) throw new Error("결제 실패");
 
-            updateCart(purchaseItems);  
+            updateCart(purchaseItems);
 
             const paymentData = await paymentRes.json();
             router.push(`/payment/${paymentData.data.id}/execute?paymentData=${encodeURIComponent(JSON.stringify(paymentData.data))}`);
@@ -241,9 +273,9 @@ export default function PurchasePage() {
                                     >
                                         <td className="py-2 px-3">{item.productName}</td>
                                         <td className="py-2 px-3">
-                                            <img 
-                                                src={item.imageUrl} 
-                                                alt={item.productName} 
+                                            <img
+                                                src={item.imageUrl}
+                                                alt={item.productName}
                                                 className="w-32 h-32 object-cover mx-auto rounded-md border"
                                             />
                                         </td>
@@ -345,7 +377,7 @@ export default function PurchasePage() {
                                         className="flex items-center space-x-2 cursor-pointer px-3 py-2 border rounded-md hover:bg-gray-50 font-medium text-gray-900 w-full"
                                         style={{ minWidth: 0, flex: 1 }}
                                     >
-                                        <input 
+                                        <input
                                             type="radio"
                                             name="selectedTopOptId"
                                             value={opt.id}

@@ -37,7 +37,10 @@ export default function ProductListPage() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
+
+  // 디버깅용 로그
+  console.log('Product list - isAuthenticated:', isAuthenticated, 'isAdmin:', isAdmin);
 
   const [pageInfo, setPageInfo] = useState({
     pageNumber: 0,
@@ -165,8 +168,8 @@ export default function ProductListPage() {
 
               return (
                 <li key={product.id} className={statusClass}>
-                  <Link href={`/products/${product.id}`}>
-                    <div className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors relative">
+                  <div className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors relative">
+                    <Link href={`/products/${product.id}`} className="flex items-center flex-grow">
                       <img
                         src={product.imageUrl}
                         alt={product.productName}
@@ -178,15 +181,137 @@ export default function ProductListPage() {
                         <div className="text-base font-bold text-gray-700">
                           {product.price.toLocaleString()}원
                         </div>
+                        <div className="text-sm text-gray-500">재고: {product.totalQuantity}개</div>
                       </div>
-                      {/* 상태 표시 태그 */}
-                      {statusText && (
-                        <span className="absolute top-2 right-2 px-2 py-1 text-xs font-semibold rounded bg-red-400 text-white">
-                          {statusText}
-                        </span>
-                      )}
-                    </div>
-                  </Link>
+                    </Link>
+
+                    {/* 상태 표시 태그 */}
+                    {statusText && (
+                      <span className="absolute top-2 right-2 px-2 py-1 text-xs font-semibold rounded bg-red-400 text-white">
+                        {statusText}
+                      </span>
+                    )}
+
+                    {/* 관리자 기능 버튼 */}
+                    {isAdmin && (
+                      <div className="flex space-x-2 ml-4">
+                        <Link
+                          href={`/products/form?id=${product.id}`}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                        >
+                          수정
+                        </Link>
+                        <button
+                          onClick={async () => {
+                            if (confirm('이 상품을 삭제하시겠습니까?')) {
+                              try {
+                                const res = await fetch(`http://localhost:8080/api/products/${product.id}`, {
+                                  method: 'DELETE',
+                                  credentials: 'include',
+                                });
+                                if (res.ok) {
+                                  alert('상품이 삭제되었습니다.');
+                                  window.location.reload();
+                                } else {
+                                  alert('상품 삭제에 실패했습니다.');
+                                }
+                              } catch (error) {
+                                console.error('상품 삭제 오류:', error);
+                                alert('상품 삭제 중 오류가 발생했습니다.');
+                              }
+                            }
+                          }}
+                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                        >
+                          삭제
+                        </button>
+                        {product.status === 'OUT_OF_STOCK' && (
+                          <button
+                            onClick={async () => {
+                              if (confirm('이 상품을 판매 가능 상태로 변경하시겠습니까?')) {
+                                try {
+                                  const res = await fetch(`http://localhost:8080/api/products/${product.id}/status`, {
+                                    method: 'PATCH',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    credentials: 'include',
+                                    body: JSON.stringify({ status: 'ON_SALE' })
+                                  });
+                                  if (res.ok) {
+                                    alert('상품 상태가 변경되었습니다.');
+                                    window.location.reload();
+                                  } else {
+                                    alert('상품 상태 변경에 실패했습니다.');
+                                  }
+                                } catch (error) {
+                                  console.error('상품 상태 변경 오류:', error);
+                                  alert('상품 상태 변경 중 오류가 발생했습니다.');
+                                }
+                              }
+                            }}
+                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                          >
+                            판매재개
+                          </button>
+                        )}
+                        {product.status === 'NOT_FOR_SALE' && (
+                          <button
+                            onClick={async () => {
+                              if (confirm('이 상품을 판매 가능 상태로 변경하시겠습니까?')) {
+                                try {
+                                  const res = await fetch(`http://localhost:8080/api/products/${product.id}/status`, {
+                                    method: 'PATCH',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    credentials: 'include',
+                                    body: JSON.stringify({ status: 'ON_SALE' })
+                                  });
+                                  if (res.ok) {
+                                    alert('상품 상태가 변경되었습니다.');
+                                    window.location.reload();
+                                  } else {
+                                    alert('상품 상태 변경에 실패했습니다.');
+                                  }
+                                } catch (error) {
+                                  console.error('상품 상태 변경 오류:', error);
+                                  alert('상품 상태 변경 중 오류가 발생했습니다.');
+                                }
+                              }
+                            }}
+                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                          >
+                            판매재개
+                          </button>
+                        )}
+                        {product.status === 'ON_SALE' && (
+                          <button
+                            onClick={async () => {
+                              if (confirm('이 상품을 판매 중지하시겠습니까?')) {
+                                try {
+                                  const res = await fetch(`http://localhost:8080/api/products/${product.id}/status`, {
+                                    method: 'PATCH',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    credentials: 'include',
+                                    body: JSON.stringify({ status: 'NOT_FOR_SALE' })
+                                  });
+                                  if (res.ok) {
+                                    alert('상품 상태가 변경되었습니다.');
+                                    window.location.reload();
+                                  } else {
+                                    alert('상품 상태 변경에 실패했습니다.');
+                                  }
+                                } catch (error) {
+                                  console.error('상품 상태 변경 오류:', error);
+                                  alert('상품 상태 변경 중 오류가 발생했습니다.');
+                                }
+                              }
+                            }}
+                            className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                          >
+                            판매중지
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </li>
               );
             })}

@@ -14,6 +14,8 @@ interface CartItem {
     productName: string;
     price: number;
     imageUrl: string;
+    totalQuantity: number; // 재고 수량 추가
+    status: 'ON_SALE' | 'OUT_OF_STOCK' | 'NOT_FOR_SALE'; // 상품 상태 추가
 }
 
 export default function CartPage() {
@@ -33,18 +35,17 @@ export default function CartPage() {
                     return;
                 }
 
-                // 각 상품 최신 정보 fetch
-                // Promise.all과 flatMap을 조합하여 유효한 아이템만 가져오기
+                // 각 상품 최신 정보 fetch (백엔드 API 사용)
                 const fetchedItems = await Promise.all(
                     localCart.map(async (item) => {
                         try {
-                            const res = await fetch(`/api/products/${item.productId}`);
+                            const res = await fetch(`http://localhost:8080/api/products/${item.productId}`);
                             if (!res.ok) {
                                 console.warn(`제품 ID ${item.productId}의 정보를 가져오지 못했습니다. (상태: ${res.status})`);
                                 return []; // 유효하지 않은 아이템은 빈 배열 반환
                             }
                             const data = await res.json();
-                            // data.data에 상품 정보가 있다고 가정
+                            // 백엔드 응답 구조에 맞게 수정
                             if (data && data.data) {
                                 return [{
                                     productId: item.productId,
@@ -52,6 +53,8 @@ export default function CartPage() {
                                     productName: data.data.productName,
                                     price: data.data.price,
                                     imageUrl: data.data.imageUrl,
+                                    totalQuantity: data.data.totalQuantity,
+                                    status: data.data.status,
                                 }];
                             } else {
                                 console.warn(`제품 ID ${item.productId}의 유효한 데이터가 없습니다.`);
@@ -63,8 +66,8 @@ export default function CartPage() {
                         }
                     })
                 )
-                // flatMap으로 배열 평탄화 및 빈 배열 제거
-                .then(results => results.flatMap(result => result)); 
+                    // flatMap으로 배열 평탄화 및 빈 배열 제거
+                    .then(results => results.flatMap(result => result));
 
                 setCartItems(fetchedItems);
 
@@ -80,22 +83,67 @@ export default function CartPage() {
         fetchCartItems();
     }, []);
 
-    // 수량 변경
-    const updateQuantity = (productId: number, newQuantity: number) => {
+    // 수량 변경 (실시간 재고 확인)
+    const updateQuantity = async (productId: number, newQuantity: number) => {
         if (newQuantity < 1) return;
-        const updated = cartItems.map((item) =>
-            item.productId === productId ? { ...item, quantity: newQuantity } : item
-        );
-        setCartItems(updated);
-        // localStorage에도 반영
+
+        const item = cartItems.find(item => item.productId === productId);
+        if (!item) return;
+
         try {
-            localStorage.setItem(
-                "cart",
-                JSON.stringify(updated.map(({ productId, quantity }) => ({ productId, quantity })))
+            // 백엔드에서 최신 재고 정보 확인
+            const res = await fetch(`http://localhost:8080/api/products/${productId}`);
+            if (!res.ok) {
+                alert('상품 정보를 가져올 수 없습니다.');
+                return;
+            }
+
+            const data = await res.json();
+            const currentProduct = data.data;
+
+            // 상품 상태 검증
+            if (currentProduct.status === 'OUT_OF_STOCK') {
+                alert('재고가 소진된 상품입니다.');
+                return;
+            }
+
+            if (currentProduct.status === 'NOT_FOR_SALE') {
+                alert('판매 중지된 상품입니다.');
+                return;
+            }
+
+            // 실시간 재고 검증
+            if (newQuantity > currentProduct.totalQuantity) {
+                alert(`재고가 부족합니다. 최대 ${currentProduct.totalQuantity}개까지 구매 가능합니다.`);
+                return;
+            }
+
+            // 재고 정보 업데이트
+            const updated = cartItems.map((item) =>
+                item.productId === productId
+                    ? {
+                        ...item,
+                        quantity: newQuantity,
+                        totalQuantity: currentProduct.totalQuantity,
+                        status: currentProduct.status
+                    }
+                    : item
             );
+            setCartItems(updated);
+
+            // localStorage에도 반영
+            try {
+                localStorage.setItem(
+                    "cart",
+                    JSON.stringify(updated.map(({ productId, quantity }) => ({ productId, quantity })))
+                );
+            } catch (error) {
+                console.error("장바구니 저장에 실패했습니다:", error);
+                alert("장바구니 저장에 실패했습니다. 다시 시도해주세요.");
+            }
         } catch (error) {
-            console.error("장바구니 저장에 실패했습니다:", error);
-            alert("장바구니 저장에 실패했습니다. 다시 시도해주세요.");
+            console.error('재고 확인 중 오류:', error);
+            alert('재고를 확인할 수 없습니다. 다시 시도해주세요.');
         }
     };
 
@@ -126,15 +174,49 @@ export default function CartPage() {
         );
     };
 
-    // 구매하기
-    const handlePurchase = () => {
+    // 구매하기 (실시간 재고 확인)
+    const handlePurchase = async () => {
         if (selected.length === 0) {
             alert("상품을 선택해주세요.");
             return;
         }
-        const purchaseCartItems = cartItems
-        .filter((item) => selected.includes(item.productId))
-        .map(({ productId, quantity }) => ({ productId, quantity }));
+
+        const selectedItems = cartItems.filter((item) => selected.includes(item.productId));
+
+        // 실시간 재고 및 상태 검증
+        for (const item of selectedItems) {
+            try {
+                const res = await fetch(`http://localhost:8080/api/products/${item.productId}`);
+                if (!res.ok) {
+                    alert(`${item.productName}의 정보를 가져올 수 없습니다.`);
+                    return;
+                }
+
+                const data = await res.json();
+                const currentProduct = data.data;
+
+                if (currentProduct.status === 'OUT_OF_STOCK') {
+                    alert(`${item.productName}은(는) 재고가 소진되었습니다.`);
+                    return;
+                }
+
+                if (currentProduct.status === 'NOT_FOR_SALE') {
+                    alert(`${item.productName}은(는) 판매가 중지되었습니다.`);
+                    return;
+                }
+
+                if (item.quantity > currentProduct.totalQuantity) {
+                    alert(`${item.productName}의 재고가 부족합니다. (재고: ${currentProduct.totalQuantity}개, 요청: ${item.quantity}개)`);
+                    return;
+                }
+            } catch (error) {
+                console.error(`${item.productName} 재고 확인 중 오류:`, error);
+                alert(`${item.productName}의 재고를 확인할 수 없습니다.`);
+                return;
+            }
+        }
+
+        const purchaseCartItems = selectedItems.map(({ productId, quantity }) => ({ productId, quantity }));
 
         if (!purchaseCartItems || purchaseCartItems.length === 0) {
             alert("선택한 상품을 찾을 수 없습니다.");
@@ -194,7 +276,8 @@ export default function CartPage() {
                                         type="checkbox"
                                         checked={selected.includes(item.productId)}
                                         onChange={() => handleSelect(item.productId)}
-                                        className="mr-4 w-5 h-5 accent-blue-600"
+                                        className="mr-4 w-5 h-5 accent-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        disabled={item.status === 'OUT_OF_STOCK' || item.status === 'NOT_FOR_SALE'}
                                     />
                                     <img
                                         src={item.imageUrl}
@@ -210,18 +293,32 @@ export default function CartPage() {
                                             {item.productName}
                                         </h3>
                                         <p className="text-gray-600">{item.price.toLocaleString()}원</p>
+                                        <div className="flex items-center space-x-2 mt-1">
+                                            <span className="text-sm text-gray-500">재고: {item.totalQuantity}개</span>
+                                            {item.status === 'OUT_OF_STOCK' && (
+                                                <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">재고소진</span>
+                                            )}
+                                            {item.status === 'NOT_FOR_SALE' && (
+                                                <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">판매중지</span>
+                                            )}
+                                            {item.quantity > item.totalQuantity && (
+                                                <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">재고부족</span>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="flex items-center space-x-2 mr-4">
                                         <button
                                             onClick={() => updateQuantity(item.productId, item.quantity - 1)}
-                                            className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center"
+                                            className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                                            disabled={item.quantity <= 1}
                                         >
                                             -
                                         </button>
                                         <span className="w-12 text-center">{item.quantity}</span>
                                         <button
                                             onClick={() => updateQuantity(item.productId, item.quantity + 1)}
-                                            className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center"
+                                            className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                                            disabled={item.quantity >= item.totalQuantity || item.status !== 'ON_SALE'}
                                         >
                                             +
                                         </button>
