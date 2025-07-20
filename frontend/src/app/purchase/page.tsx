@@ -143,7 +143,6 @@ export default function PurchasePage() {
 					return;
 				}
 			} catch (error) {
-				console.error(`${item.productName} 재고 확인 중 오류:`, error);
 				alert(`${item.productName}의 재고를 확인할 수 없습니다.`);
 				return;
 			}
@@ -243,8 +242,8 @@ export default function PurchasePage() {
 			if (!purchaseRes.ok) throw new Error("주문 실패");
 
 			const fullResponse: ServerResponse<PurchaseCheckoutResBody> = await purchaseRes.json();
-			if (!fullResponse.data) {
-				alert(fullResponse.msg || "주문 실패");
+			if (!fullResponse.resultCode.startsWith("201") || !fullResponse.data) {
+				alert(fullResponse.msg);
 				return;
 			}
 			const paymentRequestBody: PurchaseCheckoutResBody = fullResponse.data;
@@ -259,8 +258,8 @@ export default function PurchasePage() {
 			if (!paymentRes.ok) throw new Error("결제 실패");
 
 			const paymentData: ServerResponse<any> = await paymentRes.json();
-			if (!paymentData.data) {
-				alert(paymentData.msg || "결제 실패");
+			if (!paymentData.resultCode.startsWith("201") || !paymentData.data) {
+				alert(paymentData.msg);
 				return;
 			}
 
@@ -402,7 +401,6 @@ export default function PurchasePage() {
 						<h2 className="text-xl font-bold mb-4 text-gray-900">결제 정보</h2>
 						<div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
 							<div className="flex flex-col md:flex-row gap-2">
-								{/* 라디오 버튼 3개가 이름 입력칸과 동일한 너비로 각각 분할 */}
 								<div className="flex flex-row flex-1 gap-2 min-w-0">
 									{topOpts.map((opt, idx) => (
 										<label
@@ -422,7 +420,6 @@ export default function PurchasePage() {
 										</label>
 									))}
 								</div>
-								{/* 상세 셀렉트는 전화번호 입력칸과 동일한 크기 (w-full, max-w-[320px]) */}
 								{detailOpts.length > 0 && (
 									<div className="flex-1 md:ml-2 max-w-[320px] min-w-0">
 										<select

@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 import { PurchaserReqBody } from '@/purchase/types/purchase-request';
-import { PurchaseLookupResBody } from '@/purchase/types/purchase-response';
+import { PurchaseLookupResBody, ServerResponse } from '@/purchase/types/purchase-response';
 
 export default function PurchaseLookUpPage() {
   const router = useRouter();
@@ -57,17 +57,15 @@ export default function PurchaseLookUpPage() {
         },
         body: JSON.stringify(reqBody)
       });
+      if(!res.ok) console.log("주문 조회 실패");
 
-      if (!res.ok) throw new Error("응답 실패");
+      const fullResponse: ServerResponse<PurchaseLookupResBody> = await res.json();
 
-      interface ServerResponse {
-        resultCode: string;
-        statusCode: number;
-        msg: string;
-        data: PurchaseLookupResBody;
+      if (!fullResponse.resultCode.startsWith("200") || !fullResponse.data) {
+        alert(fullResponse.msg || "주문 조회에 실패했습니다.");
+        return;
       }
 
-      const fullResponse: ServerResponse = await res.json();
       const data: PurchaseLookupResBody = fullResponse.data;
 
       router.push(`/purchase/lookup/detail?id=${data.purchaseId}&email=${encodeURIComponent(data.userEmail)}`);
@@ -75,7 +73,6 @@ export default function PurchaseLookUpPage() {
     catch (err) {
       console.error('주문 조회 실패:', err);
     }
-
   }
 
   return (
