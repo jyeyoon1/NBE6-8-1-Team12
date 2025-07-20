@@ -1,6 +1,6 @@
 "use client"; // 꼭 필요함 (Client Component로 선언)
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -8,8 +8,15 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  const { setIsAuthenticated } = useAuth();
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
   const router = useRouter();
+
+  // 로그인 상태면 상태 목록 페이지로 리다이렉트
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace("/products/list"); 
+    }
+  }, [isAuthenticated]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
