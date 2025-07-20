@@ -73,6 +73,10 @@ public class ShippingService {
                 .toList();
     }
 
+    public Shipping getShippingById(int id) {
+        return shippingRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 배송 정보를 찾을 수 없습니다. ID: " + id));
+    }
 
 
     // 유저 이메일로 구매 내역 조회
