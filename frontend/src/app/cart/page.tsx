@@ -132,16 +132,17 @@ export default function CartPage() {
             alert("상품을 선택해주세요.");
             return;
         }
-        if (selected.length > 1) {
-            alert("한 번에 하나의 상품만 구매할 수 있습니다.");
-            return;
-        }
-        const selectedItem = cartItems.find((item) => item.productId === selected[0]);
-        if (!selectedItem) {
+        const purchaseCartItems = cartItems
+        .filter((item) => selected.includes(item.productId))
+        .map(({ productId, quantity }) => ({ productId, quantity }));
+
+        if (!purchaseCartItems || purchaseCartItems.length === 0) {
             alert("선택한 상품을 찾을 수 없습니다.");
             return;
         }
-        router.push(`/purchase?id=${selectedItem.productId}&quantity=${selectedItem.quantity}`);
+        const purchaseData = JSON.stringify(purchaseCartItems);
+
+        router.push(`/purchase?cartItems=${encodeURIComponent(purchaseData)}`);
     };
 
     // 선택된 상품만 합산
@@ -165,6 +166,28 @@ export default function CartPage() {
                 ) : (
                     <>
                         <div className="bg-white rounded-xl shadow-lg p-8 mb-6">
+                            {/* 전체 선택/해제 체크박스 */}
+                            <div className="flex items-center mb-4">
+                                <input
+                                    type="checkbox"
+                                    id="selectAll"
+                                    checked={selected.length === cartItems.length && cartItems.length > 0}
+                                    onChange={() => {
+                                        if (selected.length === cartItems.length) {
+                                            setSelected([]);
+                                        } else {
+                                            setSelected(cartItems.map(item => item.productId));
+                                        }
+                                    }}
+                                    className="mr-2 w-5 h-5 accent-blue-600"
+                                />
+                                <label htmlFor="selectAll" className="text-gray-700 font-medium cursor-pointer">
+                                    전체 선택
+                                </label>
+                                <span className="ml-2 text-gray-500 text-sm">
+                                    ({selected.length} / {cartItems.length})
+                                </span>
+                            </div>
                             {cartItems.map((item) => (
                                 <div key={item.productId} className="flex items-center border-b border-gray-200 py-4 last:border-b-0">
                                     <input
