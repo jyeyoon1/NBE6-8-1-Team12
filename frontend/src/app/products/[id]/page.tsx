@@ -148,44 +148,80 @@ export default function ProductDetailPage() {
         </div>
         <div className="text-lg text-gray-600 mt-4">{product.description}</div>
         <div className="text-sm text-gray-500 mt-1">재고: {product.totalQuantity}개</div>
-        {/* 수량 선택 UI */}
+        {/* 수량 선택 및 구매/장바구니 버튼: 일반 사용자만 노출 */}
         {!isAdmin && (
-          <div className="flex items-center mt-4 space-x-2">
-            <span className="text-gray-700">수량:</span>
+          <>
+            <div className="flex items-center mt-4 space-x-2">
+              <span className="text-gray-700">수량:</span>
+              <button
+                type="button"
+                className="px-2 py-1 bg-gray-300 rounded"
+                onClick={() => handleQuantityChange(quantity - 1)}
+                disabled={quantity <= 1}
+              >
+                -
+              </button>
+              <input
+                type="number"
+                min={1}
+                max={product.totalQuantity}
+                value={quantity}
+                onChange={e => handleQuantityChange(Number(e.target.value))}
+                className="w-16 text-center border rounded"
+              />
+              <button
+                type="button"
+                className="px-2 py-1 bg-gray-300 rounded"
+                onClick={() => handleQuantityChange(quantity + 1)}
+                disabled={quantity >= product.totalQuantity}
+              >
+                +
+              </button>
+            </div>
+            <div className="flex justify-between mt-10 space-x-4">
+              <button
+                onClick={() => router.push('/products/list')}
+                className="flex-1 text-center bg-gray-400 hover:bg-gray-500 text-white py-3 cursor-pointer rounded-lg transition"
+              >
+                목록으로
+              </button>
+              <button
+                onClick={handlePurchase}
+                className={`flex-1 text-center py-3 rounded-lg transition ${product.status === 'ON_SALE' && quantity <= product.totalQuantity
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                disabled={product.status !== 'ON_SALE' || quantity > product.totalQuantity}
+              >
+                {product.status === 'OUT_OF_STOCK' ? '재고소진' :
+                  product.status === 'NOT_FOR_SALE' ? '판매중지' :
+                    quantity > product.totalQuantity ? '재고부족' : '바로 구매'}
+              </button>
+              <button
+                onClick={handleAddToCart}
+                className={`flex-1 text-center py-3 rounded-lg transition ${product.status === 'ON_SALE' && quantity <= product.totalQuantity
+                  ? 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                disabled={product.status !== 'ON_SALE' || quantity > product.totalQuantity}
+              >
+                {product.status === 'OUT_OF_STOCK' ? '재고소진' :
+                  product.status === 'NOT_FOR_SALE' ? '판매중지' :
+                    quantity > product.totalQuantity ? '재고부족' : '장바구니'}
+              </button>
+            </div>
+          </>
+        )}
+        {isAdmin && (
+          <div className="flex justify-between mt-10 space-x-4">
             <button
-              type="button"
-              className="px-2 py-1 bg-gray-300 rounded"
-              onClick={() => handleQuantityChange(quantity - 1)}
-              disabled={quantity <= 1}
+              onClick={() => router.push('/products/list')}
+              className="flex-1 text-center bg-gray-400 hover:bg-gray-500 text-white py-3 cursor-pointer rounded-lg transition"
             >
-              -
-            </button>
-            <input
-              type="number"
-              min={1}
-              max={product.totalQuantity}
-              value={quantity}
-              onChange={e => handleQuantityChange(Number(e.target.value))}
-              className="w-16 text-center border rounded"
-            />
-            <button
-              type="button"
-              className="px-2 py-1 bg-gray-300 rounded"
-              onClick={() => handleQuantityChange(quantity + 1)}
-              disabled={quantity >= product.totalQuantity}
-            >
-              +
+              목록으로
             </button>
           </div>
         )}
-        <div className="flex justify-between mt-10 space-x-4">
-          <button
-            onClick={() => router.push('/products/list')}
-            className="flex-1 text-center bg-gray-400 hover:bg-gray-500 text-white py-3 cursor-pointer rounded-lg transition"
-          >
-            목록으로
-          </button>
-        </div>
       </div>
     </div>
   );
