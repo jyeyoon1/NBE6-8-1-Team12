@@ -8,7 +8,7 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
+  const { isAuthenticated, setIsAuthenticated, checkAuthStatus } = useAuth();
   const router = useRouter();
 
   // 로그인 상태면 상태 목록 페이지로 리다이렉트
@@ -35,6 +35,7 @@ export default function LoginPage() {
     });
 
     if (response.ok) {
+      await checkAuthStatus(); // 인증 상태를 먼저 다시 확인
       setIsAuthenticated(true); // 로그인 성공 시 인증 상태 업데이트
       router.push("/products/list"); // 상품 목록 페이지로 이동
     } else {
