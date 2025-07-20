@@ -37,7 +37,7 @@ export default function ProductListPage() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const { isAuthenticated, isAdmin } = useAuth();
+  const { isAuthenticated, isAdmin, isLoading } = useAuth();
 
   // 디버깅용 로그
   console.log('Product list - isAuthenticated:', isAuthenticated, 'isAdmin:', isAdmin);
@@ -130,7 +130,7 @@ export default function ProductListPage() {
 
         {/* 상품 추가 및 구매 페이지 버튼 */}
         <div className="flex justify-end mb-6">
-          {isAuthenticated && (
+          {isAdmin && (
             <a
               href="/products/form"
               className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors mr-4"
