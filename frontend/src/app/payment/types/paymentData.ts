@@ -4,7 +4,7 @@ export type PaymentData = {
   optionType: string;
   optionName: string;
 };
-export type PaymentHistoryItem = {
+export type PaymentItem = {
   id: number;
   purchaseId: number;
   paymentOptionType: string;

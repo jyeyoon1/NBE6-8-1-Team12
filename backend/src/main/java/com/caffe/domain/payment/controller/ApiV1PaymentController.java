@@ -76,6 +76,17 @@ public class ApiV1PaymentController {
         }
         // 서비스 계층에서 결제 로직 처리
         payment = paymentService.request(payment, paymentExecuteRequestDto.paymentInfo());
+        if(payment.getStatus()== PaymentStatus.SUCCESS) {
+            //결제 완료 시에 재고 처리
+            try {
+                purchaseService.completePurchase(payment.getPurchase());
+            }catch (Exception e) {
+                System.out.println("재고처리 실패 : "+e.getMessage());
+                paymentService.cancel(payment);
+
+                return new RsData<>("500-1", "현재 주문가능한 상품의 재고가 없습니다.");
+            }
+        }
 
         return new RsData<>(payment.getStatus()== PaymentStatus.SUCCESS? "200-1":"503-1", "주문번호 %d의 결제가 ".formatted(payment.getPurchase().getId())+(payment.getStatus()== PaymentStatus.SUCCESS? "성공했습니다.":"실패했습니다."), new PaymentExecuteResponseDto(payment));
     }

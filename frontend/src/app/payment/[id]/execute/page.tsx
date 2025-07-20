@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, Suspense, useEffect } from "react";
-import { useSearchParams, useRouter, useParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import BankForm from "../../components/bankForm/bankForm";
 import CardForm from "../../components/cardForm/cardForm";
 import PgForm from "../../components/pgForm/pgForm";
@@ -8,9 +8,7 @@ import { PaymentData } from "../../types/paymentData";
 
 function PaymentGateway({ } ) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const params = useParams();
-  const paymentId = parseInt(params.id as string);
 
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
   const [paymentInfo, setPaymentInfo] = useState({});
@@ -20,43 +18,45 @@ function PaymentGateway({ } ) {
   const apiUrl = 'http://localhost:8080';
 
   useEffect(() => {
-    try {
-      const paymentDataString = searchParams.get('paymentData');
-      
-      if(!paymentDataString) {
-        throw new Error("결제 정보가 올바르지 않습니다.");
-      }
-      const parsedData = JSON.parse(paymentDataString ?? `{
-        "id": 2,
-        "amount": 50000,
-        "paymentOptionType": "PG",
-        "paymentOptionName": "Toss"
-      }`);
-      console.log('parsedData :', parsedData);
-
-      setPaymentData({
-        id: parseInt(parsedData.id),
-        amount: parsedData.amount,
-        optionType: parsedData.paymentOptionType,
-        optionName: parsedData.paymentOptionName
-      });
-
-      if(paymentId !== parsedData.id) {
-        console.log('paymentId :', paymentId);
-        console.log('parsedData.id :', parsedData.id);
-        throw new Error("결제 정보가 올바르지 않습니다.");
-      }
-    } catch (err) {
-      console.error("paymentData 오류", err);
-      setError("결제 정보를 불러오는 중 오류가 발생했습니다.");
-    }finally {
+  
+    const paymentId = parseInt(params.id as string);
+    if(!paymentId) {
+      throw new Error("결제 ID가 올바르지 않습니다.");
       setIsLoading(false);
+      return;
     }
-  }, [searchParams]);
+      const fetchPaymentData = async () => {
+        setIsLoading(true);
+        try {
+          const response = await fetch(`${apiUrl}/api/v1/payments/${paymentId}`);
+          if(response.ok) {
+            const result = await response.json();
+            console.log('result :', result);
+            setPaymentData({
+              id: result.id,
+              amount: result.amount,
+              optionType: result.paymentOptionType,
+              optionName: result.paymentOptionName
+            });
+          }else {
+            throw new Error("결제 정보를 불러올 수 없습니다.");
+            router.back;
+          }
+        } catch (err) {
+          console.error("paymentData 오류", err);
+          setError("결제 정보를 불러오는 중 오류가 발생했습니다.");
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
-  if(!paymentData) {
-    return <div>결제 정보를 불러오는 중입니다...</div>;
-  }
+      fetchPaymentData();
+    }, [params.id]);
+
+    if(!paymentData) {
+      return <div>결제 정보를 불러오는 중입니다...</div>;
+    }
+
   const validatePaymentInfo = () => {
     const errors = {};
     if(paymentData.optionType === "BANK") {
@@ -127,7 +127,7 @@ function PaymentGateway({ } ) {
       const result = await response.json();
       if(result.resultCode.startsWith("200")) {
         alert("결제가 취소되었습니다.");
-        router.push(`/purchase`);
+        router.back();
       }else {
         throw new Error(result.msg);
       }
@@ -143,7 +143,7 @@ function PaymentGateway({ } ) {
       case "BANK":
         return <BankForm setPaymentInfo={setPaymentInfo} validationErrors={validationErrors} />;
       case "CARD":
-        return <CardForm setPaymentInfo={setPaymentInfo} validationErrors={validationErrors} />;
+        return <CardForm paymentInfo={paymentInfo} setPaymentInfo={setPaymentInfo} validationErrors={validationErrors} />;
       case "PG":
         return <PgForm optionName={paymentData.optionName} />;
       default:

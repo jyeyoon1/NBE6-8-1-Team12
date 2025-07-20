@@ -122,15 +122,36 @@ public class BaseInitData {
         PaymentOption paymentOption1 = new PaymentOption("BANK", PaymentOptionType.TOP_LEVEL, "0001", 1);
         PaymentOption paymentOption2 = new PaymentOption("CARD", PaymentOptionType.TOP_LEVEL, "0002", 2);
         PaymentOption paymentOption3 = new PaymentOption("PG", PaymentOptionType.TOP_LEVEL, "0003", 3);
-        PaymentOption paymentOption11 = new PaymentOption("NH" , PaymentOptionType.DETAIL, "0004", 1, paymentOption1);
-        PaymentOption paymentOption12 = new PaymentOption("HN" , PaymentOptionType.DETAIL, "0005", 2, paymentOption1);
-        PaymentOption paymentOption21 = new PaymentOption("HD" , PaymentOptionType.DETAIL, "0006", 1, paymentOption2);
-        PaymentOption paymentOption22 = new PaymentOption("BC" , PaymentOptionType.DETAIL, "0007", 2, paymentOption2);
-        PaymentOption paymentOption31 = new PaymentOption("KAKAO" , PaymentOptionType.DETAIL, "0008", 1, paymentOption3);
-        PaymentOption paymentOption32 = new PaymentOption("Toss" , PaymentOptionType.DETAIL, "0009", 2, paymentOption3);
-
-        paymentOptionRepository.saveAll(List.of(paymentOption1, paymentOption2, paymentOption3, paymentOption11, paymentOption12, paymentOption21, paymentOption22, paymentOption31, paymentOption32));
-        System.out.println("결제 옵션 데이터 9개  생성 완료");
+        //PaymentOption paymentOption4 = new PaymentOption("통신사", PaymentOptionType.TOP_LEVEL, "0004", 4);
+        PaymentOption paymentOption11 = new PaymentOption("농협은행" , PaymentOptionType.DETAIL, "0011", 3, paymentOption1);
+        PaymentOption paymentOption12 = new PaymentOption("하나은행" , PaymentOptionType.DETAIL, "0012", 2, paymentOption1);
+        PaymentOption paymentOption13 = new PaymentOption("신한은행" , PaymentOptionType.DETAIL, "0013", 1, paymentOption1);
+        PaymentOption paymentOption14 = new PaymentOption("국민은행" , PaymentOptionType.DETAIL, "0014", 0, paymentOption1);
+        PaymentOption paymentOption15 = new PaymentOption("우체국은행" , PaymentOptionType.DETAIL, "0015", 0, paymentOption1);
+        PaymentOption paymentOption16 = new PaymentOption("우리은행" , PaymentOptionType.DETAIL, "0016", 0, paymentOption1);
+        PaymentOption paymentOption17 = new PaymentOption("기업은행" , PaymentOptionType.DETAIL, "0017", 0, paymentOption1);
+        PaymentOption paymentOption21 = new PaymentOption("현대카드" , PaymentOptionType.DETAIL, "0021", 1, paymentOption2);
+        PaymentOption paymentOption22 = new PaymentOption("BC카드" , PaymentOptionType.DETAIL, "0022", 2, paymentOption2);
+        PaymentOption paymentOption23 = new PaymentOption("KB국민카드" , PaymentOptionType.DETAIL, "0023", 1, paymentOption2);
+        PaymentOption paymentOption24 = new PaymentOption("신한카드" , PaymentOptionType.DETAIL, "0024", 1, paymentOption2);
+        PaymentOption paymentOption25 = new PaymentOption("삼성카드" , PaymentOptionType.DETAIL, "0025", 1, paymentOption2);
+        PaymentOption paymentOption26 = new PaymentOption("롯데카드" , PaymentOptionType.DETAIL, "0026", 1, paymentOption2);
+        PaymentOption paymentOption27 = new PaymentOption("우리카드" , PaymentOptionType.DETAIL, "0027", 1, paymentOption2);
+        PaymentOption paymentOption28 = new PaymentOption("하나카드" , PaymentOptionType.DETAIL, "0028", 1, paymentOption2);
+        PaymentOption paymentOption29 = new PaymentOption("농협카드" , PaymentOptionType.DETAIL, "0029", 1, paymentOption2);
+        PaymentOption paymentOption31 = new PaymentOption("KAKAO Pay" , PaymentOptionType.DETAIL, "0031", 1, paymentOption3);
+        PaymentOption paymentOption32 = new PaymentOption("Toss Pay" , PaymentOptionType.DETAIL, "0032", 2, paymentOption3);
+        PaymentOption paymentOption33 = new PaymentOption("N Pay" , PaymentOptionType.DETAIL, "0033", 3, paymentOption3);
+        /*
+        PaymentOption paymentOption41 = new PaymentOption("SKT" , PaymentOptionType.DETAIL, "0041", 1, paymentOption4);
+        PaymentOption paymentOption42 = new PaymentOption("KT" , PaymentOptionType.DETAIL, "0042", 2, paymentOption4);
+        PaymentOption paymentOption43 = new PaymentOption("LG U+" , PaymentOptionType.DETAIL, "0043", 3, paymentOption4);
+        PaymentOption paymentOption44 = new PaymentOption("알뜰폰" , PaymentOptionType.DETAIL, "0044", 4, paymentOption4);
+         */
+        paymentOptionRepository.saveAll(List.of(paymentOption1, paymentOption2, paymentOption3, paymentOption11, paymentOption12, paymentOption21, paymentOption22, paymentOption31, paymentOption32,
+                paymentOption13, paymentOption14, paymentOption15, paymentOption16, paymentOption17,
+                paymentOption23, paymentOption24, paymentOption25, paymentOption26, paymentOption27, paymentOption28, paymentOption29, paymentOption33));
+        System.out.println("결제 옵션 데이터 27개  생성 완료");
 
     }
 
