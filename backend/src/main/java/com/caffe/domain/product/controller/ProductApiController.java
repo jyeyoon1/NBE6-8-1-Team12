@@ -1,6 +1,8 @@
 package com.caffe.domain.product.controller;
 
 import com.caffe.domain.product.dto.request.ProductCreateRequest;
+import com.caffe.domain.product.dto.request.ProductStatusUpdateRequest;
+import com.caffe.domain.product.dto.request.ProductStockUpdateRequest;
 import com.caffe.domain.product.dto.request.ProductUpdateRequest;
 import com.caffe.domain.product.dto.response.ProductDetailResponse;
 import com.caffe.domain.product.dto.response.ProductSummaryResponse;
@@ -100,5 +102,45 @@ public class ProductApiController {
     public ResponseEntity<RsData<ProductCreateRequest>> getAddFormDefaults() {
         ProductCreateRequest emptyForm = ProductCreateRequest.empty();
         return ResponseEntity.ok(new RsData<>("200-3", "상품 등록 폼 정보 조회", emptyForm));
+    }
+
+    // [관리자] 상품 상태 변경 API
+    @PatchMapping("/{id}/status")
+    @Operation(summary = "[관리자] 상품 상태 변경")
+    public ResponseEntity<RsData<ProductDetailResponse>> updateProductStatus(
+            @PathVariable int id, 
+            @Valid @RequestBody ProductStatusUpdateRequest request) {
+        try {
+            Product product = productService.getProductById(id);
+            product.updateStatus(request.status());
+            
+            Product updatedProduct = productService.updateProduct(product);
+            ProductDetailResponse response = new ProductDetailResponse(updatedProduct);
+            
+            return ResponseEntity.ok(new RsData<>("200-5", "상품 상태가 성공적으로 변경되었습니다.", response));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new RsData<>("400-2", "상품 상태 변경에 실패했습니다: " + e.getMessage()));
+        }
+    }
+
+    // [관리자] 상품 재고 수정 API
+    @PatchMapping("/{id}/stock")
+    @Operation(summary = "[관리자] 상품 재고 수정")
+    public ResponseEntity<RsData<ProductDetailResponse>> updateProductStock(
+            @PathVariable int id, 
+            @Valid @RequestBody ProductStockUpdateRequest request) {
+        try {
+            Product product = productService.getProductById(id);
+            product.updateStock(request.totalQuantity());
+            
+            Product updatedProduct = productService.updateProduct(product);
+            ProductDetailResponse response = new ProductDetailResponse(updatedProduct);
+            
+            return ResponseEntity.ok(new RsData<>("200-6", "상품 재고가 성공적으로 수정되었습니다.", response));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new RsData<>("400-3", "상품 재고 수정에 실패했습니다: " + e.getMessage()));
+        }
     }
 }

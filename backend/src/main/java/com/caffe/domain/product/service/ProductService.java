@@ -76,10 +76,24 @@ public class ProductService {
 
             // 6. 설명 길이 제한 (1000자 제한)
             if (product.getDescription() != null && product.getDescription().length() > 1000) {
-                throw new IllegalArgumentException("상품 설명은 500자 이하여야 합니다.");
+                throw new IllegalArgumentException("상품 설명은 1000자 이하여야 합니다.");
             }
 
-            return productRepository.save(product);
+            // 7. 이미지 URL 길이 제한 (500자 제한)
+            if (product.getImageUrl() != null && product.getImageUrl().length() > 500) {
+                throw new IllegalArgumentException("이미지 URL은 500자 이하여야 합니다.");
+            }
+
+            // 8. ID 초기화 (새로운 상품 등록시 ID를 null로 설정하여 자동 생성되도록)
+            try {
+                return productRepository.save(product);
+            } catch (Exception e) {
+                if (e.getMessage().contains("Unique index or primary key violation") || 
+                    e.getMessage().contains("duplicate key")) {
+                    throw new IllegalArgumentException("상품 등록 중 중복 오류가 발생했습니다. 다시 시도해주세요.");
+                }
+                throw e;
+            }
         }
 
         // 상품 수정
@@ -118,7 +132,12 @@ public class ProductService {
 
             // 6. 설명 길이 제한 (1000자 제한)
             if (product.getDescription() != null && product.getDescription().length() > 1000) {
-                throw new IllegalArgumentException("상품 설명은 500자 이하여야 합니다.");
+                throw new IllegalArgumentException("상품 설명은 1000자 이하여야 합니다.");
+            }
+
+            // 7. 이미지 URL 길이 제한 (500자 제한)
+            if (product.getImageUrl() != null && product.getImageUrl().length() > 500) {
+                throw new IllegalArgumentException("이미지 URL은 500자 이하여야 합니다.");
             }
 
             return productRepository.save(product);

@@ -2,9 +2,7 @@ package com.caffe.domain.product.entity;
 
 import com.caffe.global.exception.BusinessLogicException;
 import com.caffe.global.jpa.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +15,11 @@ public class Product extends BaseEntity {
     private String productName;
     private int price;
     private int totalQuantity;
+    
+    @Column(length = 1000)
     private String description;
+    
+    @Column(length = 500)
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
@@ -60,6 +62,19 @@ public class Product extends BaseEntity {
 
     public void restoreStock(int quantity) {
         this.totalQuantity += quantity;
+    }
+
+    // 상품 상태만 변경
+    public void updateStatus(ProductStatus status) {
+        this.status = status != null ? status : ProductStatus.ON_SALE;
+    }
+
+    // 재고만 변경
+    public void updateStock(int totalQuantity) {
+        if (totalQuantity < 0) {
+            throw new IllegalArgumentException("재고는 0 이상이어야 합니다.");
+        }
+        this.totalQuantity = totalQuantity;
     }
 
 }
