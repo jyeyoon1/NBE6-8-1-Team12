@@ -1,6 +1,6 @@
 package com.caffe.domain.payment.controller;
 
-import com.caffe.domain.payment.dto.PaymentOptionDto;
+import com.caffe.domain.payment.dto.PaymentDetailOptionDto;
 import com.caffe.domain.payment.entity.Payment;
 import com.caffe.domain.payment.entity.PaymentOption;
 import com.caffe.domain.payment.entity.PaymentStatus;
@@ -269,7 +269,7 @@ public class ApiV1PaymentControllerTest {
                 )
                 .andDo(print());
 
-        List<PaymentOptionDto> paymentOptions = paymentService.getDetailPaymentOptions(optionParentId);
+        List<PaymentDetailOptionDto> paymentOptions = paymentService.getDetailPaymentOptions(optionParentId);
 
         resultActions
                 .andExpect(handler().handlerType(ApiV1PaymentController.class))
@@ -278,14 +278,14 @@ public class ApiV1PaymentControllerTest {
                 .andExpect(jsonPath("$.length()").value(paymentOptions.size()));
 
         for(int i=0;i<paymentOptions.size();i++) {
-            PaymentOptionDto paymentOptionDto = paymentOptions.get(i);
+            PaymentDetailOptionDto paymentDetailOptionDto = paymentOptions.get(i);
             resultActions
-                    .andExpect(jsonPath("$[%d].id".formatted(i)).value(paymentOptionDto.id()))
-                    .andExpect(jsonPath("$[%d].parentId".formatted(i)).value(paymentOptionDto.parentId()))
-                    .andExpect(jsonPath("$[%d].name".formatted(i)).value(paymentOptionDto.name()))
-                    .andExpect(jsonPath("$[%d].type".formatted(i)).value(String.valueOf(paymentOptionDto.type())))
-                    .andExpect(jsonPath("$[%d].code".formatted(i)).value(paymentOptionDto.code()))
-                    .andExpect(jsonPath("$[%d].sortSeq".formatted(i)).value(paymentOptionDto.sortSeq()));
+                    .andExpect(jsonPath("$[%d].id".formatted(i)).value(paymentDetailOptionDto.id()))
+                    .andExpect(jsonPath("$[%d].parentId".formatted(i)).value(paymentDetailOptionDto.parentId()))
+                    .andExpect(jsonPath("$[%d].name".formatted(i)).value(paymentDetailOptionDto.name()))
+                    .andExpect(jsonPath("$[%d].type".formatted(i)).value(String.valueOf(paymentDetailOptionDto.type())))
+                    .andExpect(jsonPath("$[%d].code".formatted(i)).value(paymentDetailOptionDto.code()))
+                    .andExpect(jsonPath("$[%d].sortSeq".formatted(i)).value(paymentDetailOptionDto.sortSeq()));
         }
     }
 
