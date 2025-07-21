@@ -15,7 +15,7 @@ export default function OptionsForm({ onUpdate, onCancel, apiUrl }: { onUpdate: 
             try {
                 const response = await fetch(`${apiUrl}/api/v1/payments/options`);
                 if (!response.ok) {
-                    throw new Error('옵션 데이터를 불러오는 중 오류가 발생했습니다.');
+                    setError('옵션 데이터를 불러오는 중 오류가 발생했습니다.');
                 }
                 const data = await response.json();
                 setGroupOptions(data);
