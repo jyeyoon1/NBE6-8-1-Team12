@@ -92,11 +92,13 @@ export default function ShippingListPage() {
 
   // 오전 14시 이전 주문
   const morningAll = filteredShippings.filter(item => {
-    const orderTime = new Date(item.orderDate);
-    const hour = orderTime.getHours();
+      const orderTime = new Date(item.orderDate);
+      const hour = orderTime.getHours();
 
-     return (hour >= 9 && hour < 14) || item.status === 'DELIVERING';
+      return ((hour >= 9 && hour < 14) || item.status === 'DELIVERING')
+              && item.status !== 'DELIVERED';
   });
+
 
 
 
@@ -109,11 +111,13 @@ export default function ShippingListPage() {
 
   // 오후 14시 이후 주문
   const lateOrders = filteredShippings.filter(item => {
-    const orderTime = new Date(item.orderDate);
-    const hour = orderTime.getHours();
+      const orderTime = new Date(item.orderDate);
+      const hour = orderTime.getHours();
 
-    return (hour < 9 || hour >= 14) && item.status === 'BEFORE_DELIVERY';
+      return (hour < 9 || hour >= 14)
+              && item.status === 'BEFORE_DELIVERY';
   });
+
 
 
 

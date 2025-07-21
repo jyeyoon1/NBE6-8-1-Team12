@@ -9,6 +9,7 @@ import com.caffe.domain.shipping.service.ShippingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -37,6 +38,7 @@ public class ShippingController {
                     .contactNumber(dto.getContactNumber())
                     .carrier("CJ대한통운")
                     .purchase(purchase)
+                    .createDate(LocalDateTime.now())
                     .build();
 
             // 상태 자동 설정

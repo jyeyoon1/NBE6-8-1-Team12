@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDateTime;
@@ -17,7 +18,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@EnableJpaAuditing
+@EntityListeners(AuditingEntityListener.class)
 @Builder
 public class Shipping {
 
@@ -45,6 +46,7 @@ public class Shipping {
     @ManyToOne
     @JoinColumn(name = "purchase_id")
     private Purchase purchase;
+
 
     public void assignInitialStatus() {
         LocalDateTime now = LocalDateTime.now();
