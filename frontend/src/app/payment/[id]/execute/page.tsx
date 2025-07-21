@@ -25,7 +25,6 @@ function PaymentGateway({ }) {
     const paymentId = parseInt(params.id as string);
     if (!paymentId) {
       throw new Error("결제 ID가 올바르지 않습니다.");
-      setIsLoading(false);
       return;
     }
     const fetchPaymentData = async () => {
@@ -42,7 +41,7 @@ function PaymentGateway({ }) {
             optionName: result.paymentOptionName
           });
         } else {
-          throw new Error("결제 정보를 불러올 수 없습니다.");
+          setError("결제 정보를 불러올 수 없습니다.");
         }
       } catch (err) {
         console.error("paymentData 오류", err);
@@ -54,10 +53,6 @@ function PaymentGateway({ }) {
 
     fetchPaymentData();
   }, [params.id]);
-
-  if (!paymentData) {
-    return <div>결제 정보를 불러오는 중입니다...</div>;
-  }
 
   const validatePaymentInfo = () => {
     const errors = {};
@@ -110,8 +105,7 @@ function PaymentGateway({ }) {
         alert("결제가 완료되었습니다.");
         router.push(`/purchase/lookup/detail?id=${result.data.purchaseId}&email=${encodeURIComponent(result.data.userEmail)}`);
       } else {
-        throw new Error(result.msg);
-        router.back();
+        setError(result.msg);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "결제 중 오류가 발생했습니다.");
@@ -132,7 +126,7 @@ function PaymentGateway({ }) {
       if (result.resultCode.startsWith("200")) {
         alert("결제가 취소되었습니다.");
       } else {
-        throw new Error(result.msg);
+        setError(result.msg);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "결제 취소 중 오류가 발생했습니다.");
@@ -172,7 +166,7 @@ function PaymentGateway({ }) {
         setValidationErrors({});
         setViewMode('execute');
       } else {
-        throw new Error(result.msg);
+        setError(result.msg);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "결제 수단 변경 중 오류가 발생했습니다.");
@@ -201,9 +195,9 @@ function PaymentGateway({ }) {
 
   if (isLoading) return <div className="p-8 max-w-lg mx-auto bg-gray-50 rounded-sm shadow-sm">처리 중입니다.</div>;
   if (error) {
-    return <div className="p-8 max-w-lg mx-auto bg-gray-50 rounded-sm shadow-sm">
+    return <div className="p-8 max-w-lg mx-auto bg-gray-50 rounded-sm shadow-sm flex flex-col items-center justify-center">
       <p className="text-red-500 font-medium">{error}</p>
-      <button onClick={() => setError('')} className="mt-4 px-6 py-2 bg-gray-500 text-white rounded-lg font-semibold hover:bg-gray-600 transition-colors">
+      <button onClick={() => router.back()} className="mt-4 px-6 py-2 bg-gray-500 text-white rounded-lg font-semibold hover:bg-gray-600 transition-colors">
         확인
       </button>
     </div>;

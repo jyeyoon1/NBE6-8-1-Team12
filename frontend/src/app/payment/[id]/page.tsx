@@ -44,6 +44,7 @@ export default function Page() {
     if (error) {
         return <div className="p-8 max-w-lg mx-auto">
             <p className="text-red-500 font-medium">{error}</p>
+            <button onClick={() => router.back()} className="mt-6 w-full py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">돌아가기</button>
         </div>;
     }
 
