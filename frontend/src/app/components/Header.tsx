@@ -92,6 +92,13 @@ export default function Header() {
                 배송 목록
               </Link>
               <span className="text-gray-400">|</span>
+              <Link
+                href="/payment"
+                className="hover:text-gray-500 transition-colors"
+              >
+                결제 내역
+              </Link>
+              <span className="text-gray-400">|</span>
               <button
                 type="button"
                 onClick={logout}
