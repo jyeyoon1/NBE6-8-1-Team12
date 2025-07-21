@@ -14,6 +14,17 @@ export type PaymentItem = {
   paymentStatus: "PENDING" | "SUCCESS" | "FAILED" | "CANCELLED";
   date: string;
 };
+export type PaymentItemDetail = {
+  id: number;
+  purchaseId: number;
+  purchaseEmail: string;
+  paymentOptionType: string;
+  paymentOptionName: string;
+  paymentInfo: string | null;
+  amount: number;
+  paymentStatus: "PENDING" | "SUCCESS" | "FAILED" | "CANCELLED";
+  date: string;
+};
 export type PaymentOption = {
   id: number;
   name: string;
