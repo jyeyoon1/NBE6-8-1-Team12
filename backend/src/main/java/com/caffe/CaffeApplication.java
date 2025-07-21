@@ -20,6 +20,16 @@ public class CaffeApplication {
 	@Bean
 	public ApplicationRunner applicationRunner() {
 		return args -> {
+			System.out.println();
+			System.out.println("======================================================");
+			System.out.println("           )  )  )");
+			System.out.println("          (  (  (");
+			System.out.println("       _________");
+			System.out.println("      .-----------.");
+			System.out.println("     |   NBE6-8  |===");
+			System.out.println("     |  TEAM 12  |  ||");
+			System.out.println("     |           |===");
+			System.out.println("     '-----------'");
 			if(AppConfig.isDevMode()){
 				System.out.println("=====================");
 				System.out.println("애플리케이션이 'dev' 모드로 실행되었습니다.");
