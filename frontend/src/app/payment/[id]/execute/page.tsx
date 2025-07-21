@@ -103,7 +103,7 @@ function PaymentGateway({ }) {
       if (result.resultCode.startsWith("200")) {
         setIsPaymentComplete(true);
         alert("결제가 완료되었습니다.");
-        router.push(`/purchase/lookup/detail?id=${result.data.purchaseId}&email=${encodeURIComponent(result.data.userEmail)}`);
+        router.push(`/payment/${paymentData.id}`);
       } else {
         setError(result.msg);
       }

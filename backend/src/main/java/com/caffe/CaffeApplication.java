@@ -25,7 +25,7 @@ public class CaffeApplication {
 			System.out.println("       _________");
 			System.out.println("      .-----------.");
 			System.out.println("     |   NBE6-8  |===");
-			System.out.println("     |  TEAM 12  |  ||");
+			System.out.println("     |  TEAM 12  |   ))");
 			System.out.println("     |           |===");
 			System.out.println("     '-----------'");
 			if(AppConfig.isDevMode()){

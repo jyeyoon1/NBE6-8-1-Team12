@@ -46,9 +46,9 @@ public class ApiV1PaymentController {
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
     @Operation(summary = "단건조회")
-    public PaymentResponseDto getPayment(@PathVariable int id) {
+    public PaymentItemResponseDto getPayment(@PathVariable int id) {
         Payment payment = paymentService.findById(id);
-        return new PaymentResponseDto(payment);
+        return new PaymentItemResponseDto(payment);
     }
 
     @PostMapping()

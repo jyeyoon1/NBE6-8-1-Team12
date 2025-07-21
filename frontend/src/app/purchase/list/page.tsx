@@ -24,7 +24,7 @@ export default function PurchaseListPage() {
 	// 관리자 로그인
 	useEffect(() => {
 		if (!isLoading && !isAuthenticated) {
-			router.push('/login');
+			router.push('/member/login');
 		}
 	}, [isAuthenticated, isLoading]);
 
