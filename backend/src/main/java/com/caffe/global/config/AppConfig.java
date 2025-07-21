@@ -6,8 +6,10 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @Configuration
+@EnableJpaAuditing
 public class AppConfig {
     private static Environment env;
     @Autowired
