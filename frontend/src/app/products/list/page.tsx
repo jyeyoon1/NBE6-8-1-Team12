@@ -227,7 +227,10 @@ export default function ProductListPage() {
                         </button>
                         <button
                           onClick={async () => {
-                            const newQuantity = prompt(`현재 재고: ${product.totalQuantity}개\n새로운 재고 수량을 입력하세요:`, product.totalQuantity.toString());
+                            const newQuantity = prompt(
+                              `현재 재고: ${product.totalQuantity}개\n새로운 재고 수량을 입력하세요:`,
+                              product.totalQuantity.toString()
+                            );
                             if (newQuantity !== null) {
                               const quantity = parseInt(newQuantity);
                               if (isNaN(quantity) || quantity < 0) {
@@ -243,7 +246,19 @@ export default function ProductListPage() {
                                 });
                                 if (res.ok) {
                                   alert('재고가 업데이트되었습니다.');
-                                  window.location.reload();
+                                  
+                                  // ✅ 전체 새로고침 대신 해당 상품만 상태 갱신
+                                  setProducts((prev) =>
+                                    prev.map((p) =>
+                                      p.id === product.id
+                                        ? {
+                                            ...p,
+                                            totalQuantity: quantity,
+                                            status: quantity === 0 ? 'OUT_OF_STOCK' : 'ON_SALE'
+                                          }
+                                        : p
+                                    )
+                                  );
                                 } else {
                                   alert('재고 업데이트에 실패했습니다.');
                                 }

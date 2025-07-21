@@ -128,15 +128,12 @@ public class ProductApiController {
     @PatchMapping("/{id}/stock")
     @Operation(summary = "[관리자] 상품 재고 수정")
     public ResponseEntity<RsData<ProductDetailResponse>> updateProductStock(
-            @PathVariable int id, 
+            @PathVariable int id,
             @Valid @RequestBody ProductStockUpdateRequest request) {
         try {
-            Product product = productService.getProductById(id);
-            product.updateStock(request.totalQuantity());
-            
-            Product updatedProduct = productService.updateProduct(product);
+            Product updatedProduct = productService.updateProductStockOnly(id, request.totalQuantity());
             ProductDetailResponse response = new ProductDetailResponse(updatedProduct);
-            
+
             return ResponseEntity.ok(new RsData<>("200-6", "상품 재고가 성공적으로 수정되었습니다.", response));
         } catch (Exception e) {
             return ResponseEntity.badRequest()

@@ -143,6 +143,30 @@ public class ProductService {
             return productRepository.save(product);
         }
 
+        // 상품 재고수량만 수정
+        public Product updateProductStockOnly(int productId, int newQuantity) {
+            if (newQuantity < 0) {
+                throw new IllegalArgumentException("수량은 0 이상이어야 합니다.");
+            }
+
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new NoSuchElementException(productId + "번 상품을 찾을 수 없습니다."));
+
+            product.updateStock(newQuantity);
+
+            // [자동 상태 변경 로직 추가]
+            if (newQuantity == 0) {
+                product.updateStatus(ProductStatus.OUT_OF_STOCK);
+            } else {
+                // 재고가 다시 들어오면, OUT_OF_STOCK인 경우 ON_SALE로 자동 복구
+                if (product.getStatus() == ProductStatus.OUT_OF_STOCK) {
+                    product.updateStatus(ProductStatus.ON_SALE);
+                }
+            }
+
+            return productRepository.save(product);
+        }
+
         // 상품 삭제
         public void deleteProduct(int id) {
             Product product = productRepository.findById(id)
