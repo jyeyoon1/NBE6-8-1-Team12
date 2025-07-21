@@ -18,6 +18,7 @@ export default function ProductFormPage() {
     price: "",
     totalQuantity: "",
     imageUrl: "",
+    status: "ON_SALE"
   });
 
   const [errorMsg, setErrorMsg] = useState("");
@@ -39,6 +40,7 @@ export default function ProductFormPage() {
               price: product.price.toString(),
               totalQuantity: product.totalQuantity.toString(),
               imageUrl: product.imageUrl,
+              status: product.status || "ON_SALE"
             });
           } else {
             setErrorMsg("상품 정보를 불러올 수 없습니다.");
@@ -73,6 +75,7 @@ export default function ProductFormPage() {
       price: parseInt(form.price),
       totalQuantity: parseInt(form.totalQuantity),
       imageUrl: form.imageUrl.trim(),
+      status: form.status
     };
 
     try {
