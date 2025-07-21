@@ -41,7 +41,17 @@ public class Product extends BaseEntity {
         this.totalQuantity = totalQuantity;
         this.description = description;
         this.imageUrl = imageUrl;
-        this.status = status != null ? status : ProductStatus.ON_SALE; // 상태가 null인 경우 기본값 설정
+
+        // 재고 수량에 따른 상품 상태 변경 로직
+        if (totalQuantity == 0) {
+            this.status = ProductStatus.OUT_OF_STOCK;
+        } else {
+            if (this.status == ProductStatus.OUT_OF_STOCK) {
+                this.status = ProductStatus.ON_SALE;
+            } else {
+                this.status = status != null ? status : ProductStatus.ON_SALE;
+            }
+        }
     }
 
     public boolean hasStock(int quantity) {

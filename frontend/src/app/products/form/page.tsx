@@ -95,6 +95,15 @@ export default function ProductFormPage() {
       });
 
       if (response.ok) {
+        const data = await response.json();
+        setForm({
+          productName: data.data.productName,
+          description: data.data.description,
+          price: data.data.price.toString(),
+          totalQuantity: data.data.totalQuantity.toString(),
+          imageUrl: data.data.imageUrl,
+          status: data.data.status || "ON_SALE",
+        });
         alert(isEditMode ? "상품이 성공적으로 수정되었습니다." : "상품이 성공적으로 추가되었습니다.");
         router.push("/products/list");
       } else {
