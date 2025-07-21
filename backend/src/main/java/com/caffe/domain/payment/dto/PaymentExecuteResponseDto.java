@@ -7,16 +7,12 @@ import java.time.LocalDateTime;
 
 public record PaymentExecuteResponseDto(int id,
                                         PaymentStatus paymentStatus,
-                                        int purchaseId,
-                                        String userEmail,
                                         LocalDateTime date
 ) {
     public PaymentExecuteResponseDto(Payment payment) {
         this(
                 payment.getId(),
                 payment.getStatus(),
-                payment.getPurchase().getId(),
-                payment.getPurchase().getUserEmail(),
                 payment.getModifyDate()
         );
     }
